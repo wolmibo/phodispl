@@ -125,7 +125,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
   }
 
   if (wp_scale_) {
-    wp_fractional_scale_v1_add_listener(wp_scale_.get(), &wp_scale_listener_, this);
+    //wp_fractional_scale_v1_add_listener(wp_scale_.get(), &wp_scale_listener_, this);
   }
 
   wl_surface_commit(surface_.get());
