@@ -1,0 +1,4 @@
+option('wayland-native', type: 'feature', value: 'auto')
+option('glfw',           type: 'feature', value: 'auto')
+
+option('desktop-file', type: 'boolean', value: 'true')
