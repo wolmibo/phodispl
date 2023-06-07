@@ -56,16 +56,17 @@ if wlavailable
   )
 
   protocols = [
-    wlprotocols.get_variable('pkgdatadir') / 'stable/xdg-shell/xdg-shell.xml',
-    'protocols/xdg-decoration-unstable-v1.xml',
-    'protocols/pointer-gestures-unstable-v1.xml'
+    'stable/xdg-shell/xdg-shell.xml',
+    'unstable/xdg-decoration/xdg-decoration-unstable-v1.xml',
+    'unstable/pointer-gestures/pointer-gestures-unstable-v1.xml',
   ]
 
+  proto_root = wlprotocols.get_variable('pkgdatadir')
   proto_source = []
 
   foreach proto: protocols
-    proto_source += scanner_src.process(proto)
-    proto_source += scanner_header.process(proto)
+    proto_source += scanner_src.process(proto_root / proto)
+    proto_source += scanner_header.process(proto_root / proto)
   endforeach
 
   sources += [
