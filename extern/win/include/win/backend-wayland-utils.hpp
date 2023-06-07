@@ -10,6 +10,7 @@
 #include <wayland-util.h>
 
 #include <xkbcommon/xkbcommon.h>
+#include "fractional-scale-v1-client-protocol.h"
 #include "pointer-gestures-unstable-v1-client-protocol.h"
 #include "viewporter-client-protocol.h"
 #include "xdg-decoration-unstable-v1-client-protocol.h"
@@ -96,6 +97,15 @@ DEFINE_WAYLAND_DELETER(wp_viewport, destroy);
 DEFINE_WAYLAND_DELETER(wp_viewporter, destroy);
 
 DEFINE_WAYLAND_INTERFACE(wp_viewporter);
+#endif
+
+
+
+#ifdef WP_FRACTIONAL_SCALE_V1_INTERFACE
+DEFINE_WAYLAND_DELETER(wp_fractional_scale_v1, destroy);
+DEFINE_WAYLAND_DELETER(wp_fractional_scale_manager_v1, destroy);
+
+DEFINE_WAYLAND_INTERFACE(wp_fractional_scale_manager_v1);
 #endif
 
 

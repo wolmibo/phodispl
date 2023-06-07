@@ -37,6 +37,10 @@ class global_wayland {
     [[nodiscard]] xdg_wm_base*   wm_base()    const { return wm_base_.get();    }
     [[nodiscard]] wp_viewporter* viewporter() const { return viewporter_.get(); }
 
+    [[nodiscard]] wp_fractional_scale_manager_v1* scale_manager() const {
+      return scale_manager_.get();
+    }
+
     [[nodiscard]] zxdg_decoration_manager_v1* decoration_manager() const {
       return decoration_manager_.get();
     }
@@ -44,18 +48,19 @@ class global_wayland {
 
 
   private:
-    wl_ptr<wl_display>                 display_;
-    wl_ptr<wl_registry>                registry_;
+    wl_ptr<wl_display>                     display_;
+    wl_ptr<wl_registry>                    registry_;
 
-    global_egl                         egl_display_;
+    global_egl                             egl_display_;
 
-    wl_ptr<wl_compositor>              compositor_;
+    wl_ptr<wl_compositor>                  compositor_;
 
-    wl_ptr<xdg_wm_base>                wm_base_;
-    wl_ptr<zxdg_decoration_manager_v1> decoration_manager_;
-    wl_ptr<wp_viewporter>              viewporter_;
+    wl_ptr<xdg_wm_base>                    wm_base_;
+    wl_ptr<zxdg_decoration_manager_v1>     decoration_manager_;
+    wl_ptr<wp_viewporter>                  viewporter_;
+    wl_ptr<wp_fractional_scale_manager_v1> scale_manager_;
 
-    input_manager_wayland              input_manager_;
+    input_manager_wayland                  input_manager_;
 
 
 

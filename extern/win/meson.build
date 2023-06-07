@@ -58,6 +58,7 @@ if wlavailable
   protocols = [
     'stable/viewporter/viewporter.xml',
     'stable/xdg-shell/xdg-shell.xml',
+    'staging/fractional-scale/fractional-scale-v1.xml',
     'unstable/xdg-decoration/xdg-decoration-unstable-v1.xml',
     'unstable/pointer-gestures/pointer-gestures-unstable-v1.xml',
   ]

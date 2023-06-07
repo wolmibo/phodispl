@@ -78,6 +78,10 @@ win::global_wayland::global_wayland() :
   if (!viewporter_) {
     logcerr::debug("unable to find wp_viewporter");
   }
+
+  if (!scale_manager_) {
+    logcerr::debug("unable to find wp_fractional_scale_manager_v1");
+  }
 }
 
 
@@ -138,7 +142,10 @@ void win::global_wayland::global(
     self->input_manager_.gestures(bind<zwp_pointer_gestures_v1>(registry, name, 3));
 
   } else if (interface == wp_viewporter_interface.name) {
-    self->viewporter_  = bind<wp_viewporter>(registry, name, 1);
+    self->viewporter_ = bind<wp_viewporter>(registry, name, 1);
+
+  } else if (interface == wp_fractional_scale_manager_v1_interface.name) {
+    self->scale_manager_ = bind<wp_fractional_scale_manager_v1>(registry, name, 1);
   }
 }
 

@@ -1,3 +1,4 @@
+#include "fractional-scale-v1-client-protocol.h"
 #include "win/context.hpp"
 #include "win/global-wayland.hpp"
 #include "win/window-listener.hpp"
@@ -68,6 +69,26 @@ namespace {
 
     return viewport;
   }
+
+
+
+  [[nodiscard]] wl_ptr<wp_fractional_scale_v1> create_wp_scale(
+      wp_fractional_scale_manager_v1* scale_manager,
+      wl_surface*                     surface
+  ) {
+    if (scale_manager == nullptr) {
+      return {};
+    }
+
+    wl_ptr<wp_fractional_scale_v1> scale{
+      wp_fractional_scale_manager_v1_get_fractional_scale(scale_manager, surface)};
+
+    if (!scale) {
+      logcerr::warn("unable to obtain fractional scale");
+    }
+
+    return scale;
+  }
 }
 
 
@@ -82,6 +103,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
   toplevel_   {create_xdg_toplevel(xdg_surface_.get(), app_id)},
   decoration_ {create_decoration(wayland_.decoration_manager(), toplevel_.get())},
   viewport_   {create_viewport(wayland_.viewporter(), surface_.get())},
+  wp_scale_   {create_wp_scale(wayland_.scale_manager(), surface_.get())},
   egl_window_ {create_assert(wl_egl_window_create(surface_.get(), size_.x, size_.y),
                 "unable to create egl window")},
   context_    {wayland_.egl().create_context(egl_window_.get())},
@@ -100,6 +122,10 @@ win::window_wayland::window_wayland(const std::string& app_id) :
         ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
     zxdg_toplevel_decoration_v1_add_listener(decoration_.get(),
         &decoration_listener_, this);
+  }
+
+  if (wp_scale_) {
+    wp_fractional_scale_v1_add_listener(wp_scale_.get(), &wp_scale_listener_, this);
   }
 
   wl_surface_commit(surface_.get());
@@ -217,8 +243,6 @@ void win::window_wayland::toplevel_configure(
 
   self->size_ = new_size;
 
-  wl_egl_window_resize(self->egl_window_.get(), self->size_.x, self->size_.y, 0, 0);
-  self->rescale(self->size_, 1.f);
   self->update_viewport();
 
   wl_surface_commit(self->surface_.get());
@@ -260,15 +284,42 @@ void win::window_wayland::decoration_configure(
 
 
 void win::window_wayland::update_viewport() {
-  if (!viewport_) {
+  wl_egl_window_resize(egl_window_.get(), size_.x * scale_, size_.y * scale_, 0, 0);
+  rescale(size_, scale_);
+
+
+  if (viewport_) {
+    wp_viewport_set_destination(viewport_.get(), size_.x, size_.y);
+
+    wp_viewport_set_source(viewport_.get(),
+        wl_fixed_from_int(0),
+        wl_fixed_from_int(0),
+        wl_fixed_from_int(size_.x * scale_),
+        wl_fixed_from_int(size_.y * scale_));
+  }
+}
+
+
+
+
+
+void win::window_wayland::preferred_scale(
+    void*                   data,
+    wp_fractional_scale_v1* /*fractional_scale*/,
+    uint32_t                scale
+) {
+  if (scale == 0) {
     return;
   }
 
-  wp_viewport_set_destination(viewport_.get(), size_.x, size_.y);
+  auto* self = static_cast<window_wayland*>(data);
 
-  wp_viewport_set_source(viewport_.get(),
-      wl_fixed_from_int(0),
-      wl_fixed_from_int(0),
-      wl_fixed_from_int(size_.x),
-      wl_fixed_from_int(size_.y));
+  auto s = static_cast<float>(scale) / 120.f;
+
+  if (s == self->scale_) {
+    return;
+  }
+
+  self->scale_ = s;
+  self->update_viewport();
 }

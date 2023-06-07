@@ -25,6 +25,7 @@ class window_wayland : public window_native {
   private:
     bool                                should_close_{false};
     vec2<uint32_t>                      size_{100, 100};
+    float                               scale_{1.f};
 
     global_wayland                      wayland_;
 
@@ -33,6 +34,7 @@ class window_wayland : public window_native {
     wl_ptr<xdg_toplevel>                toplevel_;
     wl_ptr<zxdg_toplevel_decoration_v1> decoration_;
     wl_ptr<wp_viewport>                 viewport_;
+    wl_ptr<wp_fractional_scale_v1>      wp_scale_;
 
     wl_ptr<wl_egl_window>               egl_window_;
     context_wayland                     context_;
@@ -94,6 +96,14 @@ class window_wayland : public window_native {
 
     static constexpr zxdg_toplevel_decoration_v1_listener decoration_listener_ {
       .configure = decoration_configure,
+    };
+
+
+
+    static void preferred_scale(void*, wp_fractional_scale_v1*, uint32_t);
+
+    static constexpr wp_fractional_scale_v1_listener wp_scale_listener_ {
+      .preferred_scale = preferred_scale,
     };
 };
 }
