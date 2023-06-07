@@ -49,6 +49,25 @@ namespace {
 
     return decoration;
   }
+
+
+
+  [[nodiscard]] wl_ptr<wp_viewport> create_viewport(
+      wp_viewporter* viewporter,
+      wl_surface*    surface
+  ) {
+    if (viewporter == nullptr) {
+      return {};
+    }
+
+    wl_ptr<wp_viewport> viewport{wp_viewporter_get_viewport(viewporter, surface)};
+
+    if (!viewport) {
+      logcerr::warn("unable to obtain viewport");
+    }
+
+    return viewport;
+  }
 }
 
 
@@ -62,6 +81,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
                 "unable to create xdg surface")},
   toplevel_   {create_xdg_toplevel(xdg_surface_.get(), app_id)},
   decoration_ {create_decoration(wayland_.decoration_manager(), toplevel_.get())},
+  viewport_   {create_viewport(wayland_.viewporter(), surface_.get())},
   egl_window_ {create_assert(wl_egl_window_create(surface_.get(), size_.x, size_.y),
                 "unable to create egl window")},
   context_    {wayland_.egl().create_context(egl_window_.get())},
@@ -199,6 +219,7 @@ void win::window_wayland::toplevel_configure(
 
   wl_egl_window_resize(self->egl_window_.get(), self->size_.x, self->size_.y, 0, 0);
   self->rescale(self->size_, 1.f);
+  self->update_viewport();
 
   wl_surface_commit(self->surface_.get());
 }
@@ -232,4 +253,22 @@ void win::window_wayland::decoration_configure(
     default:
       logcerr::warn("compositor requested unknown window decoration mode");
   }
+}
+
+
+
+
+
+void win::window_wayland::update_viewport() {
+  if (!viewport_) {
+    return;
+  }
+
+  wp_viewport_set_destination(viewport_.get(), size_.x, size_.y);
+
+  wp_viewport_set_source(viewport_.get(),
+      wl_fixed_from_int(0),
+      wl_fixed_from_int(0),
+      wl_fixed_from_int(size_.x),
+      wl_fixed_from_int(size_.y));
 }

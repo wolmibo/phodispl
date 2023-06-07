@@ -11,6 +11,7 @@
 
 #include <xkbcommon/xkbcommon.h>
 #include "pointer-gestures-unstable-v1-client-protocol.h"
+#include "viewporter-client-protocol.h"
 #include "xdg-decoration-unstable-v1-client-protocol.h"
 #include "xdg-shell-client-protocol.h"
 
@@ -86,6 +87,15 @@ DEFINE_WAYLAND_DELETER(zwp_pointer_gesture_swipe_v1, destroy);
 DEFINE_WAYLAND_DELETER(zwp_pointer_gesture_pinch_v1, destroy);
 
 DEFINE_WAYLAND_INTERFACE(zwp_pointer_gestures_v1);
+#endif
+
+
+
+#ifdef WP_VIEWPORT_INTERFACE
+DEFINE_WAYLAND_DELETER(wp_viewport, destroy);
+DEFINE_WAYLAND_DELETER(wp_viewporter, destroy);
+
+DEFINE_WAYLAND_INTERFACE(wp_viewporter);
 #endif
 
 

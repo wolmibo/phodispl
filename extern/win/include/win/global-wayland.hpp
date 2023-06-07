@@ -35,6 +35,7 @@ class global_wayland {
 
     [[nodiscard]] wl_compositor* compositor() const { return compositor_.get(); }
     [[nodiscard]] xdg_wm_base*   wm_base()    const { return wm_base_.get();    }
+    [[nodiscard]] wp_viewporter* viewporter() const { return viewporter_.get(); }
 
     [[nodiscard]] zxdg_decoration_manager_v1* decoration_manager() const {
       return decoration_manager_.get();
@@ -52,6 +53,7 @@ class global_wayland {
 
     wl_ptr<xdg_wm_base>                wm_base_;
     wl_ptr<zxdg_decoration_manager_v1> decoration_manager_;
+    wl_ptr<wp_viewporter>              viewporter_;
 
     input_manager_wayland              input_manager_;
 

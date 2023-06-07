@@ -56,6 +56,7 @@ if wlavailable
   )
 
   protocols = [
+    'stable/viewporter/viewporter.xml',
     'stable/xdg-shell/xdg-shell.xml',
     'unstable/xdg-decoration/xdg-decoration-unstable-v1.xml',
     'unstable/pointer-gestures/pointer-gestures-unstable-v1.xml',

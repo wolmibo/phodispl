@@ -32,6 +32,7 @@ class window_wayland : public window_native {
     wl_ptr<xdg_surface>                 xdg_surface_;
     wl_ptr<xdg_toplevel>                toplevel_;
     wl_ptr<zxdg_toplevel_decoration_v1> decoration_;
+    wl_ptr<wp_viewport>                 viewport_;
 
     wl_ptr<wl_egl_window>               egl_window_;
     context_wayland                     context_;
@@ -53,7 +54,7 @@ class window_wayland : public window_native {
     [[nodiscard]] bool    mod_active(modifier /*mod*/) const override;
     [[nodiscard]] context share_context()              const override;
 
-
+    void update_viewport();
 
 
 

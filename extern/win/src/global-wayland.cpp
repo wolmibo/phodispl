@@ -74,6 +74,10 @@ win::global_wayland::global_wayland() :
   if (!decoration_manager_) {
     logcerr::debug("unable to find zxdg_decoration_manager_v1");
   }
+
+  if (!viewporter_) {
+    logcerr::debug("unable to find wp_viewporter");
+  }
 }
 
 
@@ -132,6 +136,9 @@ void win::global_wayland::global(
 
   } else if (interface == zwp_pointer_gestures_v1_interface.name) {
     self->input_manager_.gestures(bind<zwp_pointer_gestures_v1>(registry, name, 3));
+
+  } else if (interface == wp_viewporter_interface.name) {
+    self->viewporter_  = bind<wp_viewporter>(registry, name, 1);
   }
 }
 
