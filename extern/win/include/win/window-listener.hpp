@@ -24,7 +24,6 @@ class window_listener {
 
 
     virtual bool on_update() { return false; }
-    virtual void on_render() {}
 
     virtual void on_rescale(vec2<uint32_t> /*size*/, float /*scale*/) {}
 
@@ -51,6 +50,10 @@ class window_listener {
     virtual void on_pinch_update(vec2<float> /*delta*/, float /*scale*/, float /*rot*/) {}
     virtual void on_pinch_cancel() {}
     virtual void on_pinch_finish() {}
+
+
+
+    virtual void on_render_private() {}
 };
 
 }

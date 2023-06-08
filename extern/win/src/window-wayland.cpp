@@ -165,7 +165,7 @@ void win::window_wayland::run() {
   while (!should_close_ && wayland_.dispatch() != -1) {
     if (frame_requested_ && update()) {
       frame_requested_ = false;
-      listener()->on_render();
+      listener()->on_render_private();
       context_.swap_buffers();
     }
   }

@@ -121,25 +121,11 @@ viewport::viewport() :
 
   glyphs_{create_glyphs()}
 {
-  glEnable(GL_BLEND);
-
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-  auto bg = global_config().theme_background;
-  glClearColor(bg[0] * bg[3], bg[1] * bg[3], bg[2] * bg[3], bg[3]);
-  glClear(GL_COLOR_BUFFER_BIT);
-
-
-
   assert_shader_compat(solid_shader_, "SHADER_PLANE_OBJECT_VS");
   assert_shader_compat(font_shader_,  "SHADER_PLANE_UV_VS");
 }
 
 
-
-void viewport::clear() {
-  glClear(GL_COLOR_BUFFER_BIT);
-}
 
 
 

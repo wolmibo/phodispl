@@ -91,7 +91,7 @@ void win::window_glfw::run() {
 
   while (glfwWindowShouldClose(window_) == GLFW_FALSE) {
     if (update()) {
-      listener()->on_render();
+      listener()->on_render_private();
       glfwSwapBuffers(window_);
     } else {
       std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));

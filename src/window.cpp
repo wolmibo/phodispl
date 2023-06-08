@@ -26,6 +26,7 @@ window::window(std::vector<std::filesystem::path> sl) :
 
   last_left_click_     {false}
 {
+  background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 }
 
@@ -107,8 +108,6 @@ bool window::on_update() {
 
 void window::on_render() {
   logcerr::debug("rendering");
-
-  viewport_->clear();
 
   if (image_source_) {
     float v = *image_view_blend_;

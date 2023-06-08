@@ -1,6 +1,7 @@
 #ifndef WIN_APPLICATION_HPP_INCLUDED
 #define WIN_APPLICATION_HPP_INCLUDED
 
+#include "win/types.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
 
@@ -25,6 +26,8 @@ class application : public window_listener {
 
     explicit application(const std::string& /*app_id*/);
 
+    virtual void on_render() {}
+
 
 
     [[nodiscard]] uint32_t       width()   const { return native_->width();  }
@@ -33,6 +36,11 @@ class application : public window_listener {
     [[nodiscard]] float          scale()   const { return native_->scale();  }
 
     [[nodiscard]] win::backend   backend() const { return native_->backend(); }
+
+
+
+    [[nodiscard]] color background_color() const { return bg_color_; }
+    void background_color(color c) { bg_color_ = c; damage(); }
 
 
 
@@ -59,6 +67,10 @@ class application : public window_listener {
   private:
     std::chrono::steady_clock::time_point start_;
     std::unique_ptr<window_native>        native_;
+
+    color                                 bg_color_{0.f, 0.f, 0.f, 1.f};
+
+    void on_render_private() final;
 };
 
 }
