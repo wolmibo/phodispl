@@ -8,11 +8,6 @@
 
 namespace win {
   using color = std::array<float, 4>;
-
-  enum class alpha_mode {
-    premultiplied,
-    straight
-  };
 }
 
 #endif // WIN_TYPES_HPP_INCLUDED
