@@ -22,7 +22,7 @@ class viewport {
 
 
 
-    void rescale(uint32_t, uint32_t, uint32_t);
+    void rescale(uint32_t, uint32_t, float);
     static void clear();
 
 

@@ -125,7 +125,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
   }
 
   if (wp_scale_) {
-    //wp_fractional_scale_v1_add_listener(wp_scale_.get(), &wp_scale_listener_, this);
+    wp_fractional_scale_v1_add_listener(wp_scale_.get(), &wp_scale_listener_, this);
   }
 
   wl_surface_commit(surface_.get());
@@ -315,6 +315,8 @@ void win::window_wayland::preferred_scale(
   auto* self = static_cast<window_wayland*>(data);
 
   auto s = static_cast<float>(scale) / 120.f;
+
+  logcerr::verbose("viewport scale: {:.5}", s);
 
   if (s == self->scale_) {
     return;

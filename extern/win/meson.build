@@ -2,6 +2,7 @@ config = configuration_data()
 
 deps = [
   utils_dep,
+  gl_dep,
   logcerr_dep,
   dependency('epoxy', version: '>=1.5.10')
 ]

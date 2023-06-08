@@ -37,8 +37,8 @@ pixglot_dep = dependency(
 )
 
 
-subdir('extern/win')
 subdir('extern/gl')
+subdir('extern/win')
 
 subdir('src')
 

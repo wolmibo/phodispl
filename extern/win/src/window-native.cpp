@@ -1,3 +1,5 @@
+#include <gl/base.hpp>
+
 #include "win/window-glfw.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
@@ -95,6 +97,8 @@ void win::window_native::rescale(vec2<uint32_t> size, float scale) {
   damage(size_ != size || scale_ != scale);
   size_  = size;
   scale_ = scale;
+
+  glViewport(0, 0, size_.x * scale_, size_.y * scale);
 
   listener()->on_rescale(size, scale);
 }

@@ -143,12 +143,10 @@ void viewport::clear() {
 
 
 
-void viewport::rescale(uint32_t w, uint32_t h, uint32_t s) {
+void viewport::rescale(uint32_t w, uint32_t h, float s) {
   width_  = w;
   height_ = h;
   scale_  = s;
-
-  glViewport(0, 0, w * s, h * s);
 }
 
 
