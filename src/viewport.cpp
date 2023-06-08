@@ -189,8 +189,8 @@ void viewport::draw_string(
   float xoffset = 0;
   float yoffset = 0;
 
-  x = std::floor(x);
-  y = std::floor(y);
+  x = std::floor(x * scale_);
+  y = std::floor(y * scale_);
 
   font_shader_.use();
   glUniform4f(font_shader_color_, col[0], col[1], col[2], col[3]);
@@ -203,11 +203,11 @@ void viewport::draw_string(
   for (char32_t c: utf32) {
     if (c == 10) {
       xoffset = 0;
-      yoffset -= 1.2 * size;
+      yoffset -= 1.2 * size * scale_;
     } else if (c == 32) {
-      xoffset += glyphs_->get(c, size).advance_x();
+      xoffset += glyphs_->get(c, size * scale_).advance_x();
     } else {
-      const auto& g = glyphs_->get(c, size);
+      const auto& g = glyphs_->get(c, size * scale_);
 
       b.x      = x + g.width()  / 2 + g.left() + xoffset;
       b.y      = y - g.height() / 2 + g.top()  + yoffset;
@@ -217,7 +217,7 @@ void viewport::draw_string(
       xoffset += g.advance_x();
 
       g.tex().bind();
-      apply_matrix(b.to_matrix(width_, height_));
+      apply_matrix(b.to_matrix(width_ * scale_, height_ * scale_));
       quad_.draw();
     }
   }
@@ -244,7 +244,7 @@ std::pair<float, float> viewport::string_dimensions(
       x = std::max(xoffset, x);
       xoffset = 0;
     } else {
-      xoffset += glyphs_->get(c, size).advance_x();
+      xoffset += glyphs_->get(c, size * scale_).advance_x() / scale_;
     }
   }
 
