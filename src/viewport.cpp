@@ -144,6 +144,16 @@ void viewport::render(const box& b) const {
 
 
 
+void viewport::render_physical(const box& b) const {
+  auto copy = b;
+  copy.x *= scale_;
+  copy.y *= scale_;
+  apply_matrix(copy.to_matrix(width_ * scale_, height_ * scale_));
+  quad_.draw();
+}
+
+
+
 void viewport::render_solid(const box& b, const color& c) const {
   solid_shader_.use();
   glUniform4f(solid_shader_color_, c[0], c[1], c[2], c[3]);
@@ -244,11 +254,11 @@ std::pair<float, float> viewport::string_dimensions(
 
 
 float viewport::scale_fit(float w, float h) const {
-  return std::min<float>(width_ / w, height_ / h);
+  return std::min<float>(width_ / w, height_ / h) * scale_;
 }
 
 float viewport::scale_clip(float w, float h) const {
-  return std::max<float>(width_ / w, height_ / h);
+  return std::max<float>(width_ / w, height_ / h) * scale_;
 }
 
 

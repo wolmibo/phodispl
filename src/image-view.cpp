@@ -77,7 +77,7 @@ void image_view::render_frame(const frame& frame, float alpha) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }
 
-  view_info_->viewport_->render(b);
+  view_info_->viewport_->render_physical(b);
 }
 
 

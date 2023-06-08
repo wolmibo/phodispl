@@ -27,6 +27,7 @@ class viewport {
 
 
     void render(const box&) const;
+    void render_physical(const box&) const;
     void render_solid(const box&, const color&) const;
     void render_solid(const color&) const;
 
