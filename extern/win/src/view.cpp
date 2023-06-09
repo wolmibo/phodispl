@@ -20,3 +20,11 @@ win::mat4 win::view::trafo_mat_logical(vec2<float> position, vec2<float> size) c
 win::mat4 win::view::trafo_mat_physical(vec2<float> position, vec2<float> size) const {
   return trafo_mat_logical(position * (1.f / scale()), size * (1.f / scale()));
 }
+
+
+
+
+
+bool win::view::validate() {
+  return invalid_.exchange(false);
+}

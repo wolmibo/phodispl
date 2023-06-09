@@ -7,6 +7,8 @@
 #include "win/vec2.hpp"
 #include "win/types.hpp"
 
+#include <atomic>
+
 
 
 namespace win {
@@ -28,12 +30,18 @@ class view {
 
 
 
+    void invalidate() { invalid_ = true; }
+    [[nodiscard]] bool validate();
+
+
 
 
   private:
-    vec2<float> size_;
-    vec2<float> position_;
-    float       scale_;
+    vec2<float>       size_;
+    vec2<float>       position_;
+    float             scale_;
+
+    std::atomic<bool> invalid_{true};
 };
 
 }
