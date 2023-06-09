@@ -9,6 +9,7 @@ deps = [
 
 sources = [
   'src/application.cpp',
+  'src/view.cpp',
   'src/window-native.cpp'
 ]
 

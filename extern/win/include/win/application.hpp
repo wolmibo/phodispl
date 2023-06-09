@@ -59,6 +59,11 @@ class application : public window_listener {
 
 
 
+    [[nodiscard]] mat4 transform(vec2<int32_t>, vec2<uint32_t>) const;
+    [[nodiscard]] mat4 transform_physical(vec2<int32_t>, vec2<uint32_t>) const;
+
+
+
   protected:
     void damage(bool damage = true) { native_->damage(damage); }
 

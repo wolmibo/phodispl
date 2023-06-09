@@ -19,6 +19,46 @@ struct vec2 {
 
 
 
+template<typename T>
+[[nodiscard]] vec2<T> operator*(vec2<T> lhs, T scalar) {
+  lhs.x *= scalar; lhs.y *= scalar;
+  return lhs;
+}
+
+template<typename T>
+[[nodiscard]] vec2<T> operator*(T scalar, vec2<T> lhs) {
+  lhs.x *= scalar; lhs.y *= scalar;
+  return lhs;
+}
+
+template<typename T>
+[[nodiscard]] vec2<T> operator+(vec2<T> lhs, vec2<T> rhs) {
+  lhs.x += rhs.x; lhs.y += rhs.y;
+  return lhs;
+}
+
+template<typename T>
+[[nodiscard]] vec2<T> operator-(vec2<T> lhs, vec2<T> rhs) {
+  lhs.x -= rhs.x; lhs.y -= rhs.y;
+  return lhs;
+}
+
+
+
+template<typename T>
+[[nodiscard]] vec2<T> vec2_mul(vec2<T> lhs, vec2<T> rhs) {
+  lhs.x *= rhs.x; lhs.y *= rhs.y;
+  return lhs;
+}
+
+template<typename T>
+[[nodiscard]] vec2<T> vec2_div(vec2<T> lhs, vec2<T> rhs) {
+  lhs.x /= rhs.x; lhs.y /= rhs.y;
+  return lhs;
+}
+
+
+
 template<typename T, typename S>
 vec2<T> make_vec2(S x, S y) {
   return vec2<T>{

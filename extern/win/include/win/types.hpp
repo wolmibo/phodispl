@@ -8,6 +8,8 @@
 
 namespace win {
   using color = std::array<float, 4>;
+
+  using mat4 = std::array<float, 16>;
 }
 
 #endif // WIN_TYPES_HPP_INCLUDED
