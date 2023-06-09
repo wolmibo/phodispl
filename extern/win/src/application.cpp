@@ -61,5 +61,5 @@ void win::application::on_render_private() {
 
   glClear(GL_COLOR_BUFFER_BIT);
 
-  on_render();
+  render();
 }

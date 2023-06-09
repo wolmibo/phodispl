@@ -2,6 +2,7 @@
 #define WIN_APPLICATION_HPP_INCLUDED
 
 #include "win/types.hpp"
+#include "win/view.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
 
@@ -12,7 +13,7 @@
 
 namespace win {
 
-class application : public window_listener {
+class application : public window_listener, public view {
   public:
     application(const application&) = delete;
     application(application&&) noexcept;
@@ -25,8 +26,6 @@ class application : public window_listener {
 
 
     explicit application(const std::string& /*app_id*/);
-
-    virtual void on_render() {}
 
 
 
@@ -59,13 +58,12 @@ class application : public window_listener {
 
 
 
-    [[nodiscard]] mat4 transform(vec2<int32_t>, vec2<uint32_t>) const;
-    [[nodiscard]] mat4 transform_physical(vec2<int32_t>, vec2<uint32_t>) const;
-
 
 
   protected:
     void damage(bool damage = true) { native_->damage(damage); }
+
+
 
 
 
