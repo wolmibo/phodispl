@@ -1,5 +1,7 @@
 #include "win/view.hpp"
 
+#include <algorithm>
+
 
 
 win::mat4 win::view::trafo_mat_logical(vec2<float> position, vec2<float> size) const {
@@ -25,6 +27,49 @@ win::mat4 win::view::trafo_mat_physical(vec2<float> position, vec2<float> size) 
 
 
 
-bool win::view::validate() {
-  return invalid_.exchange(false);
+bool win::view::invalid() const {
+  if (invalid_) {
+    return true;
+  }
+
+  return std::ranges::any_of(children_, [](const auto& pair) {
+      return pair.first->invalid();
+  });
+}
+
+
+
+
+
+void win::view::render() {
+  on_render();
+  invalid_ = false;
+  for (const auto& [child, _]: children_) {
+    child->render();
+  }
+}
+
+
+
+
+
+void win::view::compute_layout(vec2<float> position, vec2<float> size, float scale) {
+  position_      = position;
+  realized_size_ = size;
+  scale_         = scale;
+
+  for (const auto& [child, constraint]: children_) {
+    auto [x, y, w, h] = constraint.realize(child->size(), realized_size_);
+    child->compute_layout({x, y}, {w, h}, scale);
+  }
+}
+
+
+
+
+
+void win::view::add_child(std::shared_ptr<view> child, view_constraint constraint) {
+  children_.emplace_back(std::move(child), constraint);
+
+  invalidate();
 }
