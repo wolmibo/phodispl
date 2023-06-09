@@ -51,14 +51,19 @@ class view {
 
 
 
+
+
+    void add_child(std::shared_ptr<view>, view_constraint);
+
+
+
+
+
+  protected:
     void render();
     virtual void on_render() {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
-
-
-
-    void add_child(std::shared_ptr<view>, view_constraint);
 
 
 
