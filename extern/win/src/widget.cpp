@@ -1,10 +1,10 @@
-#include "win/view.hpp"
+#include "win/widget.hpp"
 
 #include <algorithm>
 
 
 
-win::mat4 win::view::trafo_mat_logical(vec2<float> position, vec2<float> size) const {
+win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size) const {
   vec2<float> s = vec2_div(logical_size(), size);
   vec2<float> p = 2.f * vec2_div(position + logical_position()
                                  - (size - logical_size()) * 0.5f, size);
@@ -19,7 +19,7 @@ win::mat4 win::view::trafo_mat_logical(vec2<float> position, vec2<float> size) c
 
 
 
-win::mat4 win::view::trafo_mat_physical(vec2<float> position, vec2<float> size) const {
+win::mat4 win::widget::trafo_mat_physical(vec2<float> position, vec2<float> size) const {
   return trafo_mat_logical(position * (1.f / scale()), size * (1.f / scale()));
 }
 
@@ -27,7 +27,7 @@ win::mat4 win::view::trafo_mat_physical(vec2<float> position, vec2<float> size) 
 
 
 
-bool win::view::invalid() const {
+bool win::widget::invalid() const {
   if (invalid_) {
     return true;
   }
@@ -41,7 +41,7 @@ bool win::view::invalid() const {
 
 
 
-void win::view::render() {
+void win::widget::render() {
   on_render();
   invalid_ = false;
   for (const auto& [child, _]: children_) {
@@ -53,7 +53,7 @@ void win::view::render() {
 
 
 
-void win::view::compute_layout(vec2<float> position, vec2<float> size, float scale) {
+void win::widget::compute_layout(vec2<float> position, vec2<float> size, float scale) {
   position_      = position;
   realized_size_ = size;
   scale_         = scale;
@@ -68,7 +68,7 @@ void win::view::compute_layout(vec2<float> position, vec2<float> size, float sca
 
 
 
-void win::view::add_child(std::shared_ptr<view> child, view_constraint constraint) {
+void win::widget::add_child(std::shared_ptr<widget> child, widget_constraint constraint) {
   children_.emplace_back(std::move(child), constraint);
 
   invalidate();

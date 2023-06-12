@@ -1,4 +1,4 @@
-#include "win/view-constraint.hpp"
+#include "win/widget-constraint.hpp"
 
 
 
@@ -38,7 +38,7 @@ namespace {
 
 
 
-std::array<float, 4> win::view_constraint::realize(
+std::array<float, 4> win::widget_constraint::realize(
     vec2<float> outer_size
 ) const {
   std::array<float, 4> bounds{0.f};

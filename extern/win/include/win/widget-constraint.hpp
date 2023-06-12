@@ -1,8 +1,8 @@
 // Copyright (c) 2023 wolmibo
 // SPDX-License-Identifier: MIT
 
-#ifndef WIN_VIEW_CONSTRAINT_HPP_INCLUDED
-#define WIN_VIEW_CONSTRAINT_HPP_INCLUDED
+#ifndef WIN_WIDGET_CONSTRAINT_HPP_INCLUDED
+#define WIN_WIDGET_CONSTRAINT_HPP_INCLUDED
 
 #include "win/vec2.hpp"
 
@@ -29,7 +29,7 @@ using dimension_constraint = std::variant<dimension_fill_constraint, float>;
 
 
 
-struct view_constraint {
+struct widget_constraint {
   dimension_constraint width;
   dimension_constraint height;
 
@@ -40,4 +40,4 @@ struct view_constraint {
 
 }
 
-#endif // WIN_VIEW_CONSTRAINT_HPP_INCLUDED
+#endif // WIN_WIDGET_CONSTRAINT_HPP_INCLUDED

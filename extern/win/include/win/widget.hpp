@@ -1,12 +1,12 @@
 // Copyright (c) 2023 wolmibo
 // SPDX-License-Identifier: MIT
 
-#ifndef WIN_VIEW_HPP_INCLUDED
-#define WIN_VIEW_HPP_INCLUDED
+#ifndef WIN_WIDGET_HPP_INCLUDED
+#define WIN_WIDGET_HPP_INCLUDED
 
-#include "win/vec2.hpp"
-#include "win/view-constraint.hpp"
 #include "win/types.hpp"
+#include "win/vec2.hpp"
+#include "win/widget-constraint.hpp"
 
 #include <memory>
 #include <vector>
@@ -15,16 +15,16 @@
 
 namespace win {
 
-class view {
+class widget {
   public:
-    view(const view&) = delete;
-    view(view&&)      = delete;
-    view& operator=(const view&) = delete;
-    view& operator=(view&&)      = delete;
+    widget(const widget&) = delete;
+    widget(widget&&)      = delete;
+    widget& operator=(const widget&) = delete;
+    widget& operator=(widget&&)      = delete;
 
-    virtual ~view() = default;
+    virtual ~widget() = default;
 
-    view() = default;
+    widget() = default;
 
 
 
@@ -50,7 +50,7 @@ class view {
 
 
 
-    void add_child(std::shared_ptr<view>, view_constraint);
+    void add_child(std::shared_ptr<widget>, widget_constraint);
 
 
 
@@ -73,10 +73,10 @@ class view {
 
     bool              invalid_      {true};
 
-    std::vector<std::pair<std::shared_ptr<view>, view_constraint>>
+    std::vector<std::pair<std::shared_ptr<widget>, widget_constraint>>
                       children_;
 };
 
 }
 
-#endif // WIN_VIEW_HPP_INCLUDED
+#endif // WIN_WIDGET_HPP_INCLUDED
