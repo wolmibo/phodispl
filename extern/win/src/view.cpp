@@ -59,7 +59,7 @@ void win::view::compute_layout(vec2<float> position, vec2<float> size, float sca
   scale_         = scale;
 
   for (const auto& [child, constraint]: children_) {
-    auto [x, y, w, h] = constraint.realize(child->size(), realized_size_);
+    auto [x, y, w, h] = constraint.realize(realized_size_);
     child->compute_layout({x, y}, {w, h}, scale);
   }
 }

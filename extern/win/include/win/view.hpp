@@ -25,11 +25,8 @@ class view {
     virtual ~view() = default;
 
     view() = default;
-    view(vec2<float> size) : size_{size} {}
 
 
-
-    [[nodiscard]] vec2<float> size()              const { return size_; }
 
     [[nodiscard]] vec2<float> logical_size()      const { return realized_size_; }
     [[nodiscard]] vec2<float> logical_position()  const { return position_; }
@@ -70,7 +67,6 @@ class view {
 
 
   private:
-    vec2<float>       size_         {-1.f, -1.f};
     vec2<float>       realized_size_{ 0.f,  0.f};
     vec2<float>       position_     { 0.f,  0.f};
     float             scale_        {1.f};

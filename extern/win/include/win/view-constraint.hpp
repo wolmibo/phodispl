@@ -7,20 +7,35 @@
 #include "win/vec2.hpp"
 
 #include <array>
+#include <optional>
+#include <variant>
 
 
 
 namespace win {
 
+struct margin_constraint {
+  std::optional<float> start;
+  std::optional<float> end;
+  std::optional<float> top;
+  std::optional<float> bottom;
+};
+
+
+
+struct dimension_fill_constraint{};
+
+using dimension_constraint = std::variant<dimension_fill_constraint, float>;
+
+
+
 struct view_constraint {
-  float left   {-1};
-  float right  {-1};
-  float top    {-1};
-  float bottom {-1};
+  dimension_constraint width;
+  dimension_constraint height;
 
+  margin_constraint    margin;
 
-
-  [[nodiscard]] std::array<float, 4> realize(vec2<float>, vec2<float>) const;
+  [[nodiscard]] std::array<float, 4> realize(vec2<float>) const;
 };
 
 }
