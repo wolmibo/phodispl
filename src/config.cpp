@@ -119,6 +119,7 @@ config::config(std::string_view content, bool strict) {
 
     update<scale_filter>(filter,   root.unique_key("scale-filter"));
     update<bool>        (watch_fs, root.unique_key("watch-fs"));
+    update<float>       (gamma,    root.unique_key("gamma"));
 
 
 

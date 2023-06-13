@@ -21,6 +21,7 @@ struct config {
 
     scale_filter filter  {scale_filter::linear};
     bool         watch_fs{true};
+    float        gamma   {2.2f};
 
 
 
