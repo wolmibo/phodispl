@@ -23,9 +23,9 @@ struct view_info {
   message_box       message_box_;
 
   gl::program       shader_color_;
-  GLint             shader_color_alpha_{0};
+  GLint             shader_color_factor_{0};
   gl::program       shader_color_gc_;
-  GLint             shader_color_gc_alpha_{0};
+  GLint             shader_color_gc_factor_{0};
   GLint             shader_color_gc_exponent_{0};
 
   explicit view_info(std::shared_ptr<viewport>);

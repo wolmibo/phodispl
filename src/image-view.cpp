@@ -17,22 +17,22 @@ view_info::view_info(std::shared_ptr<viewport> vp) :
     resources::shader_plane_uv_vs(),
     resources::shader_plane_fs()
   },
-  shader_color_alpha_{shader_color_.uniform("alpha")},
+  shader_color_factor_{shader_color_.uniform("factor")},
 
   shader_color_gc_{
     resources::shader_plane_uv_vs(),
     resources::shader_plane_gc_fs()
   },
-  shader_color_gc_alpha_   {shader_color_gc_.uniform("alpha")},
+  shader_color_gc_factor_  {shader_color_gc_.uniform("factor")},
   shader_color_gc_exponent_{shader_color_gc_.uniform("exponent")}
 {
-  if (shader_color_alpha_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"alpha\""
+  if (shader_color_factor_ < 0) {
+    throw std::runtime_error{"shader_error: unable to find uniform \"factor\""
       "in SHADER_PLANE_FS"};
   }
 
-  if (shader_color_gc_alpha_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"alpha\""
+  if (shader_color_gc_factor_ < 0) {
+    throw std::runtime_error{"shader_error: unable to find uniform \"factor\""
       "in SHADER_PLANE_GC_FS"};
   }
 
@@ -86,10 +86,10 @@ void image_view::render_frame(const frame& frame, float alpha) {
 
   if (std::abs(frame.gamma() - global_config().gamma) < 0.2) {
     view_info_->shader_color_.use();
-    glUniform1f(view_info_->shader_color_alpha_, alpha);
+    glUniform4f(view_info_->shader_color_factor_, alpha, alpha, alpha, alpha);
   } else {
     view_info_->shader_color_gc_.use();
-    glUniform1f(view_info_->shader_color_gc_alpha_, alpha);
+    glUniform4f(view_info_->shader_color_gc_factor_, alpha, alpha, alpha, alpha);
 
     float exp = frame.gamma() / global_config().gamma;
     glUniform4f(view_info_->shader_color_gc_exponent_, exp, exp, exp, 1.f);

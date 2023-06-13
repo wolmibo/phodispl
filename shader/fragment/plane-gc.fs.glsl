@@ -5,9 +5,9 @@ out vec4 fragColor;
 in vec2 uvCoord;
 uniform sampler2D textureSampler;
 
-uniform float alpha;
-uniform vec4  exponent;
+uniform vec4 factor;
+uniform vec4 exponent;
 
 void main() {
-  fragColor = alpha * pow(texture(textureSampler, uvCoord), exponent);
+  fragColor = factor * pow(texture(textureSampler, uvCoord), exponent);
 }
