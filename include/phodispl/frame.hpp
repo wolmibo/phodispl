@@ -9,10 +9,15 @@ class frame {
   public:
     explicit frame(pixglot::frame&& frame) :
       or_     {frame.orientation},
+      gamma_  {frame.gamma},
       texture_{std::move(frame.pixels.texture())}
     {}
 
 
+
+    [[nodiscard]] float gamma() const {
+      return gamma_;
+    }
 
     [[nodiscard]] pixglot::square_isometry orientation() const {
       return or_;
@@ -50,6 +55,7 @@ class frame {
 
   private:
     pixglot::square_isometry or_;
+    float                    gamma_;
     pixglot::gl_texture      texture_;
 };
 
