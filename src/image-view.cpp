@@ -26,21 +26,6 @@ view_info::view_info(std::shared_ptr<viewport> vp) :
   shader_color_gc_factor_  {shader_color_gc_.uniform("factor")},
   shader_color_gc_exponent_{shader_color_gc_.uniform("exponent")}
 {
-  if (shader_color_factor_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"factor\""
-      "in SHADER_PLANE_FS"};
-  }
-
-  if (shader_color_gc_factor_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"factor\""
-      "in SHADER_PLANE_GC_FS"};
-  }
-
-  if (shader_color_gc_exponent_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"exponent\""
-      "in SHADER_PLANE_GC_FS"};
-  }
-
   viewport::assert_shader_compat(shader_color_,    "SHADER_PLANE_UV_VS");
   viewport::assert_shader_compat(shader_color_gc_, "SHADER_PLANE_UV_VS");
 }
