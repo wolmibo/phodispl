@@ -17,14 +17,32 @@ view_info::view_info(std::shared_ptr<viewport> vp) :
     resources::shader_plane_uv_vs(),
     resources::shader_plane_fs()
   },
-  shader_color_alpha_{shader_color_.uniform("alpha")}
+  shader_color_alpha_{shader_color_.uniform("alpha")},
+
+  shader_color_gc_{
+    resources::shader_plane_uv_vs(),
+    resources::shader_plane_gc_fs()
+  },
+  shader_color_gc_alpha_   {shader_color_gc_.uniform("alpha")},
+  shader_color_gc_exponent_{shader_color_gc_.uniform("exponent")}
 {
   if (shader_color_alpha_ < 0) {
     throw std::runtime_error{"shader_error: unable to find uniform \"alpha\""
       "in SHADER_PLANE_FS"};
   }
 
-  viewport::assert_shader_compat(shader_color_,  "SHADER_PLANE_UV_VS");
+  if (shader_color_gc_alpha_ < 0) {
+    throw std::runtime_error{"shader_error: unable to find uniform \"alpha\""
+      "in SHADER_PLANE_GC_FS"};
+  }
+
+  if (shader_color_gc_exponent_ < 0) {
+    throw std::runtime_error{"shader_error: unable to find uniform \"exponent\""
+      "in SHADER_PLANE_GC_FS"};
+  }
+
+  viewport::assert_shader_compat(shader_color_,    "SHADER_PLANE_UV_VS");
+  viewport::assert_shader_compat(shader_color_gc_, "SHADER_PLANE_UV_VS");
 }
 
 
@@ -66,8 +84,16 @@ void image_view::render_frame(const frame& frame, float alpha) {
 
   frame.texture().bind();
 
-  view_info_->shader_color_.use();
-  glUniform1f(view_info_->shader_color_alpha_, alpha);
+  if (std::abs(frame.gamma() - global_config().gamma) < 0.2) {
+    view_info_->shader_color_.use();
+    glUniform1f(view_info_->shader_color_alpha_, alpha);
+  } else {
+    view_info_->shader_color_gc_.use();
+    glUniform1f(view_info_->shader_color_gc_alpha_, alpha);
+
+    float exp = frame.gamma() / global_config().gamma;
+    glUniform4f(view_info_->shader_color_gc_exponent_, exp, exp, exp, 1.f);
+  }
 
   if (view_info_->scale_filter_ == scale_filter::linear) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

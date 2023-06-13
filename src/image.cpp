@@ -60,7 +60,7 @@ namespace {
     .expand_gray_to_rgb = {},
     .component_type     = {},
     .alpha              = pixglot::alpha_mode::premultiplied,
-    .gamma              = 2.2,
+    .gamma              = {},
     .endianess          = std::endian::native,
     .orientation        = {}
   };
