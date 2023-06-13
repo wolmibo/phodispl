@@ -59,7 +59,7 @@ void image_view::render_empty() {
 
 
 
-void image_view::render_frame(const frame& frame, float alpha) {
+void image_view::render_frame(const frame& frame, float alpha, float factor) {
   if (!view_transform_.valid()) {
     view_transform_.update(frame);
   }
@@ -71,10 +71,12 @@ void image_view::render_frame(const frame& frame, float alpha) {
 
   if (std::abs(frame.gamma() - global_config().gamma) < 0.2) {
     view_info_->shader_color_.use();
-    glUniform4f(view_info_->shader_color_factor_, alpha, alpha, alpha, alpha);
+    glUniform4f(view_info_->shader_color_factor_,
+                alpha * factor, alpha * factor, alpha * factor, alpha);
   } else {
     view_info_->shader_color_gc_.use();
-    glUniform4f(view_info_->shader_color_gc_factor_, alpha, alpha, alpha, alpha);
+    glUniform4f(view_info_->shader_color_gc_factor_,
+                alpha * factor, alpha * factor, alpha * factor, alpha);
 
     float exp = frame.gamma() / global_config().gamma;
     glUniform4f(view_info_->shader_color_gc_exponent_, exp, exp, exp, 1.f);
@@ -93,16 +95,16 @@ void image_view::render_frame(const frame& frame, float alpha) {
 
 
 
-void image_view::render_image_or_backup(const image& img, float alpha) {
+void image_view::render_image_or_backup(const image& img, float alpha, float factor) {
   if (auto frame = img.current_frame(); frame && frame->texture()) {
-    render_frame(*frame, alpha * (1.f - 0.5f * *loading_blend_));
+    render_frame(*frame, alpha * (1.f - 0.5f * *loading_blend_), factor);
 
   }
 }
 
 
 
-void image_view::render_image(float alpha) {
+void image_view::render_image(float alpha, float factor) {
   if (!image_) {
     last_image_state_ = image_state::empty;
     return;
@@ -125,7 +127,7 @@ void image_view::render_image(float alpha) {
       loading_blend_.animate_to(0.f, false);
     }
 
-    render_image_or_backup(*image_, alpha);
+    render_image_or_backup(*image_, alpha, factor);
 
     if (loading_blend_.is_running()) {
       view_info_->progress_circle_.render(1.f, alpha * *loading_blend_);
