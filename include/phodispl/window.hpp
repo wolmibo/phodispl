@@ -63,15 +63,13 @@ class window : public win::application {
 
 
 
-    enum class state : size_t {
-      exposure_control = 0
-    };
+    enum class input_mode {
+      standard,
+      exposure_control
+    }                               input_mode_{input_mode::standard};
 
-    std::bitset<1>                  state_;
-
-    [[nodiscard]] bool state_active(state s) { return state_[std::to_underlying(s)]; }
-    void activate_state  (state s) { state_.set(std::to_underlying(s));   }
-    void deactivate_state(state s) { state_.reset(std::to_underlying(s)); }
+    void set_input_mode(input_mode);
+    void clear_input_mode(input_mode);
 
 
 

@@ -42,6 +42,40 @@ window::window(std::vector<std::filesystem::path> sl) :
 
 
 
+
+
+void window::clear_input_mode(input_mode mode) {
+  switch (mode) {
+    case input_mode::exposure_control:
+      exposure_scale_.deactivate();
+      break;
+    default:
+      break;
+  }
+
+  if (input_mode_ == mode) {
+    input_mode_ = input_mode::standard;
+  }
+}
+
+
+
+
+
+void window::set_input_mode(input_mode mode) {
+  if (mode == input_mode_) {
+    return;
+  }
+
+  clear_input_mode(input_mode_);
+
+  input_mode_ = mode;
+}
+
+
+
+
+
 void window::on_rescale(win::vec2<uint32_t> size, float scale) {
   viewport_->rescale(size.x, size.y, scale);
   image_view_primary_.trafo().invalidate();
@@ -201,26 +235,31 @@ void window::on_key_release(win::key keycode) {
 
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      if (state_active(state::exposure_control)) {
-        exposure_scale_.deactivate_up();
-      } else {
-        continuous_movement_.reset(movement::direction::in);
+      switch (input_mode_) {
+        case input_mode::standard:
+          continuous_movement_.reset(movement::direction::in);
+          break;
+        case input_mode::exposure_control:
+          exposure_scale_.deactivate_up();
+          break;
       }
       break;
 
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      if (state_active(state::exposure_control)) {
-        exposure_scale_.deactivate_down();
-      } else {
-        continuous_movement_.reset(movement::direction::out);
+      switch (input_mode_) {
+        case input_mode::standard:
+          continuous_movement_.reset(movement::direction::out);
+          break;
+        case input_mode::exposure_control:
+          exposure_scale_.deactivate_down();
+          break;
       }
       break;
 
     case win::key_from_char('e'):
     case win::key_from_char('E'):
-      deactivate_state(state::exposure_control);
-      exposure_scale_.deactivate();
+      clear_input_mode(input_mode::exposure_control);
       break;
 
     default:
@@ -241,10 +280,13 @@ void window::on_key_press(win::key keycode) {
       break;
 
     case win::key::home:
-      if (state_active(state::exposure_control)) {
-        damage(assign_compare(exposure_, 1.f));
-      } else {
-        scale = -1;
+      switch (input_mode_) {
+        case input_mode::exposure_control:
+          damage(assign_compare(exposure_, 1.f));
+          break;
+        case input_mode::standard:
+          scale = -1;
+          break;
       }
       break;
     case win::key::end:  scale = -2; break;
@@ -278,24 +320,30 @@ void window::on_key_press(win::key keycode) {
 
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      if (state_active(state::exposure_control)) {
-        exposure_scale_.activate_up();
-      } else {
-        continuous_movement_.set(movement::direction::in);
+      switch (input_mode_) {
+        case input_mode::exposure_control:
+          exposure_scale_.activate_up();
+          break;
+        case input_mode::standard:
+          continuous_movement_.set(movement::direction::in);
+          break;
       }
       break;
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      if (state_active(state::exposure_control)) {
-        exposure_scale_.activate_down();
-      } else {
-        continuous_movement_.set(movement::direction::out);
+      switch (input_mode_) {
+        case input_mode::exposure_control:
+          exposure_scale_.activate_down();
+          break;
+        case input_mode::standard:
+          continuous_movement_.set(movement::direction::out);
+          break;
       }
       break;
 
     case win::key_from_char('e'):
     case win::key_from_char('E'):
-      activate_state(state::exposure_control);
+      set_input_mode(input_mode::exposure_control);
       break;
 
 
@@ -400,16 +448,18 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
     return;
   }
 
-  if (state_active(state::exposure_control)) {
-    damage();
-    exposure_ *= powf(1.01, delta.y);
-    return;
+  switch (input_mode_) {
+    case input_mode::exposure_control:
+      damage();
+      exposure_ *= powf(1.01, delta.y);
+      break;
+    case input_mode::standard:
+      pos.x = pos.x - width() / 2.;
+      pos.y = height() / 2. - pos.y;
+      delta.y = powf(1.01, delta.y);
+      IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+      break;
   }
-
-  pos.x = pos.x - width() / 2.;
-  pos.y = height() / 2. - pos.y;
-  delta.y = powf(1.01, delta.y);
-  IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
 }
 
 
