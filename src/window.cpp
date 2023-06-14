@@ -131,33 +131,18 @@ bool window::on_update() {
   }
 
 
-  if (last_movement_ > 0) {
-    auto mv = continuous_movement_.to_vector();
-
-    uint64_t eps = elapsed();
-    float time = (eps - last_movement_) / 500.f;
-
-    mv[0] *= time;
-    mv[1] *= time;
-
-    IMAGE_VIEW_TRAFO(translate(mv[0], mv[1]));
-
-    last_movement_ = eps;
-  } else if (continuous_movement_) {
-    last_movement_ = elapsed();
-  }
-
-  if (!continuous_movement_) {
-    last_movement_ = 0;
-  }
-
-
 
   damage(assign_compare(exposure_,
         exposure_ * powf(1.01f, exposure_scale_.next_sample())));
 
   if (auto sample = zoom_scale_.next_sample(); sample != 0.f) {
     IMAGE_VIEW_TRAFO(scale(powf(1.01f, sample)));
+  }
+
+  auto move_x = move_x_scale_.next_sample();
+  auto move_y = move_y_scale_.next_sample();
+  if (move_x != 0.f || move_y != 0.f) {
+    IMAGE_VIEW_TRAFO(translate(move_x, move_y));
   }
 
 
@@ -230,7 +215,9 @@ void window::update_title() {
 
 
 void window::on_key_leave() {
-  continuous_movement_.clear();
+  move_x_scale_.deactivate();
+  move_y_scale_.deactivate();
+
   zoom_scale_.deactivate();
   exposure_scale_.deactivate();
 }
@@ -241,19 +228,19 @@ void window::on_key_release(win::key keycode) {
   switch (keycode) {
     case win::key_from_char('w'):
     case win::key_from_char('W'):
-      continuous_movement_.reset(movement::direction::up);
+      move_y_scale_.deactivate_up();
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      continuous_movement_.reset(movement::direction::left);
+      move_x_scale_.deactivate_down();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
-      continuous_movement_.reset(movement::direction::down);
+      move_y_scale_.deactivate_down();
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      continuous_movement_.reset(movement::direction::right);
+      move_x_scale_.deactivate_up();
       break;
 
     case win::key::kp_plus:
@@ -312,19 +299,19 @@ void window::on_key_press(win::key keycode) {
 
     case win::key_from_char('w'):
     case win::key_from_char('W'):
-      continuous_movement_.set(movement::direction::up);
+      move_y_scale_.activate_up();
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      continuous_movement_.set(movement::direction::left);
+      move_x_scale_.activate_down();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
-      continuous_movement_.set(movement::direction::down);
+      move_y_scale_.activate_down();
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      continuous_movement_.set(movement::direction::right);
+      move_x_scale_.activate_up();
       break;
 
     case win::key::kp_plus:

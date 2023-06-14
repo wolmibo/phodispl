@@ -58,7 +58,6 @@ source_files = [
   'image.cpp',
   'main.cpp',
   'message-box.cpp',
-  'movement.cpp',
   'progress-circle.cpp',
   'view-transform.cpp',
   'viewport.cpp',

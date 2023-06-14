@@ -5,7 +5,6 @@
 #include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-source.hpp"
 #include "phodispl/image-view.hpp"
-#include "phodispl/movement.hpp"
 #include "phodispl/stopwatch.hpp"
 
 #include <chrono>
@@ -50,14 +49,15 @@ class window : public win::application {
 
     stopwatch                        last_left_click_;
 
-    bool                             dragging_               {false};
-    bool                             pinching_               {false};
-    double                           last_scale_             {1.0};
-    double                           last_x_                 {0.0};
-    double                           last_y_                 {0.0};
-    movement                         continuous_movement_;
-    uint64_t                         last_movement_          {0};
+    bool                             dragging_      {false};
+    bool                             pinching_      {false};
+    double                           last_scale_    {1.0};
+    double                           last_x_        {0.0};
+    double                           last_y_        {0.0};
     continuous_scale                 zoom_scale_    {std::chrono::milliseconds{10}};
+    continuous_scale                 move_x_scale_  {std::chrono::milliseconds{2}};
+    continuous_scale                 move_y_scale_  {std::chrono::milliseconds{2}};
+
 
     float                            exposure_      {1.f};
     continuous_scale                 exposure_scale_{std::chrono::milliseconds{10}};
