@@ -50,6 +50,7 @@ source_files = [
   generated_resource,
   'box.cpp',
   'config.cpp',
+  'continuous-scale.cpp',
   'fs-watcher.cpp',
   'image-cache.cpp',
   'image-source.cpp',

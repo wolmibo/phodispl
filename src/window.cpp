@@ -8,6 +8,16 @@
 
 
 
+namespace {
+  [[nodiscard]] bool assign_compare(float& old_value, float new_value) {
+    bool cmp = std::abs(old_value - new_value) > 1e-5;
+    old_value = new_value;
+    return cmp;
+  }
+}
+
+
+
 window::window(std::vector<std::filesystem::path> sl) :
   win::application     {"phodispl"},
 
@@ -90,6 +100,13 @@ bool window::on_update() {
     last_movement_ = 0;
   }
 
+
+
+  damage(assign_compare(exposure_,
+        exposure_ * powf(1.01f, exposure_scale_.next_sample())));
+
+
+
   damage(image_view_primary_.update());
   damage(image_view_blend_.changed());
 
@@ -111,8 +128,8 @@ void window::on_render() {
 
   if (image_source_) {
     float v = *image_view_blend_;
-    image_view_secondary_.render_image(std::clamp(2.f-v, 0.f, 1.f));
-    image_view_primary_.render_image(std::clamp(v, 0.f, 1.f));
+    image_view_secondary_.render_image(std::clamp(2.f-v, 0.f, 1.f), exposure_);
+    image_view_primary_.render_image(std::clamp(v, 0.f, 1.f), exposure_);
   } else {
     image_view_primary_.render_empty();
   }
@@ -181,14 +198,31 @@ void window::on_key_release(win::key keycode) {
     case win::key_from_char('D'):
       continuous_movement_.reset(movement::direction::right);
       break;
+
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      continuous_movement_.reset(movement::direction::in);
+      if (state_active(state::exposure_control)) {
+        exposure_scale_.deactivate_up();
+      } else {
+        continuous_movement_.reset(movement::direction::in);
+      }
       break;
+
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      continuous_movement_.reset(movement::direction::out);
+      if (state_active(state::exposure_control)) {
+        exposure_scale_.deactivate_down();
+      } else {
+        continuous_movement_.reset(movement::direction::out);
+      }
       break;
+
+    case win::key_from_char('e'):
+    case win::key_from_char('E'):
+      deactivate_state(state::exposure_control);
+      exposure_scale_.deactivate();
+      break;
+
     default:
       break;
   }
@@ -206,7 +240,13 @@ void window::on_key_press(win::key keycode) {
       close();
       break;
 
-    case win::key::home: scale = -1; break;
+    case win::key::home:
+      if (state_active(state::exposure_control)) {
+        damage(assign_compare(exposure_, 1.f));
+      } else {
+        scale = -1;
+      }
+      break;
     case win::key::end:  scale = -2; break;
 
     case win::key::kp_1: scale =  1; break;
@@ -235,14 +275,29 @@ void window::on_key_press(win::key keycode) {
     case win::key_from_char('D'):
       continuous_movement_.set(movement::direction::right);
       break;
+
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      continuous_movement_.set(movement::direction::in);
+      if (state_active(state::exposure_control)) {
+        exposure_scale_.activate_up();
+      } else {
+        continuous_movement_.set(movement::direction::in);
+      }
       break;
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      continuous_movement_.set(movement::direction::out);
+      if (state_active(state::exposure_control)) {
+        exposure_scale_.activate_down();
+      } else {
+        continuous_movement_.set(movement::direction::out);
+      }
       break;
+
+    case win::key_from_char('e'):
+    case win::key_from_char('E'):
+      activate_state(state::exposure_control);
+      break;
+
 
 
     case win::key::f5:
@@ -341,12 +396,20 @@ void window::on_pointer_move(win::vec2<float> pos) {
 
 
 void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
-  if (abs(delta.y) > 1e-5) {
-    pos.x = pos.x - width() / 2.;
-    pos.y = height() / 2. - pos.y;
-    delta.y = powf(1.01, delta.y);
-    IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+  if (abs(delta.y) < 1e-5) {
+    return;
   }
+
+  if (state_active(state::exposure_control)) {
+    damage();
+    exposure_ *= powf(1.01, delta.y);
+    return;
+  }
+
+  pos.x = pos.x - width() / 2.;
+  pos.y = height() / 2. - pos.y;
+  delta.y = powf(1.01, delta.y);
+  IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
 }
 
 

@@ -2,13 +2,16 @@
 #define PHODISPL_WINDOW_HPP_INCLUDED
 
 #include "phodispl/animation.hpp"
+#include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-source.hpp"
 #include "phodispl/image-view.hpp"
 #include "phodispl/movement.hpp"
 #include "phodispl/stopwatch.hpp"
 
+#include <chrono>
 #include <filesystem>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <win/application.hpp>
@@ -54,6 +57,21 @@ class window : public win::application {
     double                           last_y_                 {0.0};
     movement                         continuous_movement_;
     uint64_t                         last_movement_          {0};
+
+    float                            exposure_      {1.f};
+    continuous_scale                 exposure_scale_{std::chrono::milliseconds{10}};
+
+
+
+    enum class state : size_t {
+      exposure_control = 0
+    };
+
+    std::bitset<1>                  state_;
+
+    [[nodiscard]] bool state_active(state s) { return state_[std::to_underlying(s)]; }
+    void activate_state  (state s) { state_.set(std::to_underlying(s));   }
+    void deactivate_state(state s) { state_.reset(std::to_underlying(s)); }
 
 
 
