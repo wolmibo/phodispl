@@ -80,6 +80,10 @@ class window : public win::application {
 
 
 
+    void input_mode_scale(continuous_scale::direction, bool);
+
+
+
     bool on_update() override;
     void on_render() override;
 

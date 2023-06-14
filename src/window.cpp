@@ -80,6 +80,21 @@ void window::set_input_mode(input_mode mode) {
 
 
 
+void window::input_mode_scale(continuous_scale::direction direction, bool activate) {
+  switch (input_mode_) {
+    case input_mode::exposure_control:
+      exposure_scale_.set(direction, activate);
+      break;
+    case input_mode::standard:
+      zoom_scale_.set(direction, activate);
+      break;
+  }
+}
+
+
+
+
+
 void window::on_rescale(win::vec2<uint32_t> size, float scale) {
   viewport_->rescale(size.x, size.y, scale);
   image_view_primary_.trafo().invalidate();
@@ -243,26 +258,12 @@ void window::on_key_release(win::key keycode) {
 
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      switch (input_mode_) {
-        case input_mode::standard:
-          zoom_scale_.deactivate_up();
-          break;
-        case input_mode::exposure_control:
-          exposure_scale_.deactivate_up();
-          break;
-      }
+      input_mode_scale(continuous_scale::direction::up, false);
       break;
 
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      switch (input_mode_) {
-        case input_mode::standard:
-          zoom_scale_.deactivate_down();
-          break;
-        case input_mode::exposure_control:
-          exposure_scale_.deactivate_down();
-          break;
-      }
+      input_mode_scale(continuous_scale::direction::down, false);
       break;
 
     case win::key_from_char('e'):
@@ -328,25 +329,11 @@ void window::on_key_press(win::key keycode) {
 
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      switch (input_mode_) {
-        case input_mode::exposure_control:
-          exposure_scale_.activate_up();
-          break;
-        case input_mode::standard:
-          zoom_scale_.activate_up();
-          break;
-      }
+      input_mode_scale(continuous_scale::direction::up, true);
       break;
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      switch (input_mode_) {
-        case input_mode::exposure_control:
-          exposure_scale_.activate_down();
-          break;
-        case input_mode::standard:
-          zoom_scale_.activate_down();
-          break;
-      }
+      input_mode_scale(continuous_scale::direction::down, true);
       break;
 
     case win::key_from_char('e'):
