@@ -20,5 +20,6 @@ float continuous_scale::next_sample() {
 
   last_sample_ = sample;
 
-  return (movement_[move_up] ? abs : 0.f) - (movement_[move_down] ? abs : 0.f);
+  return (movement_[std::to_underlying(direction::up)] ? abs : 0.f)
+    - (movement_[std::to_underlying(direction::down)] ? abs : 0.f);
 }

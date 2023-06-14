@@ -6,22 +6,38 @@
 
 #include <bitset>
 #include <chrono>
+#include <utility>
 
 
 
 class continuous_scale {
   public:
+    enum class direction : size_t {
+      up = 0,
+      down = 1
+    };
+
+
+
     continuous_scale(std::chrono::milliseconds);
 
 
 
-    void activate_up()     { movement_.set(move_up);     }
-    void deactivate_up()   { movement_.reset(move_up);   }
+    void activate_up()     { set(direction::up, true);  }
+    void deactivate_up()   { set(direction::up, false); }
 
-    void activate_down()   { movement_.set(move_down);   }
-    void deactivate_down() { movement_.reset(move_down); }
+    void activate_down()   { set(direction::down, true);  }
+    void deactivate_down() { set(direction::down, false); }
 
-    void deactivate()      { movement_.reset();          }
+    void deactivate()      { movement_.reset(); }
+
+
+
+    void set(direction dir, bool active = true) {
+      movement_.set(std::to_underlying(dir), active);
+    }
+
+
 
 
 
@@ -30,9 +46,6 @@ class continuous_scale {
 
 
   private:
-    static constexpr size_t move_up  {0};
-    static constexpr size_t move_down{1};
-
     float                                 rate_;
     std::chrono::steady_clock::time_point last_sample_;
     std::bitset<2>                        movement_;
