@@ -57,6 +57,7 @@ class window : public win::application {
     double                           last_y_                 {0.0};
     movement                         continuous_movement_;
     uint64_t                         last_movement_          {0};
+    continuous_scale                 zoom_scale_    {std::chrono::milliseconds{10}};
 
     float                            exposure_      {1.f};
     continuous_scale                 exposure_scale_{std::chrono::milliseconds{10}};

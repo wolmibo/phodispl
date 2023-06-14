@@ -13,10 +13,9 @@ namespace {
 
 
 
-std::array<float, 3> movement::to_vector() const {
+std::array<float, 2> movement::to_vector() const {
   return {
     to_float(direction_, direction::right) - to_float(direction_, direction::left),
-    to_float(direction_, direction::up   ) - to_float(direction_, direction::down),
-    to_float(direction_, direction::in   ) - to_float(direction_, direction::out )
+    to_float(direction_, direction::up   ) - to_float(direction_, direction::down)
   };
 }

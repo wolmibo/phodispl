@@ -67,7 +67,11 @@ void window::set_input_mode(input_mode mode) {
     return;
   }
 
-  clear_input_mode(input_mode_);
+  if (input_mode_ == input_mode::standard && mode != input_mode_) {
+    zoom_scale_.deactivate();
+  } else {
+    clear_input_mode(input_mode_);
+  }
 
   input_mode_ = mode;
 }
@@ -120,10 +124,8 @@ bool window::on_update() {
 
     mv[0] *= time;
     mv[1] *= time;
-    mv[2] = powf(1.002, mv[2] * time);
 
     IMAGE_VIEW_TRAFO(translate(mv[0], mv[1]));
-    IMAGE_VIEW_TRAFO(scale(mv[2]));
 
     last_movement_ = eps;
   } else if (continuous_movement_) {
@@ -138,6 +140,10 @@ bool window::on_update() {
 
   damage(assign_compare(exposure_,
         exposure_ * powf(1.01f, exposure_scale_.next_sample())));
+
+  if (auto sample = zoom_scale_.next_sample(); sample != 0.f) {
+    IMAGE_VIEW_TRAFO(scale(powf(1.01f, sample)));
+  }
 
 
 
@@ -237,7 +243,7 @@ void window::on_key_release(win::key keycode) {
     case win::key_from_char('+'):
       switch (input_mode_) {
         case input_mode::standard:
-          continuous_movement_.reset(movement::direction::in);
+          zoom_scale_.deactivate_up();
           break;
         case input_mode::exposure_control:
           exposure_scale_.deactivate_up();
@@ -249,7 +255,7 @@ void window::on_key_release(win::key keycode) {
     case win::key_from_char('-'):
       switch (input_mode_) {
         case input_mode::standard:
-          continuous_movement_.reset(movement::direction::out);
+          zoom_scale_.deactivate_down();
           break;
         case input_mode::exposure_control:
           exposure_scale_.deactivate_down();
@@ -325,7 +331,7 @@ void window::on_key_press(win::key keycode) {
           exposure_scale_.activate_up();
           break;
         case input_mode::standard:
-          continuous_movement_.set(movement::direction::in);
+          zoom_scale_.activate_up();
           break;
       }
       break;
@@ -336,7 +342,7 @@ void window::on_key_press(win::key keycode) {
           exposure_scale_.activate_down();
           break;
         case input_mode::standard:
-          continuous_movement_.set(movement::direction::out);
+          zoom_scale_.activate_down();
           break;
       }
       break;

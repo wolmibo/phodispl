@@ -14,8 +14,6 @@ class movement {
       right = 1,
       up    = 2,
       down  = 3,
-      in    = 4,
-      out   = 5
     };
 
 
@@ -24,14 +22,14 @@ class movement {
     void reset(direction dir) { direction_.reset(std::to_underlying(dir)); }
     void clear()              { direction_.reset(); }
 
-    [[nodiscard]] std::array<float, 3> to_vector() const;
+    [[nodiscard]] std::array<float, 2> to_vector() const;
 
     [[nodiscard]] operator bool() const { return direction_.any(); }
 
 
 
   private:
-    std::bitset<6> direction_;
+    std::bitset<4> direction_;
 };
 
 #endif // PHODISPL_MOVEMENT_HPP_INCLUDED
