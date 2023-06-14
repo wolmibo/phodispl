@@ -1,11 +1,13 @@
 #include "phodispl/continuous-scale.hpp"
+#include "phodispl/config.hpp"
 
 using namespace std::chrono;
 
 
 
 continuous_scale::continuous_scale(milliseconds rate) :
-  rate_       {static_cast<float>(duration_cast<microseconds>(rate).count())},
+  rate_       {static_cast<float>(duration_cast<microseconds>(rate).count()) /
+               global_config().input_speed},
   last_sample_{steady_clock::now()}
 {}
 
