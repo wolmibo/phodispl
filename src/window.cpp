@@ -216,6 +216,8 @@ void window::update_title() {
 
 void window::on_key_leave() {
   continuous_movement_.clear();
+  zoom_scale_.deactivate();
+  exposure_scale_.deactivate();
 }
 
 
