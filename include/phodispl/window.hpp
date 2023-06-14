@@ -54,9 +54,9 @@ class window : public win::application {
     double                           last_scale_    {1.0};
     double                           last_x_        {0.0};
     double                           last_y_        {0.0};
-    continuous_scale                 zoom_scale_    {std::chrono::milliseconds{10}};
-    continuous_scale                 move_x_scale_  {std::chrono::milliseconds{2}};
-    continuous_scale                 move_y_scale_  {std::chrono::milliseconds{2}};
+    continuous_scale                 zoom_scale_    {std::chrono::milliseconds{5}};
+    continuous_scale                 move_x_scale_  {std::chrono::milliseconds{1}};
+    continuous_scale                 move_y_scale_  {std::chrono::milliseconds{1}};
 
 
     float                            exposure_      {1.f};
