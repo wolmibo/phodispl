@@ -1,3 +1,4 @@
+#include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
 
 #include <gl/base.hpp>
@@ -55,18 +56,6 @@ void image::clear() {
 
 
 namespace {
-  constexpr pixglot::output_format requested_format {
-    .target             = pixglot::pixel_target::gl_texture,
-    .expand_gray_to_rgb = {},
-    .component_type     = {},
-    .alpha              = pixglot::alpha_mode::premultiplied,
-    .gamma              = {},
-    .endianess          = std::endian::native,
-    .orientation        = {}
-  };
-
-
-
   [[nodiscard]] sequence_clock frame_seq_from_image(const pixglot::image& img) {
     std::vector<std::chrono::microseconds> times;
     times.reserve(img.frames.size());
@@ -94,6 +83,12 @@ void image::load() {
       lock->append_frame(f);
     }
   });
+
+  pixglot::output_format requested_format;
+  requested_format.target    = pixglot::pixel_target::gl_texture;
+  requested_format.alpha     = pixglot::alpha_mode::premultiplied;
+  requested_format.gamma     = global_config().gamma;
+  requested_format.endianess = std::endian::native;
 
   try {
     auto img = pixglot::decode(pixglot::reader{path_},
