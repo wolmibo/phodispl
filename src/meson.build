@@ -4,7 +4,6 @@ resource_files = [
   ['shader_plane_fs',           shader_dir / 'fragment/plane.fs.glsl'],
   ['shader_plane_solid_fs',     shader_dir / 'fragment/plane-solid.fs.glsl'],
   ['shader_plane_colorize_fs',  shader_dir / 'fragment/plane-colorize.fs.glsl'],
-  ['shader_plane_gc_fs',        shader_dir / 'fragment/plane-gc.fs.glsl'],
   ['shader_plane_uv_vs',        shader_dir / 'vertex/plane-uv.vs.glsl'],
   ['shader_plane_object_vs',    shader_dir / 'vertex/plane-object.vs.glsl'],
   ['shader_progress_circle_vs', shader_dir / 'vertex/progress-circle.vs.glsl'],

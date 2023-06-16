@@ -17,17 +17,9 @@ view_info::view_info(std::shared_ptr<viewport> vp) :
     resources::shader_plane_uv_vs(),
     resources::shader_plane_fs()
   },
-  shader_color_factor_{shader_color_.uniform("factor")},
-
-  shader_color_gc_{
-    resources::shader_plane_uv_vs(),
-    resources::shader_plane_gc_fs()
-  },
-  shader_color_gc_factor_  {shader_color_gc_.uniform("factor")},
-  shader_color_gc_exponent_{shader_color_gc_.uniform("exponent")}
+  shader_color_factor_{shader_color_.uniform("factor")}
 {
   viewport::assert_shader_compat(shader_color_,    "SHADER_PLANE_UV_VS");
-  viewport::assert_shader_compat(shader_color_gc_, "SHADER_PLANE_UV_VS");
 }
 
 
@@ -69,18 +61,9 @@ void image_view::render_frame(const frame& frame, float alpha, float factor) {
 
   frame.texture().bind();
 
-  if (std::abs(frame.gamma() - global_config().gamma) < 0.2) {
-    view_info_->shader_color_.use();
-    glUniform4f(view_info_->shader_color_factor_,
-                alpha * factor, alpha * factor, alpha * factor, alpha);
-  } else {
-    view_info_->shader_color_gc_.use();
-    glUniform4f(view_info_->shader_color_gc_factor_,
-                alpha * factor, alpha * factor, alpha * factor, alpha);
-
-    float exp = frame.gamma() / global_config().gamma;
-    glUniform4f(view_info_->shader_color_gc_exponent_, exp, exp, exp, 1.f);
-  }
+  view_info_->shader_color_.use();
+  glUniform4f(view_info_->shader_color_factor_,
+              alpha * factor, alpha * factor, alpha * factor, alpha);
 
   if (view_info_->scale_filter_ == scale_filter::linear) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
