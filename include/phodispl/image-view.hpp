@@ -23,7 +23,7 @@ struct view_info {
   message_box       message_box_;
 
   gl::program       shader_color_;
-  GLint             shader_color_alpha_{0};
+  GLint             shader_color_factor_{0};
 
   explicit view_info(std::shared_ptr<viewport>);
 };
@@ -48,7 +48,7 @@ class image_view {
 
     void reset_image(const std::shared_ptr<image>& = {});
 
-    void render_image(float = 1.f);
+    void render_image(float = 1.f, float = 1.f);
     void render_empty();
 
 
@@ -78,8 +78,8 @@ class image_view {
 
 
 
-    void render_frame          (const frame&, float);
-    void render_image_or_backup(const image&, float);
+    void render_frame          (const frame&, float, float);
+    void render_image_or_backup(const image&, float, float);
 };
 
 #endif // PHODISPL_IMAGE_VIEW_HPP_INCLUDED

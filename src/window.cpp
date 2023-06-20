@@ -8,6 +8,16 @@
 
 
 
+namespace {
+  [[nodiscard]] bool assign_compare(float& old_value, float new_value) {
+    bool cmp = std::abs(old_value - new_value) > 1e-5;
+    old_value = new_value;
+    return cmp;
+  }
+}
+
+
+
 window::window(std::vector<std::filesystem::path> sl) :
   win::application     {"phodispl"},
 
@@ -29,6 +39,59 @@ window::window(std::vector<std::filesystem::path> sl) :
   background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 }
+
+
+
+
+
+void window::clear_input_mode(input_mode mode) {
+  switch (mode) {
+    case input_mode::exposure_control:
+      exposure_scale_.deactivate();
+      break;
+    default:
+      break;
+  }
+
+  if (input_mode_ == mode) {
+    input_mode_ = input_mode::standard;
+  }
+}
+
+
+
+
+
+void window::set_input_mode(input_mode mode) {
+  if (mode == input_mode_) {
+    return;
+  }
+
+  if (input_mode_ == input_mode::standard && mode != input_mode_) {
+    zoom_scale_.deactivate();
+  } else {
+    clear_input_mode(input_mode_);
+  }
+
+  input_mode_ = mode;
+}
+
+
+
+
+
+void window::input_mode_scale(continuous_scale::direction direction, bool activate) {
+  switch (input_mode_) {
+    case input_mode::exposure_control:
+      exposure_scale_.set(direction, activate);
+      break;
+    case input_mode::standard:
+      zoom_scale_.set(direction, activate);
+      break;
+  }
+}
+
+
 
 
 
@@ -68,27 +131,21 @@ bool window::on_update() {
   }
 
 
-  if (last_movement_ > 0) {
-    auto mv = continuous_movement_.to_vector();
 
-    uint64_t eps = elapsed();
-    float time = (eps - last_movement_) / 500.f;
+  damage(assign_compare(exposure_,
+        exposure_ * powf(1.01f, exposure_scale_.next_sample())));
 
-    mv[0] *= time;
-    mv[1] *= time;
-    mv[2] = powf(1.002, mv[2] * time);
-
-    IMAGE_VIEW_TRAFO(translate(mv[0], mv[1]));
-    IMAGE_VIEW_TRAFO(scale(mv[2]));
-
-    last_movement_ = eps;
-  } else if (continuous_movement_) {
-    last_movement_ = elapsed();
+  if (auto sample = zoom_scale_.next_sample(); sample != 0.f) {
+    IMAGE_VIEW_TRAFO(scale(powf(1.01f, sample)));
   }
 
-  if (!continuous_movement_) {
-    last_movement_ = 0;
+  auto move_x = move_x_scale_.next_sample();
+  auto move_y = move_y_scale_.next_sample();
+  if (move_x != 0.f || move_y != 0.f) {
+    IMAGE_VIEW_TRAFO(translate(move_x, move_y));
   }
+
+
 
   damage(image_view_primary_.update());
   damage(image_view_blend_.changed());
@@ -111,8 +168,8 @@ void window::on_render() {
 
   if (image_source_) {
     float v = *image_view_blend_;
-    image_view_secondary_.render_image(std::clamp(2.f-v, 0.f, 1.f));
-    image_view_primary_.render_image(std::clamp(v, 0.f, 1.f));
+    image_view_secondary_.render_image(std::clamp(2.f-v, 0.f, 1.f), exposure_);
+    image_view_primary_.render_image(std::clamp(v, 0.f, 1.f), exposure_);
   } else {
     image_view_primary_.render_empty();
   }
@@ -158,7 +215,11 @@ void window::update_title() {
 
 
 void window::on_key_leave() {
-  continuous_movement_.clear();
+  move_x_scale_.deactivate();
+  move_y_scale_.deactivate();
+
+  zoom_scale_.deactivate();
+  exposure_scale_.deactivate();
 }
 
 
@@ -167,28 +228,36 @@ void window::on_key_release(win::key keycode) {
   switch (keycode) {
     case win::key_from_char('w'):
     case win::key_from_char('W'):
-      continuous_movement_.reset(movement::direction::up);
+      move_y_scale_.deactivate_up();
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      continuous_movement_.reset(movement::direction::left);
+      move_x_scale_.deactivate_down();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
-      continuous_movement_.reset(movement::direction::down);
+      move_y_scale_.deactivate_down();
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      continuous_movement_.reset(movement::direction::right);
+      move_x_scale_.deactivate_up();
       break;
+
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      continuous_movement_.reset(movement::direction::in);
+      input_mode_scale(continuous_scale::direction::up, false);
       break;
+
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      continuous_movement_.reset(movement::direction::out);
+      input_mode_scale(continuous_scale::direction::down, false);
       break;
+
+    case win::key_from_char('e'):
+    case win::key_from_char('E'):
+      clear_input_mode(input_mode::exposure_control);
+      break;
+
     default:
       break;
   }
@@ -206,7 +275,16 @@ void window::on_key_press(win::key keycode) {
       close();
       break;
 
-    case win::key::home: scale = -1; break;
+    case win::key::home:
+      switch (input_mode_) {
+        case input_mode::exposure_control:
+          damage(assign_compare(exposure_, 1.f));
+          break;
+        case input_mode::standard:
+          scale = -1;
+          break;
+      }
+      break;
     case win::key::end:  scale = -2; break;
 
     case win::key::kp_1: scale =  1; break;
@@ -221,28 +299,35 @@ void window::on_key_press(win::key keycode) {
 
     case win::key_from_char('w'):
     case win::key_from_char('W'):
-      continuous_movement_.set(movement::direction::up);
+      move_y_scale_.activate_up();
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      continuous_movement_.set(movement::direction::left);
+      move_x_scale_.activate_down();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
-      continuous_movement_.set(movement::direction::down);
+      move_y_scale_.activate_down();
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      continuous_movement_.set(movement::direction::right);
+      move_x_scale_.activate_up();
       break;
+
     case win::key::kp_plus:
     case win::key_from_char('+'):
-      continuous_movement_.set(movement::direction::in);
+      input_mode_scale(continuous_scale::direction::up, true);
       break;
     case win::key::kp_minus:
     case win::key_from_char('-'):
-      continuous_movement_.set(movement::direction::out);
+      input_mode_scale(continuous_scale::direction::down, true);
       break;
+
+    case win::key_from_char('e'):
+    case win::key_from_char('E'):
+      set_input_mode(input_mode::exposure_control);
+      break;
+
 
 
     case win::key::f5:
@@ -341,11 +426,21 @@ void window::on_pointer_move(win::vec2<float> pos) {
 
 
 void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
-  if (abs(delta.y) > 1e-5) {
-    pos.x = pos.x - width() / 2.;
-    pos.y = height() / 2. - pos.y;
-    delta.y = powf(1.01, delta.y);
-    IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+  if (abs(delta.y) < 1e-5) {
+    return;
+  }
+
+  switch (input_mode_) {
+    case input_mode::exposure_control:
+      damage();
+      exposure_ *= powf(1.01, delta.y);
+      break;
+    case input_mode::standard:
+      pos.x = pos.x - width() / 2.;
+      pos.y = height() / 2. - pos.y;
+      delta.y = powf(1.01, delta.y);
+      IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+      break;
   }
 }
 

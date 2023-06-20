@@ -2,13 +2,15 @@
 #define PHODISPL_WINDOW_HPP_INCLUDED
 
 #include "phodispl/animation.hpp"
+#include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-source.hpp"
 #include "phodispl/image-view.hpp"
-#include "phodispl/movement.hpp"
 #include "phodispl/stopwatch.hpp"
 
+#include <chrono>
 #include <filesystem>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <win/application.hpp>
@@ -47,19 +49,38 @@ class window : public win::application {
 
     stopwatch                        last_left_click_;
 
-    bool                             dragging_               {false};
-    bool                             pinching_               {false};
-    double                           last_scale_             {1.0};
-    double                           last_x_                 {0.0};
-    double                           last_y_                 {0.0};
-    movement                         continuous_movement_;
-    uint64_t                         last_movement_          {0};
+    bool                             dragging_      {false};
+    bool                             pinching_      {false};
+    double                           last_scale_    {1.0};
+    double                           last_x_        {0.0};
+    double                           last_y_        {0.0};
+    continuous_scale                 zoom_scale_    {std::chrono::milliseconds{5}};
+    continuous_scale                 move_x_scale_  {std::chrono::milliseconds{1}};
+    continuous_scale                 move_y_scale_  {std::chrono::milliseconds{1}};
+
+
+    float                            exposure_      {1.f};
+    continuous_scale                 exposure_scale_{std::chrono::milliseconds{10}};
+
+
+
+    enum class input_mode {
+      standard,
+      exposure_control
+    }                               input_mode_{input_mode::standard};
+
+    void set_input_mode(input_mode);
+    void clear_input_mode(input_mode);
 
 
 
     void toggle_scale_filter();
 
     void update_title();
+
+
+
+    void input_mode_scale(continuous_scale::direction, bool);
 
 
 

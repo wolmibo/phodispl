@@ -19,8 +19,10 @@ struct config {
 
 
 
-    scale_filter filter  {scale_filter::linear};
-    bool         watch_fs{true};
+    scale_filter filter     {scale_filter::linear};
+    bool         watch_fs   {true};
+    float        gamma      {2.2f};
+    float        input_speed{1.f};
 
 
 

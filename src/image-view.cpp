@@ -17,14 +17,9 @@ view_info::view_info(std::shared_ptr<viewport> vp) :
     resources::shader_plane_uv_vs(),
     resources::shader_plane_fs()
   },
-  shader_color_alpha_{shader_color_.uniform("alpha")}
+  shader_color_factor_{shader_color_.uniform("factor")}
 {
-  if (shader_color_alpha_ < 0) {
-    throw std::runtime_error{"shader_error: unable to find uniform \"alpha\""
-      "in SHADER_PLANE_FS"};
-  }
-
-  viewport::assert_shader_compat(shader_color_,  "SHADER_PLANE_UV_VS");
+  viewport::assert_shader_compat(shader_color_,    "SHADER_PLANE_UV_VS");
 }
 
 
@@ -56,7 +51,7 @@ void image_view::render_empty() {
 
 
 
-void image_view::render_frame(const frame& frame, float alpha) {
+void image_view::render_frame(const frame& frame, float alpha, float factor) {
   if (!view_transform_.valid()) {
     view_transform_.update(frame);
   }
@@ -67,7 +62,8 @@ void image_view::render_frame(const frame& frame, float alpha) {
   frame.texture().bind();
 
   view_info_->shader_color_.use();
-  glUniform1f(view_info_->shader_color_alpha_, alpha);
+  glUniform4f(view_info_->shader_color_factor_,
+              alpha * factor, alpha * factor, alpha * factor, alpha);
 
   if (view_info_->scale_filter_ == scale_filter::linear) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -82,16 +78,16 @@ void image_view::render_frame(const frame& frame, float alpha) {
 
 
 
-void image_view::render_image_or_backup(const image& img, float alpha) {
+void image_view::render_image_or_backup(const image& img, float alpha, float factor) {
   if (auto frame = img.current_frame(); frame && frame->texture()) {
-    render_frame(*frame, alpha * (1.f - 0.5f * *loading_blend_));
+    render_frame(*frame, alpha * (1.f - 0.5f * *loading_blend_), factor);
 
   }
 }
 
 
 
-void image_view::render_image(float alpha) {
+void image_view::render_image(float alpha, float factor) {
   if (!image_) {
     last_image_state_ = image_state::empty;
     return;
@@ -114,7 +110,7 @@ void image_view::render_image(float alpha) {
       loading_blend_.animate_to(0.f, false);
     }
 
-    render_image_or_backup(*image_, alpha);
+    render_image_or_backup(*image_, alpha, factor);
 
     if (loading_blend_.is_running()) {
       view_info_->progress_circle_.render(1.f, alpha * *loading_blend_);
