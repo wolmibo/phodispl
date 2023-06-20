@@ -38,11 +38,6 @@ class application : public window_listener, public viewport {
 
 
 
-    [[nodiscard]] color background_color() const { return bg_color_; }
-    void background_color(color c) { bg_color_ = c; damage(); }
-
-
-
     void run()   { native_->run();   }
     void close() { native_->close(); }
 
@@ -70,8 +65,6 @@ class application : public window_listener, public viewport {
   private:
     std::chrono::steady_clock::time_point start_;
     std::unique_ptr<window_native>        native_;
-
-    color                                 bg_color_{0.f, 0.f, 0.f, 1.f};
 
     void on_render_private() final;
     void on_resize_private(vec2<float> /*size*/, float /*scale*/) final;
