@@ -66,9 +66,15 @@ void win::widget::render(const viewport& root) {
 
 
 void win::widget::compute_layout(vec2<float> position, vec2<float> size, float scale) {
+  if (position_ == position && realized_size_ == size && scale_ == scale) {
+    return;
+  }
+
   position_      = position;
   realized_size_ = size;
   scale_         = scale;
+
+  invalidate();
 
   for (const auto& [child, constraint]: children_) {
     auto [x, y, w, h] = constraint.realize(realized_size_);
