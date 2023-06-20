@@ -54,6 +54,7 @@ class window_listener {
 
 
     virtual void on_render_private() {}
+    virtual void on_resize_private(vec2<float> /*size*/, float /*scale*/) {}
 };
 
 }

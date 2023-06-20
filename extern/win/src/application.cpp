@@ -63,3 +63,9 @@ void win::application::on_render_private() {
 
   render();
 }
+
+
+
+void win::application::on_resize_private(vec2<float> size, float scale) {
+  resize(size, scale);
+}

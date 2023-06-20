@@ -74,6 +74,7 @@ class application : public window_listener, public viewport {
     color                                 bg_color_{0.f, 0.f, 0.f, 1.f};
 
     void on_render_private() final;
+    void on_resize_private(vec2<float> /*size*/, float /*scale*/) final;
 };
 
 }
