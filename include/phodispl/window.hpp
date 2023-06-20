@@ -38,7 +38,7 @@ class window : public win::application {
 
 
   private:
-    std::shared_ptr<viewport>        viewport_;
+    std::shared_ptr<::viewport>      viewport_;
 
     std::shared_ptr<view_info>       view_info_;
 

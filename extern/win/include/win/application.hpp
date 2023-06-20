@@ -2,7 +2,7 @@
 #define WIN_APPLICATION_HPP_INCLUDED
 
 #include "win/types.hpp"
-#include "win/widget.hpp"
+#include "win/viewport.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
 
@@ -13,7 +13,7 @@
 
 namespace win {
 
-class application : public window_listener, public widget {
+class application : public window_listener, public viewport {
   public:
     application(const application&) = delete;
     application(application&&) noexcept;

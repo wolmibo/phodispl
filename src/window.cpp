@@ -21,7 +21,7 @@ namespace {
 window::window(std::vector<std::filesystem::path> sl) :
   win::application     {"phodispl"},
 
-  viewport_            {std::make_shared<viewport>()},
+  viewport_            {std::make_shared<::viewport>()},
 
   view_info_           {std::make_shared<view_info>(viewport_)},
   image_source_        {std::move(sl), *this},

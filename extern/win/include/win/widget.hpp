@@ -15,6 +15,8 @@
 
 namespace win {
 
+class viewport;
+
 class widget {
   public:
     widget(const widget&) = delete;
@@ -38,9 +40,6 @@ class widget {
 
 
 
-    [[nodiscard]] mat4 trafo_mat_logical (vec2<float>, vec2<float>) const;
-    [[nodiscard]] mat4 trafo_mat_physical(vec2<float>, vec2<float>) const;
-
 
 
     void invalidate() { invalid_ = true; }
@@ -57,24 +56,29 @@ class widget {
 
 
   protected:
-    void render();
+    void render(const viewport&);
     virtual void on_render() {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 
 
 
+    [[nodiscard]] mat4 trafo_mat_logical (vec2<float>, vec2<float>) const;
+    [[nodiscard]] mat4 trafo_mat_physical(vec2<float>, vec2<float>) const;
+
+
 
 
   private:
-    vec2<float>       realized_size_{ 0.f,  0.f};
-    vec2<float>       position_     { 0.f,  0.f};
-    float             scale_        {1.f};
+    vec2<float>             realized_size_{ 0.f,  0.f};
+    vec2<float>             position_     { 0.f,  0.f};
+    float                   scale_        {1.f};
 
-    bool              invalid_      {true};
+    bool                    invalid_      {true};
 
     std::vector<std::pair<std::shared_ptr<widget>, widget_constraint>>
-                      children_;
+                            children_;
+    const viewport*         root_ptr_{nullptr};
 };
 
 }

@@ -10,6 +10,7 @@ deps = [
 sources = [
   'src/application.cpp',
   'src/types.cpp',
+  'src/viewport.cpp',
   'src/widget.cpp',
   'src/widget-constraint.cpp',
   'src/window-native.cpp'

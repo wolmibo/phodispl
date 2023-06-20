@@ -5,6 +5,10 @@
 
 
 win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size) const {
+  if (root_ptr_ == nullptr) {
+    return win::mat4_identity;
+  }
+
   vec2<float> s = vec2_div(logical_size(), size);
   vec2<float> p = 2.f * vec2_div(position + logical_position()
                                  - (size - logical_size()) * 0.5f, size);
@@ -41,11 +45,19 @@ bool win::widget::invalid() const {
 
 
 
-void win::widget::render() {
+void win::widget::render(const viewport& root) {
+  root_ptr_ = &root;
+
+  struct clear_root_ptr {
+    void operator()(widget* wid) { wid->root_ptr_ = nullptr; }
+  };
+
+  std::unique_ptr<widget, clear_root_ptr> root_ptr_guard{this};
+
   on_render();
   invalid_ = false;
   for (const auto& [child, _]: children_) {
-    child->render();
+    child->render(root);
   }
 }
 
@@ -60,7 +72,7 @@ void win::widget::compute_layout(vec2<float> position, vec2<float> size, float s
 
   for (const auto& [child, constraint]: children_) {
     auto [x, y, w, h] = constraint.realize(realized_size_);
-    child->compute_layout({x, y}, {w, h}, scale);
+    child->compute_layout(vec2<float>{x, y} + position, {w, h}, scale);
   }
 }
 
@@ -69,6 +81,10 @@ void win::widget::compute_layout(vec2<float> position, vec2<float> size, float s
 
 
 void win::widget::add_child(std::shared_ptr<widget> child, widget_constraint constraint) {
+  if (!child) {
+    return;
+  }
+
   children_.emplace_back(std::move(child), constraint);
 
   invalidate();
