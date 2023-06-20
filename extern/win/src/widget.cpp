@@ -1,3 +1,4 @@
+#include "win/viewport.hpp"
 #include "win/widget.hpp"
 
 #include <algorithm>
@@ -9,9 +10,11 @@ win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size)
     return win::mat4_identity;
   }
 
-  vec2<float> s = vec2_div(logical_size(), size);
+  auto vpsize = root_ptr_->logical_size();
+
+  vec2<float> s = vec2_div(size, vpsize);
   vec2<float> p = 2.f * vec2_div(position + logical_position()
-                                 - (size - logical_size()) * 0.5f, size);
+                                 - (vpsize - size) * 0.5f, vpsize);
 
   return {
     s.x,   0,   0,   0,
