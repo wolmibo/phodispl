@@ -11,6 +11,13 @@ namespace win {
 
   using mat4 = std::array<float, 16>;
 
+  static constexpr mat4 mat4_identity {
+    1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f
+  };
+
 
 
   void set_uniform_mat4(int, const mat4&);
