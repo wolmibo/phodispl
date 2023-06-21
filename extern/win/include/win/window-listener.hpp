@@ -23,7 +23,7 @@ class window_listener {
 
 
 
-    virtual bool on_update() { return false; }
+    virtual void on_update() {}
 
     virtual void on_rescale(vec2<uint32_t> /*size*/, float /*scale*/) {}
 
@@ -53,7 +53,6 @@ class window_listener {
 
 
 
-    virtual void on_render_private() {}
     virtual void on_resize_private(vec2<float> /*size*/, float /*scale*/) {}
 };
 

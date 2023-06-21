@@ -105,7 +105,7 @@ void window::on_rescale(win::vec2<uint32_t> size, float scale) {
 
 
 
-bool window::on_update() {
+void window::on_update() {
   switch (image_source_.take_image_change()) {
     case image_change::none:
       if (!image_view_primary_.view_image()) {
@@ -132,7 +132,7 @@ bool window::on_update() {
 
 
 
-  damage(assign_compare(exposure_,
+  invalidate(assign_compare(exposure_,
         exposure_ * powf(1.01f, exposure_scale_.next_sample())));
 
   if (auto sample = zoom_scale_.next_sample(); sample != 0.f) {
@@ -147,18 +147,16 @@ bool window::on_update() {
 
 
 
-  damage(image_view_primary_.update());
-  damage(image_view_blend_.changed());
+  invalidate(image_view_primary_.update());
+  invalidate(image_view_blend_.changed());
 
   if (!image_view_blend_.is_running()) {
     image_view_secondary_.reset_image(nullptr);
   }
 
-  damage(image_view_secondary_.update());
+  invalidate(image_view_secondary_.update());
 
   update_title();
-
-  return false;
 }
 
 
@@ -186,7 +184,7 @@ void window::toggle_scale_filter() {
     } else {
       view_info_->scale_filter_ = scale_filter::linear;
     }
-    damage();
+    invalidate();
   }
 }
 
@@ -278,7 +276,7 @@ void window::on_key_press(win::key keycode) {
     case win::key::home:
       switch (input_mode_) {
         case input_mode::exposure_control:
-          damage(assign_compare(exposure_, 1.f));
+          invalidate(assign_compare(exposure_, 1.f));
           break;
         case input_mode::standard:
           scale = -1;
@@ -432,7 +430,7 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
   switch (input_mode_) {
     case input_mode::exposure_control:
-      damage();
+      invalidate();
       exposure_ *= powf(1.01, delta.y);
       break;
     case input_mode::standard:

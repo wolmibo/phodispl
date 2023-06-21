@@ -1,4 +1,6 @@
 #include "fractional-scale-v1-client-protocol.h"
+
+#include "win/application.hpp"
 #include "win/context.hpp"
 #include "win/global-wayland.hpp"
 #include "win/window-listener.hpp"
@@ -139,8 +141,8 @@ win::window_wayland::window_wayland(const std::string& app_id) :
 
 
 
-void win::window_wayland::on_new_listener() {
-  wayland_.input_manager().register_listener(surface_.get(), listener());
+void win::window_wayland::on_new_parent() {
+  wayland_.input_manager().register_listener(surface_.get(), parent());
 }
 
 
@@ -165,7 +167,7 @@ void win::window_wayland::run() {
   while (!should_close_ && wayland_.dispatch() != -1) {
     if (frame_requested_ && update()) {
       frame_requested_ = false;
-      listener()->on_render_private();
+      parent()->render();
       context_.swap_buffers();
     }
   }

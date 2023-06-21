@@ -1,5 +1,6 @@
 #include <gl/base.hpp>
 
+#include "win/application.hpp"
 #include "win/window-glfw.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
@@ -94,23 +95,26 @@ std::unique_ptr<win::window_native> win::window_native::create(
 
 
 void win::window_native::rescale(vec2<uint32_t> size, float scale) {
-  damage();
-  listener()->on_resize_private(make_vec2<float>(size.x, size.y), scale);
-  listener()->on_rescale(size, scale);
+  static_cast<window_listener*>(parent())
+    ->on_resize_private(make_vec2<float>(size.x, size.y), scale);
+  parent()->on_rescale(size, scale);
 }
+
+
 
 
 
 bool win::window_native::update() {
-  auto value1 = take_damage();
-  auto value2 = listener()->on_update();
+  parent()->on_update();
 
-  return value1 || value2;
+  return parent()->invalid();
 }
 
 
 
-void win::window_native::listener(window_listener* listener) {
-  listener_ = listener;
-  on_new_listener();
+
+
+void win::window_native::parent(application* parent) {
+  parent_ = parent;
+  on_new_parent();
 }

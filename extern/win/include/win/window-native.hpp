@@ -8,13 +8,12 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <utility>
 
 
 
 namespace win {
 
-class window_listener;
+class application;
 
 
 
@@ -45,8 +44,8 @@ class window_native {
 
 
 
-    [[nodiscard]] window_listener* listener() { return listener_; }
-    void listener(window_listener*);
+    [[nodiscard]] application* parent() { return parent_; }
+    void parent(application*);
 
 
 
@@ -64,7 +63,6 @@ class window_native {
 
 
     void rescale(vec2<uint32_t>, float);
-    void damage(bool damage = true) { needs_update_ = needs_update_ || damage; }
 
 
 
@@ -73,19 +71,16 @@ class window_native {
 
 
   protected:
-    [[nodiscard]] bool take_damage() { return std::exchange(needs_update_, false); }
     [[nodiscard]] bool update();
 
-    virtual void on_new_listener() {}
+    virtual void on_new_parent() {}
 
 
 
 
 
   private:
-    window_listener*  listener_    {nullptr};
-
-    bool              needs_update_{true};
+    application*  parent_    {nullptr};
 };
 
 }

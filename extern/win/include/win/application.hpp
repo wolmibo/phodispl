@@ -46,17 +46,9 @@ class application : public window_listener, public viewport {
 
 
 
-  protected:
-    void damage(bool damage = true) { native_->damage(damage); }
-
-
-
-
-
   private:
     std::unique_ptr<window_native>        native_;
 
-    void on_render_private() final;
     void on_resize_private(vec2<float> /*size*/, float /*scale*/) final;
 };
 

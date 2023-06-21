@@ -51,7 +51,7 @@ class window_wayland : public window_native {
     void close() override;
     void run()   override;
 
-    void on_new_listener() override;
+    void on_new_parent() override;
 
     [[nodiscard]] bool    mod_active(modifier /*mod*/) const override;
     [[nodiscard]] context share_context()              const override;

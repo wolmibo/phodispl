@@ -42,7 +42,9 @@ class widget {
 
 
 
-    void invalidate() { invalid_ = true; }
+    void invalidate()                { invalid_ = true; }
+    void invalidate(bool invalidate) { if (invalidate) { invalid_ = true; } }
+
     [[nodiscard]] bool invalid() const;
 
 

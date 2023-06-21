@@ -1,3 +1,4 @@
+#include "win/application.hpp"
 #include "win/context-glfw.hpp"
 #include "win/window-glfw.hpp"
 #include "win/window-listener.hpp"
@@ -91,7 +92,7 @@ void win::window_glfw::run() {
 
   while (glfwWindowShouldClose(window_) == GLFW_FALSE) {
     if (update()) {
-      listener()->on_render_private();
+      parent()->render();
       glfwSwapBuffers(window_);
     } else {
       std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
@@ -188,15 +189,15 @@ void win::window_glfw::key_cb(
   glfw->last_key_ = key;
   if (action == GLFW_PRESS) {
     if (prop_key) {
-      glfw->listener()->on_key_press(*prop_key);
+      glfw->parent()->on_key_press(*prop_key);
     } else {
       glfw->last_key_ = key;
     }
   } else if (action == GLFW_RELEASE) {
     if (prop_key) {
-      glfw->listener()->on_key_release(*prop_key);
+      glfw->parent()->on_key_release(*prop_key);
     } else if (auto ix = glfw->key_map_.find_index(key)) {
-      glfw->listener()->on_key_release(static_cast<win::key>(glfw->key_map_.value(*ix)));
+      glfw->parent()->on_key_release(static_cast<win::key>(glfw->key_map_.value(*ix)));
     }
   }
 }
@@ -210,7 +211,7 @@ void win::window_glfw::char_cb(GLFWwindow* window, unsigned int character) {
     if (!glfw->key_map_.find_index(glfw->last_key_)) {
       glfw->key_map_.emplace(glfw->last_key_, character);
     }
-    glfw->listener()->on_key_press(static_cast<win::key>(character));
+    glfw->parent()->on_key_press(static_cast<win::key>(character));
   }
 
   glfw->last_key_ = 0;
@@ -248,9 +249,9 @@ void win::window_glfw::mouse_btn_cb(
   glfwGetCursorPos(window, &x, &y);
 
   if (action == GLFW_PRESS) {
-    glfw->listener()->on_pointer_press(make_vec2<float>(x, y), convert_button(button));
+    glfw->parent()->on_pointer_press(make_vec2<float>(x, y), convert_button(button));
   } else {
-    glfw->listener()->on_pointer_release(make_vec2<float>(x, y), convert_button(button));
+    glfw->parent()->on_pointer_release(make_vec2<float>(x, y), convert_button(button));
   }
 }
 
@@ -263,9 +264,9 @@ void win::window_glfw::mouse_enter_cb(GLFWwindow* window, int enter) {
     double x{0.};
     double y{0.};
     glfwGetCursorPos(window, &x, &y);
-    glfw->listener()->on_pointer_enter(make_vec2<float>(x, y));
+    glfw->parent()->on_pointer_enter(make_vec2<float>(x, y));
   } else {
-    glfw->listener()->on_pointer_leave();
+    glfw->parent()->on_pointer_leave();
   }
 }
 
@@ -278,7 +279,7 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
   double y{0.};
   glfwGetCursorPos(window, &x, &y);
 
-  glfw->listener()->on_scroll(make_vec2<float>(x, y),
+  glfw->parent()->on_scroll(make_vec2<float>(x, y),
       make_vec2<float>(dx * -15.f, dy * 15.f));
 }
 
@@ -287,5 +288,5 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
 void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
   auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
-  glfw->listener()->on_pointer_move(make_vec2<float>(x, y));
+  glfw->parent()->on_pointer_move(make_vec2<float>(x, y));
 }

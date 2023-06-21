@@ -84,7 +84,7 @@ class window : public win::application {
 
 
 
-    bool on_update() override;
+    void on_update() override;
     void on_render() override;
 
     void on_rescale(win::vec2<uint32_t> /*size*/, float /*scale*/) override;
