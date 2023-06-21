@@ -4,8 +4,13 @@
 #ifndef WIN_VIEWPORT_HPP_INCLUDED
 #define WIN_VIEWPORT_HPP_INCLUDED
 
-#include "win/types.hpp"
 #include "win/widget.hpp"
+
+#include <string_view>
+
+#include <gl/glyphs.hpp>
+#include <gl/mesh.hpp>
+#include <gl/program.hpp>
 
 
 
@@ -29,6 +34,13 @@ class viewport : public widget {
 
 
 
+    void font(const std::filesystem::path&);
+
+
+
+    vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color);
+
+
 
     void resize(vec2<float>, float);
 
@@ -37,7 +49,11 @@ class viewport : public widget {
 
 
   private:
-    color bg_color_{0.f, 0.f, 0.f, 1.f};
+    std::optional<gl::glyphs> font_cache_;
+    gl::program               font_shader_;
+    gl::mesh                  font_plane_;
+
+    color                     bg_color_{0.f, 0.f, 0.f, 1.f};
 };
 
 }

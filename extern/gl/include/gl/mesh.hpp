@@ -18,6 +18,10 @@ class mesh {
 
 
 
+    [[nodiscard]] operator bool() const { return ibo_.get() != 0; }
+
+
+
     void draw() const;
 
 

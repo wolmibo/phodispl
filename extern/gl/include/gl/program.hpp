@@ -17,6 +17,12 @@ class program {
 
 
 
+    [[nodiscard]] operator bool() const { return get() != 0; }
+
+    [[nodiscard]] GLuint get() const { return program_.get(); }
+
+
+
     void use() const { glUseProgram(program_.get()); }
 
     [[nodiscard]] GLint uniform  (const std::string&) const;
