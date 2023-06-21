@@ -44,10 +44,6 @@ class application : public window_listener, public viewport {
 
 
 
-    [[nodiscard]] uint64_t elapsed() const;
-
-
-
 
 
   protected:
@@ -58,7 +54,6 @@ class application : public window_listener, public viewport {
 
 
   private:
-    std::chrono::steady_clock::time_point start_;
     std::unique_ptr<window_native>        native_;
 
     void on_render_private() final;
