@@ -20,9 +20,9 @@ class viewport;
 class widget {
   public:
     widget(const widget&) = delete;
-    widget(widget&&)      = delete;
+    widget(widget&&)      = default;
     widget& operator=(const widget&) = delete;
-    widget& operator=(widget&&)      = delete;
+    widget& operator=(widget&&)      = default;
 
     virtual ~widget() = default;
 

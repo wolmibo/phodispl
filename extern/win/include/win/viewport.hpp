@@ -14,9 +14,9 @@ namespace win {
 class viewport : public widget {
   public:
     viewport(const viewport&) = delete;
-    viewport(viewport&&)      = delete;
+    viewport(viewport&&)      = default;
     viewport& operator=(const viewport&) = delete;
-    viewport& operator=(viewport&&)      = delete;
+    viewport& operator=(viewport&&)      = default;
 
     ~viewport() override = default;
 
