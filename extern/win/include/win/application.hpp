@@ -29,12 +29,7 @@ class application : public window_listener, public viewport {
 
 
 
-    [[nodiscard]] uint32_t       width()   const { return native_->width();  }
-    [[nodiscard]] uint32_t       height()  const { return native_->height(); }
-    [[nodiscard]] vec2<uint32_t> size()    const { return native_->size();   }
-    [[nodiscard]] float          scale()   const { return native_->scale();  }
-
-    [[nodiscard]] win::backend   backend() const { return native_->backend(); }
+    [[nodiscard]] win::backend backend() const { return native_->backend(); }
 
 
 

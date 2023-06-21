@@ -436,8 +436,8 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
       exposure_ *= powf(1.01, delta.y);
       break;
     case input_mode::standard:
-      pos.x = pos.x - width() / 2.;
-      pos.y = height() / 2. - pos.y;
+      pos.x = pos.x - logical_size().x / 2.;
+      pos.y = logical_size().y / 2. - pos.y;
       delta.y = powf(1.01, delta.y);
       IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
       break;
@@ -461,7 +461,8 @@ void window::on_pinch_begin(win::vec2<float> pos) {
 void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*rot*/) {
   float ds = scale / last_scale_;
   ds *= ds;
-  IMAGE_VIEW_TRAFO(scale(ds, last_x_ - width() / 2., height() / 2. - last_y_));
+  IMAGE_VIEW_TRAFO(scale(ds, last_x_ - logical_size().x / 2.,
+        logical_size().y / 2. - last_y_));
   last_scale_ = scale;
 }
 

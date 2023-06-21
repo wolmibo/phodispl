@@ -49,11 +49,6 @@ class window_native {
     void listener(window_listener*);
 
 
-    [[nodiscard]] uint32_t       width()  const { return size_.x; }
-    [[nodiscard]] uint32_t       height() const { return size_.y; }
-    [[nodiscard]] vec2<uint32_t> size()   const { return size_;   }
-    [[nodiscard]] float          scale()  const { return scale_;  }
-
 
     [[nodiscard]] virtual win::backend backend() const { return win::backend::none; }
 
@@ -90,8 +85,6 @@ class window_native {
   private:
     window_listener*  listener_    {nullptr};
 
-    vec2<uint32_t>    size_        {};
-    float             scale_       {1.f};
     bool              needs_update_{true};
 };
 

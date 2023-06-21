@@ -94,9 +94,7 @@ std::unique_ptr<win::window_native> win::window_native::create(
 
 
 void win::window_native::rescale(vec2<uint32_t> size, float scale) {
-  damage(size_ != size || scale_ != scale);
-  size_  = size;
-  scale_ = scale;
+  damage();
   listener()->on_resize_private(make_vec2<float>(size.x, size.y), scale);
   listener()->on_rescale(size, scale);
 }
