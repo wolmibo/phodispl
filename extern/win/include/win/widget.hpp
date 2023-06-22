@@ -51,7 +51,7 @@ class widget {
 
 
 
-    void add_child(std::shared_ptr<widget>, widget_constraint);
+    void add_child(widget*, widget_constraint);
 
 
 
@@ -81,7 +81,7 @@ class widget {
 
     bool                    invalid_      {true};
 
-    std::vector<std::pair<std::shared_ptr<widget>, widget_constraint>>
+    std::vector<std::pair<widget*, widget_constraint>>
                             children_;
     const viewport*         root_ptr_{nullptr};
 };

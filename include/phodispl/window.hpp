@@ -31,8 +31,7 @@ class window : public win::application {
 
 
   private:
-    std::shared_ptr<image_display>   image_display_;
-
+    image_display                    image_display_;
     image_source                     image_source_;
 
     stopwatch                        last_left_click_;

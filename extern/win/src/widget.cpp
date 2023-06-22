@@ -101,12 +101,12 @@ void win::widget::compute_layout(vec2<float> position, vec2<float> size, float s
 
 
 
-void win::widget::add_child(std::shared_ptr<widget> child, widget_constraint constraint) {
-  if (!child) {
+void win::widget::add_child(widget* child, widget_constraint constraint) {
+  if (child == nullptr) {
     return;
   }
 
-  children_.emplace_back(std::move(child), constraint);
+  children_.emplace_back(child, constraint);
 
   invalidate();
 }

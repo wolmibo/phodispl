@@ -21,11 +21,9 @@ namespace {
 window::window(std::vector<std::filesystem::path> sl) :
   win::application     {"phodispl"},
 
-  image_display_       {std::make_shared<image_display>()},
-
   image_source_        {
     [this](std::shared_ptr<image> img, image_change) {
-      image_display_->active(std::move(img));
+      image_display_.active(std::move(img));
     }, std::move(sl), *this},
 
   last_left_click_     {false}
@@ -33,7 +31,7 @@ window::window(std::vector<std::filesystem::path> sl) :
   background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 
-  add_child(image_display_, win::widget_constraint {
+  add_child(&image_display_, win::widget_constraint {
       .width  = win::dimension_fill_constraint{},
       .height = win::dimension_fill_constraint{},
       .margin = win::margin_constraint {
