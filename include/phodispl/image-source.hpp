@@ -31,13 +31,19 @@ enum class image_change {
 
 class image_source {
   public:
+    using callback =
+      std::move_only_function<void(std::shared_ptr<image>, image_change)>;
+
+
+
     image_source(const image_source&) = delete;
     image_source(image_source&&)      = delete;
 
-    image_source &operator=(const image_source&) = delete;
-    image_source &operator=(image_source&&)      = delete;
+    image_source& operator=(const image_source&) = delete;
+    image_source& operator=(image_source&&)      = delete;
 
-    explicit image_source(std::vector<std::filesystem::path>, const win::application&);
+    explicit image_source(callback&&,
+        std::vector<std::filesystem::path>, const win::application&);
 
     ~image_source();
 
@@ -70,6 +76,7 @@ class image_source {
 
 
   private:
+    callback                            callback_;
     image_cache                         cache_;
     mutable std::mutex                  cache_mutex_;
 

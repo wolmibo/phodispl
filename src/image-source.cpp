@@ -37,9 +37,12 @@ namespace {
 
 
 image_source::image_source(
+    callback&&                         cb,
     std::vector<std::filesystem::path> fnames,
     const win::application&            app
 ) :
+  callback_{std::move(cb)},
+
   cache_{
     [this](const auto& img, size_t prio) {
       schedule_image(img, prio);

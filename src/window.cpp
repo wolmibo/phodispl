@@ -28,7 +28,11 @@ window::window(std::vector<std::filesystem::path> sl) :
 
   image_display_       {std::make_shared<image_display>()},
 
-  image_source_        {std::move(sl), *this},
+  image_source_        {
+    [this](std::shared_ptr<image> img, image_change) {
+      image_display_->active(std::move(img));
+    }, std::move(sl), *this},
+
   image_view_primary_  {view_info_},
   image_view_secondary_{view_info_},
 
