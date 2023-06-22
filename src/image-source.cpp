@@ -17,6 +17,15 @@
 
 
 namespace {
+  template<typename Fnc, typename... Args>
+  void invoke_save(Fnc&& cb, Args&&... args) {
+    if (cb) {
+      std::invoke(std::forward<Fnc>(cb), std::forward<Args>(args)...);
+    }
+  }
+
+
+
   [[nodiscard]] std::vector<std::filesystem::path> normalize_names(
       std::vector<std::filesystem::path>&& files
   ) {
@@ -71,6 +80,7 @@ image_source::image_source(
 
   if (!startup_files_.empty()) {
     cache_.add(std::filesystem::absolute(startup_files_.front()));
+    invoke_save(callback_, cache_.current(), image_change::next);
   }
 
   populate_cache(std::move(lock));
@@ -209,10 +219,9 @@ void image_source::work_loop(const std::stop_token& stoken) {
 void image_source::next_image() {
   std::lock_guard<std::mutex> lock{cache_mutex_};
 
-  backup_ = cache_.current();
-  change_ = image_change::next;
-
   cache_.next();
+
+  invoke_save(callback_, cache_.current(), image_change::next);
 }
 
 
@@ -220,10 +229,9 @@ void image_source::next_image() {
 void image_source::previous_image() {
   std::lock_guard<std::mutex> lock{cache_mutex_};
 
-  backup_ = cache_.current();
-  change_ = image_change::previous;
-
   cache_.previous();
+
+  invoke_save(callback_, cache_.current(), image_change::next);
 }
 
 
@@ -231,10 +239,9 @@ void image_source::previous_image() {
 void image_source::reload_current() {
   std::lock_guard<std::mutex> lock{cache_mutex_};
 
-  backup_ = cache_.current();
-  change_ = image_change::reload;
-
   cache_.invalidate_current();
+
+  invoke_save(callback_, cache_.current(), image_change::reload);
 }
 
 
@@ -293,11 +300,10 @@ void image_source::populate_cache(std::unique_lock<std::mutex> cache_lock) {
 void image_source::reload_file_list() {
   std::unique_lock lock{cache_mutex_};
 
-  backup_ = cache_.current();
-  change_ = image_change::reload;
-
   cache_.invalidate_all();
   populate_cache(std::move(lock));
+
+  invoke_save(callback_, current(), image_change::reload);
 }
 
 
@@ -336,23 +342,26 @@ void image_source::file_event(
   if (action == fs_watcher::action::removed) {
     logcerr::debug("file removed: {}", path.string());
 
-    if (is_cur) {
-      backup_ = cache_.current();
-      change_ = image_change::replace_deleted;
-    }
     cache_.remove(path);
+
+    invoke_save(callback_, cache_.current(), image_change::replace_deleted);
 
   } else if (is_cur) {
     logcerr::debug("file changed: {}*", path.string());
 
-    backup_ = cache_.current();
-    change_ = image_change::reload;
-
     cache_.invalidate_current();
+
+    invoke_save(callback_, cache_.current(), image_change::reload);
 
   } else {
     logcerr::debug("file changed: {}", path.string());
 
+    bool first = !cache_.current();
+
     cache_.add(path);
+
+    if (first) {
+      invoke_save(callback_, cache_.current(), image_change::next);
+    }
   }
 }

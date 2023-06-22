@@ -1,3 +1,4 @@
+#include "logcerr/log.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/image-display.hpp"
 #include "resources.hpp"
@@ -40,6 +41,12 @@ void image_display::active(std::shared_ptr<image> next_image) {
 
 
 void image_display::on_update() {
+  current_->update();
+
+  if (current_->take_damage()) {
+    invalidate();
+  }
+
   if (crossfade_.changed()) {
     invalidate();
   } else {
@@ -72,10 +79,10 @@ void image_display::on_render() {
   auto factor = crossfade_.factor();
 
   glActiveTexture(GL_TEXTURE1);
-  crossfade_image(previous_.get(), 1.f - factor, crossfade_shader_factor_a_);
+  crossfade_image(previous_.get(), 1.f - factor, crossfade_shader_factor_b_);
 
   glActiveTexture(GL_TEXTURE0);
-  crossfade_image(current_.get(), factor, crossfade_shader_factor_b_);
+  crossfade_image(current_.get(), factor, crossfade_shader_factor_a_);
 
   quad_.draw();
 }

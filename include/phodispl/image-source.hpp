@@ -57,16 +57,6 @@ class image_source {
 
 
 
-    [[nodiscard]] image_change take_image_change() {
-      return std::exchange(change_, image_change::none);
-    }
-
-    [[nodiscard]] std::shared_ptr<image> take_backup() {
-      return std::exchange(backup_, {});
-    }
-
-
-
     [[nodiscard]] operator bool() const { return !cache_.empty(); }
 
     [[nodiscard]] std::shared_ptr<image> current() const;
@@ -92,9 +82,6 @@ class image_source {
 
     fs_watcher                          filesystem_watcher_;
     win::context                        filesystem_context_;
-
-    image_change                        change_                 {image_change::none};
-    std::shared_ptr<image>              backup_                 {};
 
 
 
