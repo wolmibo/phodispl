@@ -39,6 +39,12 @@ class continuous_scale {
 
 
 
+    [[nodiscard]] operator bool() const {
+      return movement_.any();
+    }
+
+
+
 
 
     [[nodiscard]] float next_sample();

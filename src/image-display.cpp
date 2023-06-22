@@ -18,7 +18,13 @@ image_display::image_display() :
   quad_{gl::primitives::quad()},
   crossfade_shader_{resources::shader_crossfade_vs(), resources::shader_crossfade_fs()},
   crossfade_shader_factor_a_{crossfade_shader_.uniform("factorA")},
-  crossfade_shader_factor_b_{crossfade_shader_.uniform("factorB")}
+  crossfade_shader_factor_b_{crossfade_shader_.uniform("factorB")},
+
+  exposure_(
+    1.f,
+    global_config().animation_view_snap_ms.count(),
+    global_config().animation_view_snap_interpolation
+  )
 {
   crossfade_shader_.use();
   glUniform1i(crossfade_shader_.uniform("textureSamplerA"), 0);
@@ -40,10 +46,28 @@ void image_display::active(std::shared_ptr<image> next_image) {
 
 
 
+void image_display::exposure(float exposure) {
+  exposure_.animate_to(exposure);
+}
+
+
+
+void image_display::exposure_multiply(float diff) {
+  exposure_.animate_to(*exposure_ * diff, true);
+}
+
+
+
+
+
 void image_display::on_update() {
   current_->update();
 
   if (current_->take_damage()) {
+    invalidate();
+  }
+
+  if (exposure_.changed()) {
     invalidate();
   }
 
@@ -59,14 +83,14 @@ void image_display::on_update() {
 
 
 namespace {
-  void crossfade_image(image* img, float factor, GLint uni) {
+  void crossfade_image(image* img, float factor, float exposure, GLint uni) {
     if (img == nullptr) {
       return;
     }
 
     if (auto frame = img->current_frame()) {
       frame->texture().bind();
-      glUniform4f(uni, factor, factor, factor, factor);
+      glUniform4f(uni, factor * exposure, factor * exposure, factor * exposure, factor);
     }
   }
 }
@@ -79,10 +103,10 @@ void image_display::on_render() {
   auto factor = crossfade_.factor();
 
   glActiveTexture(GL_TEXTURE1);
-  crossfade_image(previous_.get(), 1.f - factor, crossfade_shader_factor_b_);
+  crossfade_image(previous_.get(), 1.f - factor, *exposure_, crossfade_shader_factor_b_);
 
   glActiveTexture(GL_TEXTURE0);
-  crossfade_image(current_.get(), factor, crossfade_shader_factor_a_);
+  crossfade_image(current_.get(), factor, *exposure_, crossfade_shader_factor_a_);
 
   quad_.draw();
 }

@@ -20,6 +20,9 @@ class image_display : public win::widget {
 
     void active(std::shared_ptr<image>);
 
+    void exposure(float);
+    void exposure_multiply(float);
+
 
 
   private:
@@ -32,6 +35,8 @@ class image_display : public win::widget {
     gl::program            crossfade_shader_;
     GLint                  crossfade_shader_factor_a_;
     GLint                  crossfade_shader_factor_b_;
+
+    animation<float>       exposure_;
 
 
 

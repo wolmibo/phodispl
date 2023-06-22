@@ -8,14 +8,6 @@
 
 
 
-namespace {
-  [[nodiscard]] bool assign_compare(float& old_value, float new_value) {
-    bool cmp = std::abs(old_value - new_value) > 1e-5;
-    old_value = new_value;
-    return cmp;
-  }
-}
-
 
 
 window::window(std::vector<std::filesystem::path> sl) :
@@ -91,6 +83,16 @@ void window::input_mode_scale(continuous_scale::direction direction, bool activa
     case input_mode::standard:
       zoom_scale_.set(direction, activate);
       break;
+  }
+}
+
+
+
+
+
+void window::on_update() {
+  if (auto samp = exposure_scale_.next_sample(); exposure_scale_) {
+    image_display_.exposure_multiply(powf(1.01f, samp));
   }
 }
 
@@ -190,7 +192,7 @@ void window::on_key_press(win::key keycode) {
     case win::key::home:
       switch (input_mode_) {
         case input_mode::exposure_control:
-          invalidate(assign_compare(exposure_, 1.f));
+          image_display_.exposure(1.f);
           break;
         case input_mode::standard:
           scale = -1;
@@ -344,8 +346,7 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
   switch (input_mode_) {
     case input_mode::exposure_control:
-      invalidate();
-      exposure_ *= powf(1.01, delta.y);
+      image_display_.exposure_multiply(powf(1.01, delta.y));
       break;
     case input_mode::standard:
       pos.x = pos.x - logical_size().x / 2.;

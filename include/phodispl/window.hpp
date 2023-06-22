@@ -46,7 +46,6 @@ class window : public win::application {
     continuous_scale                 move_y_scale_  {std::chrono::milliseconds{1}};
 
 
-    float                            exposure_      {1.f};
     continuous_scale                 exposure_scale_{std::chrono::milliseconds{10}};
 
 
@@ -70,6 +69,7 @@ class window : public win::application {
     void input_mode_scale(continuous_scale::direction, bool);
 
 
+    void on_update() override;
 
     void on_key_press  (win::key /*keycode*/) override;
     void on_key_release(win::key /*keycode*/) override;
