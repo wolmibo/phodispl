@@ -8,6 +8,9 @@ resource_files = [
   ['shader_plane_object_vs',    shader_dir / 'vertex/plane-object.vs.glsl'],
   ['shader_progress_circle_vs', shader_dir / 'vertex/progress-circle.vs.glsl'],
   ['shader_progress_circle_fs', shader_dir / 'fragment/progress-circle.fs.glsl'],
+
+  ['shader_crossfade_vs',       shader_dir / 'vertex/crossfade.vs.glsl'],
+  ['shader_crossfade_fs',       shader_dir / 'fragment/crossfade.fs.glsl'],
 ]
 
 resource_header = 'resources.hpp'
@@ -52,6 +55,7 @@ source_files = [
   'continuous-scale.cpp',
   'fs-watcher.cpp',
   'image-cache.cpp',
+  'image-display.cpp',
   'image-source.cpp',
   'image-view.cpp',
   'image.cpp',
