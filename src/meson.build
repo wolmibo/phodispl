@@ -57,13 +57,10 @@ source_files = [
   'image-cache.cpp',
   'image-display.cpp',
   'image-source.cpp',
-  'image-view.cpp',
   'image.cpp',
   'main.cpp',
-  'message-box.cpp',
-  'progress-circle.cpp',
-  'view-transform.cpp',
-  'viewport.cpp',
+  #'message-box.cpp',
+  #'progress-circle.cpp',
   'window.cpp',
 ]
 

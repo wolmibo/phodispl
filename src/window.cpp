@@ -1,7 +1,6 @@
 #include "phodispl/config.hpp"
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
-#include "phodispl/viewport.hpp"
 #include "phodispl/window.hpp"
 #include "win/widget-constraint.hpp"
 
@@ -22,25 +21,12 @@ namespace {
 window::window(std::vector<std::filesystem::path> sl) :
   win::application     {"phodispl"},
 
-  viewport_            {std::make_shared<::viewport>()},
-
-  view_info_           {std::make_shared<view_info>(viewport_)},
-
   image_display_       {std::make_shared<image_display>()},
 
   image_source_        {
     [this](std::shared_ptr<image> img, image_change) {
       image_display_->active(std::move(img));
     }, std::move(sl), *this},
-
-  image_view_primary_  {view_info_},
-  image_view_secondary_{view_info_},
-
-  image_view_blend_    {
-    1.0f,
-    static_cast<float>(global_config().animation_view_next_ms.count()),
-    global_config().animation_view_next_interpolation
-  },
 
   last_left_click_     {false}
 {
@@ -114,97 +100,8 @@ void window::input_mode_scale(continuous_scale::direction direction, bool activa
 
 
 
-void window::on_rescale(win::vec2<uint32_t> size, float scale) {
-  viewport_->rescale(size.x, size.y, scale);
-  image_view_primary_.trafo().invalidate();
-  image_view_secondary_.trafo().invalidate();
-}
-
-
-
-
-
-void window::on_update() {
-  switch (image_source_.take_image_change()) {
-    case image_change::none:
-      if (!image_view_primary_.view_image()) {
-        image_view_primary_.reset_image(image_source_.current());
-      }
-      break;
-
-    case image_change::reload:
-      image_view_primary_.reset_image(image_source_.current());
-      break;
-
-    case image_change::previous:
-    case image_change::next:
-    case image_change::replace_deleted:
-      image_view_primary_.reset_image(image_source_.current());
-      image_view_secondary_.reset_image(image_source_.take_backup());
-
-      std::swap(image_view_primary_.trafo(), image_view_secondary_.trafo());
-
-      image_view_blend_ = 0.0;
-      image_view_blend_.animate_to(2.0);
-      break;
-  }
-
-
-
-  invalidate(assign_compare(exposure_,
-        exposure_ * powf(1.01f, exposure_scale_.next_sample())));
-
-  if (auto sample = zoom_scale_.next_sample(); sample != 0.f) {
-    IMAGE_VIEW_TRAFO(scale(powf(1.01f, sample)));
-  }
-
-  auto move_x = move_x_scale_.next_sample();
-  auto move_y = move_y_scale_.next_sample();
-  if (move_x != 0.f || move_y != 0.f) {
-    IMAGE_VIEW_TRAFO(translate(move_x, move_y));
-  }
-
-
-
-  invalidate(image_view_primary_.update());
-  invalidate(image_view_blend_.changed());
-
-  if (!image_view_blend_.is_running()) {
-    image_view_secondary_.reset_image(nullptr);
-  }
-
-  invalidate(image_view_secondary_.update());
-
-  update_title();
-}
-
-
-
-void window::on_render() {
-  logcerr::debug("rendering");
-
-  if (image_source_) {
-    float v = *image_view_blend_;
-    image_view_secondary_.render_image(std::clamp(2.f-v, 0.f, 1.f), exposure_);
-    image_view_primary_.render_image(std::clamp(v, 0.f, 1.f), exposure_);
-  } else {
-    image_view_primary_.render_empty();
-  }
-}
-
-
-
-
-
 void window::toggle_scale_filter() {
-  if (view_info_) {
-    if (view_info_->scale_filter_ == scale_filter::linear) {
-      view_info_->scale_filter_ = scale_filter::nearest;
-    } else {
-      view_info_->scale_filter_ = scale_filter::linear;
-    }
-    invalidate();
-  }
+  invalidate();
 }
 
 
@@ -394,11 +291,11 @@ void window::on_key_press(win::key keycode) {
     if (!mod_active(win::modifier::control)) {
       s = 1.f / s;
     }
-    IMAGE_VIEW_TRAFO(snap_absolute_scale(s));
-  } else if (scale == -1) {
+    //IMAGE_VIEW_TRAFO(snap_absolute_scale(s));
+  /*} else if (scale == -1) {
     IMAGE_VIEW_TRAFO(snap_fit());
   } else if (scale == -2) {
-    IMAGE_VIEW_TRAFO(snap_clip());
+    IMAGE_VIEW_TRAFO(snap_clip());*/
   }
 }
 
@@ -433,7 +330,7 @@ void window::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button butt
 
 void window::on_pointer_move(win::vec2<float> pos) {
   if (dragging_) {
-    IMAGE_VIEW_TRAFO(translate(last_x_ - pos.x, pos.y - last_y_));
+    //IMAGE_VIEW_TRAFO(translate(last_x_ - pos.x, pos.y - last_y_));
 
     last_x_ = pos.x;
     last_y_ = pos.y;
@@ -456,7 +353,7 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
       pos.x = pos.x - logical_size().x / 2.;
       pos.y = logical_size().y / 2. - pos.y;
       delta.y = powf(1.01, delta.y);
-      IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+      //IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
       break;
   }
 }
@@ -478,8 +375,8 @@ void window::on_pinch_begin(win::vec2<float> pos) {
 void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*rot*/) {
   float ds = scale / last_scale_;
   ds *= ds;
-  IMAGE_VIEW_TRAFO(scale(ds, last_x_ - logical_size().x / 2.,
-        logical_size().y / 2. - last_y_));
+  //IMAGE_VIEW_TRAFO(scale(ds, last_x_ - logical_size().x / 2.,
+  //      logical_size().y / 2. - last_y_));
   last_scale_ = scale;
 }
 
@@ -493,9 +390,9 @@ void window::on_swipe_begin(win::vec2<float> /*pos*/, uint32_t fingers) {
 
 
 
-void window::on_swipe_update(win::vec2<float> delta) {
+void window::on_swipe_update(win::vec2<float> /*delta*/) {
   if (dragging_) {
-    IMAGE_VIEW_TRAFO(translate(-delta.x, delta.y));
+    //IMAGE_VIEW_TRAFO(translate(-delta.x, delta.y));
   }
 }
 
@@ -503,7 +400,7 @@ void window::on_swipe_update(win::vec2<float> delta) {
 
 void window::on_swipe_cancel() {
   if (!dragging_) {
-    IMAGE_VIEW_TRAFO(restore_state());
+    //IMAGE_VIEW_TRAFO(restore_state());
   }
 }
 

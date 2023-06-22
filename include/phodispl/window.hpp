@@ -5,7 +5,6 @@
 #include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-display.hpp"
 #include "phodispl/image-source.hpp"
-#include "phodispl/image-view.hpp"
 #include "phodispl/stopwatch.hpp"
 
 #include <chrono>
@@ -15,13 +14,6 @@
 #include <vector>
 
 #include <win/application.hpp>
-
-
-
-// NOLINTNEXTLINE(*macro*)
-#define IMAGE_VIEW_TRAFO(action)       \
-  image_view_primary_.trafo().action;   \
-  image_view_secondary_.trafo().action;
 
 
 
@@ -39,16 +31,9 @@ class window : public win::application {
 
 
   private:
-    std::shared_ptr<::viewport>      viewport_;
-
-    std::shared_ptr<view_info>       view_info_;
-
     std::shared_ptr<image_display>   image_display_;
 
     image_source                     image_source_;
-    image_view                       image_view_primary_;
-    image_view                       image_view_secondary_;
-    animation<float>                 image_view_blend_;
 
     stopwatch                        last_left_click_;
 
@@ -86,11 +71,6 @@ class window : public win::application {
     void input_mode_scale(continuous_scale::direction, bool);
 
 
-
-    void on_update() override;
-    void on_render() override;
-
-    void on_rescale(win::vec2<uint32_t> /*size*/, float /*scale*/) override;
 
     void on_key_press  (win::key /*keycode*/) override;
     void on_key_release(win::key /*keycode*/) override;
