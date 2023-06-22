@@ -40,3 +40,12 @@ win::application::application(const std::string& app_id) :
 void win::application::on_resize_private(vec2<float> size, float scale) {
   resize(size, scale);
 }
+
+
+
+
+
+
+void win::application::on_update_private() {
+  update();
+}

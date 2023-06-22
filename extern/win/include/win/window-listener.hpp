@@ -23,8 +23,6 @@ class window_listener {
 
 
 
-    virtual void on_update() {}
-
     virtual void on_rescale(vec2<uint32_t> /*size*/, float /*scale*/) {}
 
     virtual void on_key_press  (key /*key*/) {}
@@ -54,6 +52,7 @@ class window_listener {
 
 
     virtual void on_resize_private(vec2<float> /*size*/, float /*scale*/) {}
+    virtual void on_update_private() {}
 };
 
 }

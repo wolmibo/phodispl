@@ -59,7 +59,10 @@ class widget {
 
   protected:
     void render(const viewport&);
+    void update();
+
     virtual void on_render() {}
+    virtual void on_update() {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 

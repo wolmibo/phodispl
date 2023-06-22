@@ -50,6 +50,7 @@ class application : public window_listener, public viewport {
     std::unique_ptr<window_native>        native_;
 
     void on_resize_private(vec2<float> /*size*/, float /*scale*/) final;
+    void on_update_private() final;
 };
 
 }

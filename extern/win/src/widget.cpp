@@ -68,6 +68,18 @@ void win::widget::render(const viewport& root) {
 
 
 
+
+void win::widget::update() {
+  on_update();
+  for (const auto& [child, _]: children_) {
+    child->update();
+  }
+}
+
+
+
+
+
 void win::widget::compute_layout(vec2<float> position, vec2<float> size, float scale) {
   if (position_ == position && realized_size_ == size && scale_ == scale) {
     return;

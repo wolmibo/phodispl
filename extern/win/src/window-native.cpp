@@ -105,7 +105,7 @@ void win::window_native::rescale(vec2<uint32_t> size, float scale) {
 
 
 bool win::window_native::update() {
-  parent()->on_update();
+  static_cast<window_listener*>(parent())->on_update_private();
 
   return parent()->invalid();
 }
