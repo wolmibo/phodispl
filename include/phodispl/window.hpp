@@ -3,6 +3,7 @@
 
 #include "phodispl/animation.hpp"
 #include "phodispl/continuous-scale.hpp"
+#include "phodispl/image-display.hpp"
 #include "phodispl/image-source.hpp"
 #include "phodispl/image-view.hpp"
 #include "phodispl/stopwatch.hpp"
@@ -41,6 +42,8 @@ class window : public win::application {
     std::shared_ptr<::viewport>      viewport_;
 
     std::shared_ptr<view_info>       view_info_;
+
+    std::shared_ptr<image_display>   image_display_;
 
     image_source                     image_source_;
     image_view                       image_view_primary_;

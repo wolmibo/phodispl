@@ -3,6 +3,7 @@
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/viewport.hpp"
 #include "phodispl/window.hpp"
+#include "win/widget-constraint.hpp"
 
 #include <logcerr/log.hpp>
 
@@ -24,6 +25,9 @@ window::window(std::vector<std::filesystem::path> sl) :
   viewport_            {std::make_shared<::viewport>()},
 
   view_info_           {std::make_shared<view_info>(viewport_)},
+
+  image_display_       {std::make_shared<image_display>()},
+
   image_source_        {std::move(sl), *this},
   image_view_primary_  {view_info_},
   image_view_secondary_{view_info_},
@@ -38,6 +42,17 @@ window::window(std::vector<std::filesystem::path> sl) :
 {
   background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
+
+  add_child(image_display_, win::widget_constraint {
+      .width  = win::dimension_fill_constraint{},
+      .height = win::dimension_fill_constraint{},
+      .margin = win::margin_constraint {
+        .start  = 0.f,
+        .end    = 0.f,
+        .top    = 0.f,
+        .bottom = 0.f
+      }
+  });
 }
 
 
