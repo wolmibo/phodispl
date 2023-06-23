@@ -95,6 +95,8 @@ void window::on_update() {
   if (auto samp = exposure_scale_.next_sample(); exposure_scale_) {
     image_display_.exposure_multiply(std::pow(1.01f, samp));
   }
+
+  update_title();
 }
 
 
