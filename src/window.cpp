@@ -2,6 +2,7 @@
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
+#include "win/modifier.hpp"
 #include "win/widget-constraint.hpp"
 
 #include <logcerr/log.hpp>
@@ -183,16 +184,7 @@ void window::on_key_press(win::key keycode) {
       close();
       break;
 
-    case win::key::home:
-      switch (input_mode_) {
-        case input_mode::exposure_control:
-          image_display_.exposure(1.f);
-          break;
-        case input_mode::standard:
-          scale = -1;
-          break;
-      }
-      break;
+    case win::key::home: scale = -1; break;
     case win::key::end:  scale = -2; break;
 
     case win::key::kp_1: scale =  1; break;
@@ -281,15 +273,25 @@ void window::on_key_press(win::key keycode) {
   }
 
   if (scale > 0) {
-    float s = scale;
-    if (!mod_active(win::modifier::control)) {
-      s = 1.f / s;
+    switch (input_mode_) {
+      case input_mode::exposure_control:
+        if (mod_active(win::modifier::control)) {
+          image_display_.exposure(std::pow(0.5f, scale));
+        } else {
+          image_display_.exposure(std::pow(2.f, scale));
+        }
+        break;
+      case input_mode::standard:
+        break;
     }
-    //IMAGE_VIEW_TRAFO(snap_absolute_scale(s));
-  /*} else if (scale == -1) {
-    IMAGE_VIEW_TRAFO(snap_fit());
-  } else if (scale == -2) {
-    IMAGE_VIEW_TRAFO(snap_clip());*/
+  } else if (scale == -1) {
+    switch (input_mode_) {
+      case input_mode::exposure_control:
+        image_display_.exposure(1.f);
+        break;
+      case input_mode::standard:
+        break;
+    }
   }
 }
 
