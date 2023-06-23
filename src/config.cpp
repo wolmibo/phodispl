@@ -70,13 +70,13 @@ void load_config(const std::optional<std::filesystem::path>& path, bool strict) 
 
 
 
-template<> struct iconfigp::case_insensitive_parse_lut<animation_interpolation> {
-  static constexpr std::string_view name {"animation-interpolation"};
-  static constexpr std::array<std::pair<std::string_view, animation_interpolation>, 3>
+template<> struct iconfigp::case_insensitive_parse_lut<animation_curve> {
+  static constexpr std::string_view name {"animation-curve"};
+  static constexpr std::array<std::pair<std::string_view, animation_curve>, 3>
   lut {
-    std::make_pair("linear",     animation_interpolation::linear),
-    std::make_pair("sinusoidal", animation_interpolation::sinusoidal),
-    std::make_pair("immediate",  animation_interpolation::immediate)
+    std::make_pair("linear",     animation_curve::linear),
+    std::make_pair("sinusoidal", animation_curve::sinusoidal),
+    std::make_pair("immediate",  animation_curve::immediate)
   };
 };
 
@@ -151,13 +151,13 @@ config::config(std::string_view content, bool strict) {
 
 
     if (auto animation = root.subsection("animation")) {
-      update(animation_view_next_interpolation,
-          animation->unique_key("view-next-interpolation"));
-      update(animation_view_next_ms, animation->unique_key("view-next-ms"));
+      update(animation_view_next_curve, animation->unique_key("view-next-interpolation"));
+      update(animation_view_next_curve, animation->unique_key("view-next-curve"));
+      update(animation_view_next_ms,    animation->unique_key("view-next-ms"));
 
-      update(animation_view_snap_interpolation,
-          animation->unique_key("view-snap-interpolation"));
-      update(animation_view_snap_ms, animation->unique_key("view-snap-ms"));
+      update(animation_view_snap_curve, animation->unique_key("view-snap-interpolation"));
+      update(animation_view_snap_curve, animation->unique_key("view-snap-curve"));
+      update(animation_view_snap_ms,    animation->unique_key("view-snap-ms"));
     }
 
 

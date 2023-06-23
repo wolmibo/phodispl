@@ -3,8 +3,6 @@
 
 #include <gl/base.hpp>
 
-#include "phodispl/animation-interpolation.hpp"
-
 #include <array>
 
 

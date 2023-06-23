@@ -12,9 +12,8 @@
 
 image_display::image_display() :
   crossfade_(
-    1.f,
     global_config().animation_view_next_ms.count(),
-    global_config().animation_view_next_interpolation
+    global_config().animation_view_next_curve
   ),
   quad_{gl::primitives::quad()},
   crossfade_shader_{resources::shader_crossfade_vs(), resources::shader_crossfade_fs()},
@@ -24,7 +23,7 @@ image_display::image_display() :
   exposure_(
     1.f,
     global_config().animation_view_snap_ms.count(),
-    global_config().animation_view_snap_interpolation
+    global_config().animation_view_snap_curve
   ),
   scale_filter_{global_config().filter}
 {
@@ -41,7 +40,7 @@ void image_display::active(std::shared_ptr<image> next_image) {
   previous_ = std::move(current_);
   current_  = std::move(next_image);
 
-  crossfade_.animate_to(1.f);
+  crossfade_.start();
 }
 
 
@@ -55,7 +54,7 @@ void image_display::exposure(float exposure) {
 
 
 void image_display::exposure_multiply(float diff) {
-  exposure_.animate_to(*exposure_ * diff, true);
+  exposure_.set_to(*exposure_ * diff);
 }
 
 

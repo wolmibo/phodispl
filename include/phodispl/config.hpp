@@ -1,6 +1,7 @@
 #ifndef PHODISPL_CONFIG_HPP_INCLUDED
 #define PHODISPL_CONFIG_HPP_INCLUDED
 
+#include "phodispl/animation.hpp"
 #include "phodispl/config-types.hpp"
 
 #include <chrono>
@@ -26,10 +27,10 @@ struct config {
 
 
 
-    animation_interpolation   animation_view_next_interpolation{animation_interpolation::sinusoidal};
+    animation_curve           animation_view_next_curve{animation_curve::sinusoidal};
     std::chrono::milliseconds animation_view_next_ms{0};
 
-    animation_interpolation   animation_view_snap_interpolation{animation_interpolation::sinusoidal};
+    animation_curve           animation_view_snap_curve{animation_curve::sinusoidal};
     std::chrono::milliseconds animation_view_snap_ms{0};
 
 

@@ -44,7 +44,7 @@ class image_display : public win::widget {
     std::shared_ptr<image> current_;
     std::shared_ptr<image> previous_;
 
-    animation<float>       crossfade_;
+    animation_time         crossfade_;
 
     gl::mesh               quad_;
     gl::program            crossfade_shader_;
