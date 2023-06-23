@@ -93,7 +93,7 @@ void window::input_mode_scale(continuous_scale::direction direction, bool activa
 
 void window::on_update() {
   if (auto samp = exposure_scale_.next_sample(); exposure_scale_) {
-    image_display_.exposure_multiply(powf(1.01f, samp));
+    image_display_.exposure_multiply(std::pow(1.01f, samp));
   }
 }
 
@@ -343,12 +343,12 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
   switch (input_mode_) {
     case input_mode::exposure_control:
-      image_display_.exposure_multiply(powf(1.01, delta.y));
+      image_display_.exposure_multiply(std::pow(1.01, delta.y));
       break;
     case input_mode::standard:
       pos.x = pos.x - logical_size().x / 2.;
       pos.y = logical_size().y / 2. - pos.y;
-      delta.y = powf(1.01, delta.y);
+      delta.y = std::pow(1.01, delta.y);
       //IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
       break;
   }
