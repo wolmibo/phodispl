@@ -38,6 +38,8 @@ class image_display : public win::widget {
     void scale(scale_mode);
     void scale_multiply_at(float, win::vec2<float>);
 
+    void translate(win::vec2<float>);
+
 
 
   private:

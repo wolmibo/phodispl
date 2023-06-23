@@ -88,6 +88,14 @@ void image_display::scale_multiply_at(float /*unused*/, win::vec2<float> /*unuse
 
 
 
+void image_display::translate(win::vec2<float> /*unused*/) {
+
+}
+
+
+
+
+
 void image_display::on_update() {
   current_->update();
 

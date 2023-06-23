@@ -84,7 +84,7 @@ class window : public win::application {
 
     void on_swipe_begin (win::vec2<float> /*pos*/, uint32_t /*count*/) override;
     void on_swipe_update(win::vec2<float> /*delta*/)                   override;
-    void on_swipe_cancel() override;
+    void on_swipe_cancel() override {};
     void on_swipe_finish() override;
 
     void on_pinch_begin(win::vec2<float> /*pos*/) override;

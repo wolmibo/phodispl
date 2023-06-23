@@ -333,11 +333,13 @@ void window::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button butt
 
 void window::on_pointer_move(win::vec2<float> pos) {
   if (dragging_) {
-    //IMAGE_VIEW_TRAFO(translate(last_x_ - pos.x, pos.y - last_y_));
+    image_display_.translate(pos - last_position_);
 
     last_position_ = pos;
   }
 }
+
+
 
 
 
@@ -378,6 +380,8 @@ void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*ro
 
 
 
+
+
 void window::on_swipe_begin(win::vec2<float> /*pos*/, uint32_t fingers) {
   if (fingers == 3) {
     dragging_ = true;
@@ -386,17 +390,9 @@ void window::on_swipe_begin(win::vec2<float> /*pos*/, uint32_t fingers) {
 
 
 
-void window::on_swipe_update(win::vec2<float> /*delta*/) {
+void window::on_swipe_update(win::vec2<float> delta) {
   if (dragging_) {
-    //IMAGE_VIEW_TRAFO(translate(-delta.x, delta.y));
-  }
-}
-
-
-
-void window::on_swipe_cancel() {
-  if (!dragging_) {
-    //IMAGE_VIEW_TRAFO(restore_state());
+    image_display_.translate(delta);
   }
 }
 
