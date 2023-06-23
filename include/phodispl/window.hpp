@@ -5,7 +5,6 @@
 #include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-display.hpp"
 #include "phodispl/image-source.hpp"
-#include "phodispl/stopwatch.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -34,7 +33,8 @@ class window : public win::application {
     image_display                    image_display_;
     image_source                     image_source_;
 
-    stopwatch                        last_left_click_;
+    std::chrono::steady_clock::time_point
+                                     last_left_click_{};
 
     bool                             dragging_      {false};
     bool                             pinching_      {false};

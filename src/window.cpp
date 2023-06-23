@@ -17,9 +17,7 @@ window::window(std::vector<std::filesystem::path> sl) :
   image_source_        {
     [this](std::shared_ptr<image> img, image_change) {
       image_display_.active(std::move(img));
-    }, std::move(sl), *this},
-
-  last_left_click_     {false}
+    }, std::move(sl), *this}
 {
   background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
@@ -331,11 +329,12 @@ void window::on_pointer_press(win::vec2<float> pos, win::mouse_button button) {
     dragging_ = true;
     last_position_ = pos;
   } else if (button == win::mouse_button::left) {
-    if (last_left_click_.current_ms() < 250) {
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now() - last_left_click_).count() < 250) {
       dragging_ = true;
       last_position_ = pos;
     }
-    last_left_click_.reset(true);
+    last_left_click_ = std::chrono::steady_clock::now();
   }
 }
 
