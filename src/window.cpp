@@ -100,12 +100,6 @@ void window::on_update() {
 
 
 
-void window::toggle_scale_filter() {
-  invalidate();
-}
-
-
-
 void window::update_title() {
   static std::string old_title;
 
@@ -279,7 +273,7 @@ void window::on_key_press(win::key keycode) {
 
     case win::key_from_char('t'):
     case win::key_from_char('T'):
-      toggle_scale_filter();
+      image_display_.scale_filter_toggle();
       break;
 
     default:

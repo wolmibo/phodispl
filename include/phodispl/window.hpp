@@ -60,8 +60,6 @@ class window : public win::application {
 
 
 
-    void toggle_scale_filter();
-
     void update_title();
 
 

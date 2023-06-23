@@ -5,6 +5,7 @@
 #define PHODISPL_IMAGE_DISPLAY_HPP_INCLUDED
 
 #include "phodispl/animation.hpp"
+#include "phodispl/config-types.hpp"
 #include "phodispl/image.hpp"
 
 #include <gl/mesh.hpp>
@@ -23,6 +24,8 @@ class image_display : public win::widget {
     void exposure(float);
     void exposure_multiply(float);
 
+    void scale_filter_toggle();
+
 
 
   private:
@@ -37,6 +40,7 @@ class image_display : public win::widget {
     GLint                  crossfade_shader_factor_b_;
 
     animation<float>       exposure_;
+    scale_filter           scale_filter_;
 
 
 

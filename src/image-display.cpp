@@ -1,4 +1,5 @@
 #include "logcerr/log.hpp"
+#include "phodispl/config-types.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/image-display.hpp"
 #include "resources.hpp"
@@ -24,7 +25,8 @@ image_display::image_display() :
     1.f,
     global_config().animation_view_snap_ms.count(),
     global_config().animation_view_snap_interpolation
-  )
+  ),
+  scale_filter_{global_config().filter}
 {
   crossfade_shader_.use();
   glUniform1i(crossfade_shader_.uniform("textureSamplerA"), 0);
@@ -54,6 +56,19 @@ void image_display::exposure(float exposure) {
 
 void image_display::exposure_multiply(float diff) {
   exposure_.animate_to(*exposure_ * diff, true);
+}
+
+
+
+
+
+void image_display::scale_filter_toggle() {
+  if (scale_filter_ == scale_filter::linear) {
+    scale_filter_ = scale_filter::nearest;
+  } else {
+    scale_filter_ = scale_filter::linear;
+  }
+  invalidate();
 }
 
 
@@ -93,6 +108,13 @@ namespace {
       glUniform4f(uni, factor * exposure, factor * exposure, factor * exposure, factor);
     }
   }
+
+
+
+  void set_scale_filter(scale_filter filter) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, std::to_underlying(filter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, std::to_underlying(filter));
+  }
 }
 
 
@@ -104,9 +126,11 @@ void image_display::on_render() {
 
   glActiveTexture(GL_TEXTURE1);
   crossfade_image(previous_.get(), 1.f - factor, *exposure_, crossfade_shader_factor_b_);
+  set_scale_filter(scale_filter_);
 
   glActiveTexture(GL_TEXTURE0);
   crossfade_image(current_.get(), factor, *exposure_, crossfade_shader_factor_a_);
+  set_scale_filter(scale_filter_);
 
   quad_.draw();
 }
