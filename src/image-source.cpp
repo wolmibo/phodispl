@@ -80,7 +80,6 @@ image_source::image_source(
 
   if (!startup_files_.empty()) {
     cache_.add(std::filesystem::absolute(startup_files_.front()));
-    invoke_save(callback_, cache_.current(), image_change::next);
   }
 
   populate_cache(std::move(lock));
@@ -281,9 +280,18 @@ namespace {
 
 
 void image_source::populate_cache(std::unique_lock<std::mutex> cache_lock) {
+  bool first_sent = !cache_.empty();
+  if (first_sent) {
+    invoke_save(callback_, cache_.current(), image_change::next);
+  }
+
   auto files = list_files(startup_files_);
 
   cache_.set(files);
+
+  if (!first_sent && !cache_.empty()) {
+    invoke_save(callback_, cache_.current(), image_change::next);
+  }
 
   cache_lock.unlock();
 
