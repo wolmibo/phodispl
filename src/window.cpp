@@ -12,15 +12,18 @@
 
 
 window::window(std::vector<std::filesystem::path> sl) :
-  win::application     {"phodispl"},
+  win::application{"phodispl"},
 
-  image_source_        {
+  image_source_{
     [this](std::shared_ptr<image> img, image_change) {
       image_display_.active(std::move(img));
-    }, std::move(sl), *this}
+    },
+    std::move(sl), *this
+  }
 {
-  background_color(global_config().theme_background);
   logcerr::verbose("window backend: {}", win::to_string(backend()));
+
+  background_color(global_config().theme_background);
 
   add_child(&image_display_, win::widget_constraint {
       .width  = win::dimension_fill_constraint{},
