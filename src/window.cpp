@@ -187,6 +187,7 @@ void window::on_key_press(win::key keycode) {
     case win::key::home: scale = -1; break;
     case win::key::end:  scale = -2; break;
 
+    case win::key::kp_0: scale = -1; break;
     case win::key::kp_1: scale =  1; break;
     case win::key::kp_2: scale =  2; break;
     case win::key::kp_3: scale =  3; break;
