@@ -283,6 +283,11 @@ void window::on_key_press(win::key keycode) {
         }
         break;
       case input_mode::standard:
+        if (mod_active(win::modifier::control)) {
+          image_display_.scale(static_cast<float>(scale));
+        } else {
+          image_display_.scale(1.f / static_cast<float>(scale));
+        }
         break;
     }
   } else if (scale == -1) {
@@ -291,8 +296,11 @@ void window::on_key_press(win::key keycode) {
         image_display_.exposure(1.f);
         break;
       case input_mode::standard:
+        image_display_.scale(dynamic_scale::fit);
         break;
     }
+  } else if (scale == -2 && input_mode_ == input_mode::standard) {
+    image_display_.scale(dynamic_scale::clip);
   }
 }
 
@@ -303,13 +311,11 @@ void window::on_key_press(win::key keycode) {
 void window::on_pointer_press(win::vec2<float> pos, win::mouse_button button) {
   if (button == win::mouse_button::middle) {
     dragging_ = true;
-    last_x_ = pos.x;
-    last_y_ = pos.y;
+    last_position_ = pos;
   } else if (button == win::mouse_button::left) {
     if (last_left_click_.current_ms() < 250) {
       dragging_ = true;
-      last_x_ = pos.x;
-      last_y_ = pos.y;
+      last_position_ = pos;
     }
     last_left_click_.reset(true);
   }
@@ -329,8 +335,7 @@ void window::on_pointer_move(win::vec2<float> pos) {
   if (dragging_) {
     //IMAGE_VIEW_TRAFO(translate(last_x_ - pos.x, pos.y - last_y_));
 
-    last_x_ = pos.x;
-    last_y_ = pos.y;
+    last_position_ = pos;
   }
 }
 
@@ -343,13 +348,10 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
   switch (input_mode_) {
     case input_mode::exposure_control:
-      image_display_.exposure_multiply(std::pow(1.01, delta.y));
+      image_display_.exposure_multiply(std::pow(1.01f, delta.y));
       break;
     case input_mode::standard:
-      pos.x = pos.x - logical_size().x / 2.;
-      pos.y = logical_size().y / 2. - pos.y;
-      delta.y = std::pow(1.01, delta.y);
-      //IMAGE_VIEW_TRAFO(scale(delta.y, pos.x, pos.y));
+      image_display_.scale_multiply_at(std::pow(1.01f, delta.y), pos);
       break;
   }
 }
@@ -359,8 +361,7 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
 
 void window::on_pinch_begin(win::vec2<float> pos) {
-  last_x_     = pos.x;
-  last_y_     = pos.y;
+  last_position_ = pos;
   last_scale_ = 1.f;
 }
 
@@ -371,8 +372,7 @@ void window::on_pinch_begin(win::vec2<float> pos) {
 void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*rot*/) {
   float ds = scale / last_scale_;
   ds *= ds;
-  //IMAGE_VIEW_TRAFO(scale(ds, last_x_ - logical_size().x / 2.,
-  //      logical_size().y / 2. - last_y_));
+  image_display_.scale_multiply_at(ds, last_position_);
   last_scale_ = scale;
 }
 

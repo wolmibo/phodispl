@@ -15,6 +15,15 @@
 
 
 
+enum class dynamic_scale {
+  fit,
+  clip,
+};
+
+using scale_mode = std::variant<dynamic_scale, float>;
+
+
+
 class image_display : public win::widget {
   public:
     image_display();
@@ -25,6 +34,9 @@ class image_display : public win::widget {
     void exposure_multiply(float);
 
     void scale_filter_toggle();
+
+    void scale(scale_mode);
+    void scale_multiply_at(float, win::vec2<float>);
 
 
 
