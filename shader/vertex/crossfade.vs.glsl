@@ -2,10 +2,15 @@
 
 layout (location=0) in vec4 position;
 
-out vec2 uvCoord;
+uniform mat4 transformA;
+uniform mat4 transformB;
+
+out vec2 uvCoordA;
+out vec2 uvCoordB;
 
 void main() {
-  uvCoord = vec2(0.5, -0.5) * position.xy + vec2(0.5, 0.5);
+  uvCoordA = vec2(0.5, -0.5) * (transformA * position).xy + vec2(0.5, 0.5);
+  uvCoordB = vec2(0.5, -0.5) * (transformB * position).xy + vec2(0.5, 0.5);
 
   gl_Position = position;
 }

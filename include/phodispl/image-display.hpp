@@ -49,17 +49,25 @@ class image_display : public win::widget {
     animation_time         crossfade_;
 
     gl::mesh               quad_;
-    gl::program            crossfade_shader_;
-    GLint                  crossfade_shader_factor_a_;
-    GLint                  crossfade_shader_factor_b_;
+    gl::program            shader_;
+    GLint                  shader_factor_;
+    GLint                  shader_transform_;
 
     animation<float>       exposure_;
     scale_filter           scale_filter_;
+
+    scale_mode             scale_mode_{dynamic_scale::fit};
+    win::vec2<float>       position_  {0.f, 0.f};
 
 
 
     void on_update() override;
     void on_render() override;
+
+
+
+    [[nodiscard]] float     scale_dynamic(frame&, dynamic_scale) const;
+    [[nodiscard]] win::mat4 matrix_for(frame&)                   const;
 };
 
 #endif // PHODISPL_IMAGE_DISPLAY_HPP_INCLUDED

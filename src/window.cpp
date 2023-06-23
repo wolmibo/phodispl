@@ -96,6 +96,16 @@ void window::on_update() {
     image_display_.exposure_multiply(std::pow(1.01f, samp));
   }
 
+  if (auto samp = zoom_scale_.next_sample(); zoom_scale_) {
+    image_display_.scale_multiply_at(std::pow(1.01f, samp), 0.5f * logical_size());
+  }
+
+  auto samp_x = move_x_scale_.next_sample();
+  auto samp_y = move_y_scale_.next_sample();
+  if (move_x_scale_ || move_y_scale_) {
+    image_display_.translate({samp_x, samp_y});
+  }
+
   update_title();
 }
 
@@ -143,7 +153,7 @@ void window::on_key_release(win::key keycode) {
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      move_x_scale_.deactivate_down();
+      move_x_scale_.deactivate_up();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
@@ -151,7 +161,7 @@ void window::on_key_release(win::key keycode) {
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      move_x_scale_.deactivate_up();
+      move_x_scale_.deactivate_down();
       break;
 
     case win::key::kp_plus:
@@ -206,7 +216,7 @@ void window::on_key_press(win::key keycode) {
       break;
     case win::key_from_char('a'):
     case win::key_from_char('A'):
-      move_x_scale_.activate_down();
+      move_x_scale_.activate_up();
       break;
     case win::key_from_char('s'):
     case win::key_from_char('S'):
@@ -214,7 +224,7 @@ void window::on_key_press(win::key keycode) {
       break;
     case win::key_from_char('d'):
     case win::key_from_char('D'):
-      move_x_scale_.activate_up();
+      move_x_scale_.activate_down();
       break;
 
     case win::key::kp_plus:
@@ -292,9 +302,9 @@ void window::input_mode_apply_scale(int scale) {
         break;
       case input_mode::standard:
         if (mod_active(win::modifier::control)) {
-          image_display_.scale(static_cast<float>(scale));
+          image_display_.scale(static_cast<float>(scale) / win::widget::scale());
         } else {
-          image_display_.scale(1.f / static_cast<float>(scale));
+          image_display_.scale(1.f / static_cast<float>(scale) / win::widget::scale());
         }
         break;
     }

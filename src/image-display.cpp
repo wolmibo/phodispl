@@ -1,4 +1,3 @@
-#include "logcerr/log.hpp"
 #include "phodispl/config-types.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/image-display.hpp"
@@ -16,9 +15,10 @@ image_display::image_display() :
     global_config().animation_view_next_curve
   ),
   quad_{gl::primitives::quad()},
-  crossfade_shader_{resources::shader_crossfade_vs(), resources::shader_crossfade_fs()},
-  crossfade_shader_factor_a_{crossfade_shader_.uniform("factorA")},
-  crossfade_shader_factor_b_{crossfade_shader_.uniform("factorB")},
+
+  shader_{resources::shader_plane_uv_vs(), resources::shader_plane_fs()},
+  shader_factor_   {shader_.uniform("factor")},
+  shader_transform_{shader_.uniform("transform")},
 
   exposure_(
     1.f,
@@ -26,11 +26,7 @@ image_display::image_display() :
     global_config().animation_view_snap_curve
   ),
   scale_filter_{global_config().filter}
-{
-  crossfade_shader_.use();
-  glUniform1i(crossfade_shader_.uniform("textureSamplerA"), 0);
-  glUniform1i(crossfade_shader_.uniform("textureSamplerB"), 1);
-}
+{}
 
 
 
@@ -40,7 +36,9 @@ void image_display::active(std::shared_ptr<image> next_image) {
   previous_ = std::move(current_);
   current_  = std::move(next_image);
 
-  crossfade_.start();
+  if (previous_.get() != current_.get()) {
+    crossfade_.start();
+  }
 }
 
 
@@ -74,22 +72,41 @@ void image_display::scale_filter_toggle() {
 
 
 
-void image_display::scale(scale_mode /*unused*/) {
-
+void image_display::scale(scale_mode mode) {
+  scale_mode_ = mode;
+  if (std::holds_alternative<dynamic_scale>(scale_mode_)) {
+    position_ = {0.f, 0.f};
+  }
+  invalidate();
 }
 
 
 
-void image_display::scale_multiply_at(float /*unused*/, win::vec2<float> /*unused*/) {
+void image_display::scale_multiply_at(float factor, win::vec2<float> position) {
+  if (auto* value = std::get_if<float>(&scale_mode_)) {
+    scale_mode_ = *value * factor;
 
+  } else if (auto* mode = std::get_if<dynamic_scale>(&scale_mode_);
+             mode != nullptr && current_) {
+    if (auto frame = current_->current_frame()) {
+      scale_mode_ = scale_dynamic(*frame, *mode) * factor;
+    }
+  }
+
+  position = position - 0.5f * logical_size();
+
+  position_ = factor * (position_ - position) + position;
+
+  invalidate();
 }
 
 
 
 
 
-void image_display::translate(win::vec2<float> /*unused*/) {
-
+void image_display::translate(win::vec2<float> delta) {
+  position_ = position_ + delta;
+  invalidate();
 }
 
 
@@ -119,15 +136,17 @@ void image_display::on_update() {
 
 
 namespace {
-  void crossfade_image(image* img, float factor, float exposure, GLint uni) {
+  [[nodiscard]] std::shared_ptr<frame> current_frame(image* img) {
     if (img == nullptr) {
-      return;
+      return {};
     }
+    return img->current_frame();
+  }
 
-    if (auto frame = img->current_frame()) {
-      frame->texture().bind();
-      glUniform4f(uni, factor * exposure, factor * exposure, factor * exposure, factor);
-    }
+
+
+  void crossfade_image(float factor, float exposure, GLint uni) {
+    glUniform4f(uni, factor * exposure, factor * exposure, factor * exposure, factor);
   }
 
 
@@ -141,17 +160,60 @@ namespace {
 
 
 void image_display::on_render() {
-  crossfade_shader_.use();
+  shader_.use();
 
-  auto factor = crossfade_.factor();
 
-  glActiveTexture(GL_TEXTURE1);
-  crossfade_image(previous_.get(), 1.f - factor, *exposure_, crossfade_shader_factor_b_);
-  set_scale_filter(scale_filter_);
+  if (auto frame = current_frame(current_.get())) {
+    frame->texture().bind();
+    set_scale_filter(scale_filter_);
 
-  glActiveTexture(GL_TEXTURE0);
-  crossfade_image(current_.get(), factor, *exposure_, crossfade_shader_factor_a_);
-  set_scale_filter(scale_filter_);
+    win::set_uniform_mat4(shader_transform_, matrix_for(*frame));
+    crossfade_image(1.f, *exposure_, shader_factor_);
+  }
 
   quad_.draw();
+}
+
+
+
+
+
+float image_display::scale_dynamic(frame& f, dynamic_scale scale) const {
+  auto size = logical_size();
+
+  float scale_x = size.x / f.real_width();
+  float scale_y = size.y / f.real_height();
+
+  if (scale == dynamic_scale::fit) {
+    return std::min(scale_x, scale_y);
+  }
+  return std::max(scale_x, scale_y);
+}
+
+
+
+
+
+win::mat4 image_display::matrix_for(frame& f) const {
+  auto size = logical_size();
+
+  float s = 1.f;
+  if (const auto* scale = std::get_if<float>(&scale_mode_)) {
+    s = *scale;
+  } else if (const auto* mode = std::get_if<dynamic_scale>(&scale_mode_)) {
+    s = scale_dynamic(f, *mode);
+  }
+
+  float sx = s * f.real_width()  / size.x;
+  float sy = s * f.real_height() / size.y;
+
+  float px =  position_.x / size.x / 0.5f;
+  float py = -position_.y / size.y / 0.5f;
+
+  return {
+     sx, 0.f, 0.f, 0.f,
+    0.f,  sy, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+     px,  py, 0.f, 1.f
+  };
 }
