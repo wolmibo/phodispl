@@ -275,6 +275,12 @@ void window::on_key_press(win::key keycode) {
       break;
   }
 
+  input_mode_apply_scale(scale);
+}
+
+
+
+void window::input_mode_apply_scale(int scale) {
   if (scale > 0) {
     switch (input_mode_) {
       case input_mode::exposure_control:

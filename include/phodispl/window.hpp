@@ -65,6 +65,8 @@ class window : public win::application {
 
     void input_mode_scale(continuous_scale::direction, bool);
 
+    void input_mode_apply_scale(int);
+
 
     void on_update() override;
 
