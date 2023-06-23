@@ -1,6 +1,7 @@
 #include "phodispl/config-types.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/image-display.hpp"
+#include "pixglot/square-isometry.hpp"
 #include "resources.hpp"
 
 #include <gl/primitives.hpp>
@@ -196,6 +197,42 @@ float image_display::scale_dynamic(frame& f, dynamic_scale scale) const {
 
 
 
+namespace {
+  [[nodiscard]] win::mat4 matrix_from(
+      float                    sx,
+      float                    sy,
+      float                    px,
+      float                    py,
+      pixglot::square_isometry trafo
+  ) {
+    using enum pixglot::square_isometry;
+
+    win::mat4 matrix {
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 1.f, 0.f,
+       px,  py, 0.f, 1.f
+    };
+
+    switch (trafo) {
+      default:
+      case identity:       matrix[0] =  sx; matrix[5] =  sy; break;
+      case flip_x:         matrix[0] = -sx; matrix[5] =  sy; break;
+      case rotate_ccw:     matrix[1] = -sy; matrix[4] =  sx; break;
+      case transpose:      matrix[1] = -sy; matrix[4] = -sx; break;
+      case rotate_half:    matrix[0] = -sx; matrix[5] = -sy; break;
+      case flip_y:         matrix[0] =  sx; matrix[5] = -sy; break;
+      case rotate_cw:      matrix[1] =  sy; matrix[4] = -sx; break;
+      case anti_transpose: matrix[1] =  sy; matrix[4] =  sx; break;
+    }
+    return matrix;
+  }
+}
+
+
+
+
+
 win::mat4 image_display::matrix_for(frame& f) const {
   auto size = logical_size();
 
@@ -212,10 +249,5 @@ win::mat4 image_display::matrix_for(frame& f) const {
   float px =  position_.x / size.x / 0.5f;
   float py = -position_.y / size.y / 0.5f;
 
-  return {
-     sx, 0.f, 0.f, 0.f,
-    0.f,  sy, 0.f, 0.f,
-    0.f, 0.f, 1.f, 0.f,
-     px,  py, 0.f, 1.f
-  };
+  return matrix_from(sx, sy, px, py, f.orientation());
 }
