@@ -114,10 +114,12 @@ void image_display::translate(win::vec2<float> delta) {
 
 
 void image_display::on_update() {
-  current_->update();
+  if (current_) {
+    current_->update();
 
-  if (current_->take_damage()) {
-    invalidate();
+    if (current_->take_damage()) {
+      invalidate();
+    }
   }
 
   if (exposure_.changed()) {
