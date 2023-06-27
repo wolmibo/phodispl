@@ -26,7 +26,14 @@ image_display::image_display() :
     global_config().animation_view_snap_ms.count(),
     global_config().animation_view_snap_curve
   ),
-  scale_filter_{global_config().filter}
+
+  scale_filter_{global_config().filter},
+
+  position_(
+    {0.f, 0.f},
+    global_config().animation_view_snap_ms.count(),
+    global_config().animation_view_snap_curve
+  )
 {}
 
 
@@ -74,12 +81,19 @@ void image_display::scale_filter_toggle() {
 
 
 void image_display::scale(scale_mode mode) {
-  scale_mode_ = mode;
-  if (std::holds_alternative<dynamic_scale>(scale_mode_)) {
-    position_ = {0.f, 0.f};
+  scale_mode_ = current_scale(scale_mode_);
+
+  if (std::holds_alternative<dynamic_scale>(mode)) {
+    position_.animate_to({0.f, 0.f});
+  } else if (auto* scale = std::get_if<float>(&mode)) {
+    position_.animate_to((*scale / std::get<float>(scale_mode_)) * *position_);
   }
+
+  scale_mode_target_ = mode;
   invalidate();
 }
+
+
 
 
 
@@ -94,9 +108,11 @@ void image_display::scale_multiply_at(float factor, win::vec2<float> position) {
     }
   }
 
+  scale_mode_target_ = scale_mode_;
+
   position = position - 0.5f * logical_size();
 
-  position_ = factor * (position_ - position) + position;
+  position_.set_to(factor * (*position_ - position) + position);
 
   invalidate();
 }
@@ -106,7 +122,7 @@ void image_display::scale_multiply_at(float factor, win::vec2<float> position) {
 
 
 void image_display::translate(win::vec2<float> delta) {
-  position_ = position_ + delta;
+  position_.set_to(*position_ + delta);
   invalidate();
 }
 
@@ -125,6 +141,12 @@ void image_display::on_update() {
 
   if (exposure_.changed()) {
     invalidate();
+  }
+
+  if (position_.changed()) {
+    invalidate();
+  } else {
+    scale_mode_ = scale_mode_target_;
   }
 
   if (crossfade_.changed()) {
@@ -175,6 +197,38 @@ void image_display::on_render() {
   }
 
   quad_.draw();
+}
+
+
+
+
+
+float image_display::scale_any(frame& f, scale_mode mode) const {
+  if (auto* dynamic = std::get_if<dynamic_scale>(&mode)) {
+    return scale_dynamic(f, *dynamic);
+  }
+
+  if (auto* value = std::get_if<float>(&mode)) {
+    return *value;
+  }
+
+  return 1.f;
+}
+
+
+
+
+
+float image_display::current_scale(scale_mode mode) const {
+  if (auto* value = std::get_if<float>(&mode)) {
+    return *value;
+  }
+
+  if (auto frame = current_frame(current_.get())) {
+    return scale_any(*frame, mode);
+  }
+
+  return 1.f;
 }
 
 
@@ -236,18 +290,17 @@ namespace {
 win::mat4 image_display::matrix_for(frame& f) const {
   auto size = logical_size();
 
-  float s = 1.f;
-  if (const auto* scale = std::get_if<float>(&scale_mode_)) {
-    s = *scale;
-  } else if (const auto* mode = std::get_if<dynamic_scale>(&scale_mode_)) {
-    s = scale_dynamic(f, *mode);
-  }
+  float s_source = scale_any(f, scale_mode_);
+  float s_target = scale_any(f, scale_mode_target_);
+
+  float factor = position_.clock().factor();
+
+  float s = (1.f - factor) * s_source + factor * s_target;
 
   float sx = s * f.real_width()  / size.x;
   float sy = s * f.real_height() / size.y;
 
-  float px =  position_.x / size.x / 0.5f;
-  float py = -position_.y / size.y / 0.5f;
+  auto pos = win::vec2_mul(win::vec2_div(*position_, size), {2.f, -2.f});
 
-  return matrix_from(sx, sy, px, py, f.orientation());
+  return matrix_from(sx, sy, pos.x, pos.y, f.orientation());
 }

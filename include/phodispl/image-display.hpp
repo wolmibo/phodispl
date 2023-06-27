@@ -43,21 +43,22 @@ class image_display : public win::widget {
 
 
   private:
-    std::shared_ptr<image> current_;
-    std::shared_ptr<image> previous_;
+    std::shared_ptr<image>      current_;
+    std::shared_ptr<image>      previous_;
 
-    animation_time         crossfade_;
+    animation_time              crossfade_;
 
-    gl::mesh               quad_;
-    gl::program            shader_;
-    GLint                  shader_factor_;
-    GLint                  shader_transform_;
+    gl::mesh                    quad_;
+    gl::program                 shader_;
+    GLint                       shader_factor_;
+    GLint                       shader_transform_;
 
-    animation<float>       exposure_;
-    scale_filter           scale_filter_;
+    animation<float>            exposure_;
+    scale_filter                scale_filter_;
 
-    scale_mode             scale_mode_{dynamic_scale::fit};
-    win::vec2<float>       position_  {0.f, 0.f};
+    scale_mode                  scale_mode_       {dynamic_scale::fit};
+    scale_mode                  scale_mode_target_{dynamic_scale::fit};
+    animation<win::vec2<float>> position_;
 
 
 
@@ -66,8 +67,10 @@ class image_display : public win::widget {
 
 
 
+    [[nodiscard]] float     current_scale(scale_mode)            const;
+    [[nodiscard]] float     scale_any    (frame&, scale_mode)    const;
     [[nodiscard]] float     scale_dynamic(frame&, dynamic_scale) const;
-    [[nodiscard]] win::mat4 matrix_for(frame&)                   const;
+    [[nodiscard]] win::mat4 matrix_for   (frame&)                const;
 };
 
 #endif // PHODISPL_IMAGE_DISPLAY_HPP_INCLUDED

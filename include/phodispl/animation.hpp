@@ -133,6 +133,8 @@ class animation {
     [[nodiscard]] bool is_running() const { return clock_.is_running();       }
     [[nodiscard]] operator bool()   const { return static_cast<bool>(clock_); }
 
+    [[nodiscard]] const animation_time& clock() const { return clock_; }
+
 
 
     T value() const {
