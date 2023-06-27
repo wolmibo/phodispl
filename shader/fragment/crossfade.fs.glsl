@@ -12,6 +12,15 @@ uniform vec4 factorA;
 uniform vec4 factorB;
 
 void main() {
-  fragColor = factorA * texture(textureSamplerA, uvCoordA)
-              + factorB * texture(textureSamplerB, uvCoordB);
+  vec4 colorA = vec4(0.f, 0.f, 0.f, 0.f);
+  if (all(greaterThan(uvCoordA, vec2(0.f))) && all(lessThan(uvCoordA, vec2(1.f)))) {
+    colorA = factorA * texture(textureSamplerA, uvCoordA);
+  }
+
+  vec4 colorB = vec4(0.f, 0.f, 0.f, 0.f);
+  if (all(greaterThan(uvCoordB, vec2(0.f))) && all(lessThan(uvCoordB, vec2(1.f)))) {
+    colorB = factorB * texture(textureSamplerB, uvCoordB);
+  }
+
+  fragColor = colorA + colorB;
 }

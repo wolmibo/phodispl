@@ -17,9 +17,11 @@ image_display::image_display() :
   ),
   quad_{gl::primitives::quad()},
 
-  shader_{resources::shader_plane_uv_vs(), resources::shader_plane_fs()},
-  shader_factor_   {shader_.uniform("factor")},
-  shader_transform_{shader_.uniform("transform")},
+  shader_{resources::shader_crossfade_vs(), resources::shader_crossfade_fs()},
+  shader_factor_a_   {shader_.uniform("factorA")},
+  shader_factor_b_   {shader_.uniform("factorB")},
+  shader_transform_a_{shader_.uniform("transformA")},
+  shader_transform_b_{shader_.uniform("transformB")},
 
   exposure_(
     1.f,
@@ -34,7 +36,11 @@ image_display::image_display() :
     global_config().animation_view_snap_ms.count(),
     global_config().animation_view_snap_curve
   )
-{}
+{
+  shader_.use();
+  glUniform1i(shader_.uniform("textureSamplerA"), 0);
+  glUniform1i(shader_.uniform("textureSamplerB"), 1);
+}
 
 
 
@@ -180,6 +186,15 @@ namespace {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, std::to_underlying(filter));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, std::to_underlying(filter));
   }
+
+
+
+  constexpr win::mat4 out_of_range_matrix {
+    1.f, 0.f, 0.f, -10.f,
+    0.f, 1.f, 0.f, -10.f,
+    0.f, 0.f, 1.f,   0.f,
+    0.f, 0.f, 0.f,   1.f,
+  };
 }
 
 
@@ -187,13 +202,28 @@ namespace {
 void image_display::on_render() {
   shader_.use();
 
+  float factor = *crossfade_;
 
   if (auto frame = current_frame(current_.get())) {
+    glActiveTexture(GL_TEXTURE0);
     frame->texture().bind();
     set_scale_filter(scale_filter_);
 
-    win::set_uniform_mat4(shader_transform_, matrix_for(*frame));
-    crossfade_image(1.f, *exposure_, shader_factor_);
+    win::set_uniform_mat4(shader_transform_a_, matrix_for(*frame));
+    crossfade_image(factor, *exposure_, shader_factor_a_);
+  } else {
+    win::set_uniform_mat4(shader_transform_a_, out_of_range_matrix);
+  }
+
+  if (auto frame = current_frame(previous_.get())) {
+    glActiveTexture(GL_TEXTURE1);
+    frame->texture().bind();
+    set_scale_filter(scale_filter_);
+
+    win::set_uniform_mat4(shader_transform_b_, matrix_for(*frame));
+    crossfade_image(1.f - factor, *exposure_, shader_factor_b_);
+  } else {
+    win::set_uniform_mat4(shader_transform_b_, out_of_range_matrix);
   }
 
   quad_.draw();

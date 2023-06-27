@@ -50,8 +50,10 @@ class image_display : public win::widget {
 
     gl::mesh                    quad_;
     gl::program                 shader_;
-    GLint                       shader_factor_;
-    GLint                       shader_transform_;
+    GLint                       shader_factor_a_;
+    GLint                       shader_factor_b_;
+    GLint                       shader_transform_a_;
+    GLint                       shader_transform_b_;
 
     animation<float>            exposure_;
     scale_filter                scale_filter_;

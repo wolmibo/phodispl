@@ -9,8 +9,8 @@ out vec2 uvCoordA;
 out vec2 uvCoordB;
 
 void main() {
-  uvCoordA = vec2(0.5, -0.5) * (transformA * position).xy + vec2(0.5, 0.5);
-  uvCoordB = vec2(0.5, -0.5) * (transformB * position).xy + vec2(0.5, 0.5);
+  uvCoordA = vec2(0.5, -0.5) * (inverse(transformA) * position).xy + vec2(0.5, 0.5);
+  uvCoordB = vec2(0.5, -0.5) * (inverse(transformB) * position).xy + vec2(0.5, 0.5);
 
   gl_Position = position;
 }
