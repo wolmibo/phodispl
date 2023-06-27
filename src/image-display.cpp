@@ -3,6 +3,7 @@
 #include "phodispl/image-display.hpp"
 #include "pixglot/square-isometry.hpp"
 #include "resources.hpp"
+#include "win/widget-constraint.hpp"
 
 #include <gl/primitives.hpp>
 
@@ -37,6 +38,17 @@ image_display::image_display() :
     global_config().animation_view_snap_curve
   )
 {
+  add_child(&progress_circle_, win::widget_constraint {
+      .width  = 64.f,
+      .height = 64.f,
+      .margin = win::margin_constraint{
+        .start  = 0.f,
+        .end    = 0.f,
+        .top    = 0.f,
+        .bottom = 0.f
+      }
+  });
+
   shader_.use();
   glUniform1i(shader_.uniform("textureSamplerA"), 0);
   glUniform1i(shader_.uniform("textureSamplerB"), 1);
@@ -143,6 +155,13 @@ void image_display::on_update() {
     if (current_->take_damage()) {
       invalidate();
     }
+  }
+
+  if (current_ && current_->loading()) {
+    progress_circle_.show();
+    progress_circle_.value(current_->progress());
+  } else {
+    progress_circle_.hide();
   }
 
   if (exposure_.changed()) {
