@@ -34,12 +34,7 @@ progress_circle::progress_circle() :
 
 
 void progress_circle::value(float value) {
-  float new_value = std::clamp(value, 0.f, 1.f);
-
-  if (new_value != value_) {
-    value_ = new_value;
-    invalidate();
-  }
+  value_ = std::clamp(value, 0.f, 1.f);
 }
 
 
