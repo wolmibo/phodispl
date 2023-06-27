@@ -208,21 +208,21 @@ namespace {
     using enum pixglot::square_isometry;
 
     win::mat4 matrix {
-      0.f, 0.f, 0.f, 0.f,
-      0.f, 0.f, 0.f, 0.f,
+      0.f, 0.f, 0.f,  px,
+      0.f, 0.f, 0.f,  py,
       0.f, 0.f, 1.f, 0.f,
-       px,  py, 0.f, 1.f
+      0.f, 0.f, 0.f, 1.f
     };
 
     switch (trafo) {
       default:
       case identity:       matrix[0] =  sx; matrix[5] =  sy; break;
       case flip_x:         matrix[0] = -sx; matrix[5] =  sy; break;
-      case rotate_ccw:     matrix[1] = -sy; matrix[4] =  sx; break;
-      case transpose:      matrix[1] = -sy; matrix[4] = -sx; break;
+      case rotate_ccw:     matrix[4] = -sy; matrix[1] =  sx; break;
+      case transpose:      matrix[4] = -sy; matrix[1] = -sx; break;
       case rotate_half:    matrix[0] = -sx; matrix[5] = -sy; break;
       case flip_y:         matrix[0] =  sx; matrix[5] = -sy; break;
-      case rotate_cw:      matrix[1] =  sy; matrix[4] = -sx; break;
+      case rotate_cw:      matrix[4] =  sy; matrix[1] = -sx; break;
       case anti_transpose: matrix[1] =  sy; matrix[4] =  sx; break;
     }
     return matrix;

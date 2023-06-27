@@ -17,10 +17,10 @@ win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size)
                                  - (vpsize - size) * 0.5f, vpsize);
 
   return {
-    s.x,   0,   0,   0,
-      0, s.y,   0,   0,
-      0,   0,   1,   0,
-    p.x, p.y,   0,   1
+    s.x, 0.f, 0.f, p.x,
+    0.f, s.y, 0.f, p.y,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f
   };
 }
 

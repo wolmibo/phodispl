@@ -1,5 +1,6 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
+#include "pixglot/square-isometry.hpp"
 
 #include <gl/base.hpp>
 
