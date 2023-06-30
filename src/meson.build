@@ -53,6 +53,7 @@ source_files = [
   'box.cpp',
   'config.cpp',
   'continuous-scale.cpp',
+  'font-name.cpp',
   'fs-watcher.cpp',
   'image-cache.cpp',
   'image-display.cpp',
