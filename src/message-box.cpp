@@ -42,10 +42,15 @@ namespace {
 
 
 void message_box::show_message(const std::string& header, const std::string& message) {
-  header_  = convert_string(header);
-  message_ = convert_string(message);
+  if (header_base_ != header || message_base_ != message) {
+    header_base_  = header;
+    message_base_ = message;
 
-  invalidate();
+    header_  = convert_string(header);
+    message_ = convert_string(message);
+
+    invalidate();
+  }
 
   if (visible_) {
     return;
