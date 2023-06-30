@@ -1,4 +1,5 @@
 #include "phodispl/config.hpp"
+#include "phodispl/font-name.hpp"
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
@@ -24,6 +25,10 @@ window::window(std::vector<std::filesystem::path> sl) :
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 
   background_color(global_config().theme_background);
+
+  auto font_path = resolve_font_name(global_config().theme_font);
+  logcerr::verbose("font file: {}", font_path.string());
+  font(font_path);
 
   add_child(&image_display_, win::widget_constraint {
       .width  = win::dimension_fill_constraint{},
