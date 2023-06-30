@@ -71,6 +71,8 @@ class widget {
     [[nodiscard]] mat4 trafo_mat_logical (vec2<float>, vec2<float>) const;
     [[nodiscard]] mat4 trafo_mat_physical(vec2<float>, vec2<float>) const;
 
+    [[nodiscard]] const win::viewport& viewport() const;
+
 
 
 
@@ -83,7 +85,7 @@ class widget {
 
     std::vector<std::pair<widget*, widget_constraint>>
                             children_;
-    const viewport*         root_ptr_{nullptr};
+    const win::viewport*    root_ptr_{nullptr};
 };
 
 }

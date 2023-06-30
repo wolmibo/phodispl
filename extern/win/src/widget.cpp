@@ -34,6 +34,18 @@ win::mat4 win::widget::trafo_mat_physical(vec2<float> position, vec2<float> size
 
 
 
+const win::viewport& win::widget::viewport() const {
+  if (root_ptr_ == nullptr) {
+    throw std::runtime_error{"viewport only available during rendering"};
+  }
+
+  return *root_ptr_;
+}
+
+
+
+
+
 bool win::widget::invalid() const {
   if (invalid_) {
     return true;
@@ -48,7 +60,7 @@ bool win::widget::invalid() const {
 
 
 
-void win::widget::render(const viewport& root) {
+void win::widget::render(const win::viewport& root) {
   root_ptr_ = &root;
 
   struct clear_root_ptr {
