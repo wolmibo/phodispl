@@ -103,6 +103,10 @@ namespace {
 
 
 void progress_circle::on_render() {
+  if (!visible_) {
+    return;
+  }
+
   shader_.use();
   glUniform1f(shader_progress_, value_);
   glUniform1f(shader_alpha_,    *alpha_);
