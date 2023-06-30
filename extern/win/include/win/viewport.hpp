@@ -38,7 +38,7 @@ class viewport : public widget {
 
 
 
-    vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color);
+    vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color) const;
 
 
 
@@ -49,9 +49,9 @@ class viewport : public widget {
 
 
   private:
+    mutable gl::program       font_shader_;
+    mutable gl::mesh          font_plane_;
     std::optional<gl::glyphs> font_cache_;
-    gl::program               font_shader_;
-    gl::mesh                  font_plane_;
 
     color                     bg_color_{0.f, 0.f, 0.f, 1.f};
 };

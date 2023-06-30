@@ -31,8 +31,8 @@ class message_box : public win::widget {
     bool             might_hide_{false};
     animation<float> alpha_;
 
-    std::string      header_;
-    std::string      message_;
+    std::u32string   header_;
+    std::u32string   message_;
 
     gl::mesh         quad_;
     gl::program      shader_;

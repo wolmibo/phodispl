@@ -2,7 +2,12 @@
 #include "phodispl/message-box.hpp"
 #include "resources.hpp"
 
+#include <codecvt>
+#include <locale>
+
 #include <gl/primitives.hpp>
+
+#include <win/viewport.hpp>
 
 
 
@@ -28,9 +33,17 @@ message_box::message_box() :
 
 
 
+namespace {
+  [[nodiscard]] std::u32string convert_string(const std::string& str) {
+    return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.from_bytes(str);
+  }
+}
+
+
+
 void message_box::show_message(const std::string& header, const std::string& message) {
-  header_  = header;
-  message_ = message;
+  header_  = convert_string(header);
+  message_ = convert_string(message);
 
   invalidate();
 

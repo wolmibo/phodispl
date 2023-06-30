@@ -50,7 +50,7 @@ win::vec2<float> win::viewport::draw_string(
     std::u32string_view string,
     uint32_t            size,
     color               col
-) {
+) const {
   if (!font_cache_) {
     return {0.f, 0.f};
   }
