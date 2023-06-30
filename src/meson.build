@@ -59,7 +59,7 @@ source_files = [
   'image-source.cpp',
   'image.cpp',
   'main.cpp',
-  #'message-box.cpp',
+  'message-box.cpp',
   'progress-circle.cpp',
   'window.cpp',
 ]

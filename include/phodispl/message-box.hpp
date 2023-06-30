@@ -1,37 +1,48 @@
+// Copyright (c) 2023 wolmibo
+// SPDX-License-Identifier: MIT
+
 #ifndef PHODISPL_MESSAGE_BOX_HPP_INCLUDED
 #define PHODISPL_MESSAGE_BOX_HPP_INCLUDED
 
-#include <filesystem>
-#include <memory>
-#include <optional>
+#include "phodispl/animation.hpp"
+
 #include <string>
 
+#include <gl/mesh.hpp>
+#include <gl/program.hpp>
 
-
-namespace pixglot {
-  class base_exception;
-}
-
-class viewport;
-struct config;
+#include <win/widget.hpp>
 
 
 
-class message_box {
+class message_box : public win::widget {
   public:
-    explicit message_box(std::shared_ptr<viewport> vp) :
-      viewport_{std::move(vp)}
-    {}
+    message_box();
 
 
 
-    void render(const std::string&, const std::string&, float=1.f) const;
-    void render(const pixglot::base_exception&,
-                const std::optional<std::filesystem::path>&, float=1.f) const;
+    void show_message(const std::string&, const std::string&);
+    void hide();
+
 
 
   private:
-    std::shared_ptr<viewport> viewport_;
+    bool             visible_   {false};
+    bool             might_hide_{false};
+    animation<float> alpha_;
+
+    std::string      header_;
+    std::string      message_;
+
+    gl::mesh         quad_;
+    gl::program      shader_;
+    GLint            shader_trafo_;
+    GLint            shader_color_;
+
+
+
+    void on_update() override;
+    void on_render() override;
 };
 
 #endif // PHODISPL_MESSAGE_BOX_HPP_INCLUDED

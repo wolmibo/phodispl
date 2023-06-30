@@ -1,144 +1,84 @@
-#include "phodispl/box.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/message-box.hpp"
-#include "phodispl/viewport.hpp"
+#include "resources.hpp"
 
-#include <pixglot/exception.hpp>
+#include <gl/primitives.hpp>
 
 
 
-void message_box::render(
-    const std::string& heading,
-    const std::string& body,
-    float              alpha
-) const {
-  auto heading_u32 = viewport::convert_string(heading);
-  auto body_u32    = viewport::convert_string(body);
+message_box::message_box() :
+  alpha_(
+    0.f,
+    global_config().animation_view_next_ms.count(),
+    global_config().animation_view_next_curve
+  ),
 
-  auto hs = global_config().theme_heading_size;
-  auto ts = global_config().theme_text_size;
+  quad_{gl::primitives::quad()},
 
-  auto [w1, h1] = viewport_->string_dimensions(heading_u32, hs);
-  auto [w2, h2] = viewport_->string_dimensions(body_u32,    ts);
+  shader_{
+    resources::shader_plane_fs(),
+    resources::shader_plane_solid_fs()
+  },
 
-  float w = std::max<float>(w1, w2);
-  float h = h1 + h2 + ts;
+  shader_trafo_{shader_.uniform("transform")},
+  shader_color_{shader_.uniform("color")}
+{}
 
-  box ruler = {
-    .width        = w,
-    .height       = 2.f,
-    .x            = 0.f,
-    .y            = 0.5f * h - 55.f,
-    .anchor       = placement::center,
-    .align_pixels = true
-  };
 
-  auto head = global_config().theme_heading_color;
 
-  head[0] *= alpha;
-  head[1] *= alpha;
-  head[2] *= alpha;
-  head[3] *= alpha;
 
-  viewport_->draw_string(heading_u32, hs, -0.5 * w, 0.5 * h  - hs, head);
-  viewport_->draw_string(body_u32,    ts, -0.5 * w, 0.5 * h  - 4.2 * ts,
-                          global_config().theme_text_color);
 
-  head[0] *= 0.3;
-  head[1] *= 0.3;
-  head[2] *= 0.3;
-  head[3] *= 0.3;
-  viewport_->render_solid(ruler, head);
+void message_box::show_message(const std::string& header, const std::string& message) {
+  header_  = header;
+  message_ = message;
+
+  invalidate();
+
+  if (visible_) {
+    return;
+  }
+
+  alpha_.animate_to(1.f);
+
+  visible_    = true;
+  might_hide_ = false;
 }
 
 
 
 
 
-namespace {
-  [[nodiscard]] std::string bump_first(std::string_view in) {
-    std::string out{in};
-    if (!out.empty()) {
-      out[0] = toupper(out[0]);
-    }
-    return out;
+void message_box::hide() {
+  if (!visible_ || might_hide_) {
+    return;
   }
 
+  alpha_.animate_to(0.f);
+
+  might_hide_ = true;
+}
 
 
-  struct message {
-    std::string header;
-    std::string body;
-  };
 
 
 
-  [[nodiscard]] message format_no_stream_access(
-      const pixglot::no_stream_access& /*err*/
-  ) {
-    return {
-      .header{"[404]  Data Not Found"},
-      .body  {"Cannot access input data."}
-    };
+void message_box::on_update() {
+  if (might_hide_ && *alpha_ < 1e-4f) {
+    might_hide_ = false;
+    visible_    = false;
+    alpha_.set_to(0.f);
+    invalidate();
   }
 
-
-
-  [[nodiscard]] message format_no_decoder(const pixglot::no_decoder& /*err*/) {
-    return {
-      .header{"[415]  Unsupported Media Type"},
-      .body  {"None of the decoders recognized this file type."}
-    };
-  }
-
-
-
-  [[nodiscard]] message format_decode_error(const pixglot::decode_error& err) {
-    return {
-      .header{"[409]  Failed to Decode"},
-      .body  {"The " + pixglot::to_string(err.decoder()) +
-        " decoder failed to decode the input:\n" +
-        bump_first(err.plain())}
-    };
-  }
-
-
-
-  [[nodiscard]] message format_generic_error(const pixglot::base_exception& err) {
-    return {
-      .header{"[500]  Internal Error"},
-      .body  {std::string{err.message()}}
-    };
-  }
-
-
-
-  [[nodiscard]] message format_base_error(const pixglot::base_exception& error) {
-    if (const auto* err = dynamic_cast<const pixglot::no_stream_access*>(&error)) {
-      return format_no_stream_access(*err);
-    }
-    if (const auto* err = dynamic_cast<const pixglot::no_decoder*>(&error)) {
-      return format_no_decoder(*err);
-    }
-    if (const auto* err = dynamic_cast<const pixglot::decode_error*>(&error)) {
-      return format_decode_error(*err);
-    }
-    return format_generic_error(error);
+  if (alpha_.changed()) {
+    invalidate();
   }
 }
 
 
 
-void message_box::render(
-    const pixglot::base_exception&        error,
-    const std::optional<std::filesystem::path>& path,
-    float                                       alpha
-) const {
-  auto [header, body] = format_base_error(error);
 
-  if (path) {
-    body += "\n\nFile: " + path->string();
-  }
 
-  render(header, body, alpha);
+void message_box::on_render() {
+
 }
