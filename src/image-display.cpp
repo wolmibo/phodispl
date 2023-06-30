@@ -38,6 +38,17 @@ image_display::image_display() :
     global_config().animation_view_snap_curve
   )
 {
+  add_child(&message_box_, win::widget_constraint {
+      .width  = 256.f,
+      .height = 128.f,
+      .margin = win::margin_constraint{
+        .start  = 0.f,
+        .end    = 0.f,
+        .top    = 0.f,
+        .bottom = 0.f
+      }
+  });
+
   add_child(&progress_circle_, win::widget_constraint {
       .width  = 64.f,
       .height = 64.f,
@@ -155,6 +166,14 @@ void image_display::on_update() {
     if (current_->take_damage()) {
       invalidate();
     }
+
+    if (const auto* error = current_->error(); error != nullptr) {
+      message_box_.show_message("Error", error->what());
+    } else {
+      message_box_.hide();
+    }
+  } else {
+    message_box_.show_message("No image", "No image available.");
   }
 
   if (current_ && current_->loading()) {

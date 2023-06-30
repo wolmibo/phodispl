@@ -16,7 +16,7 @@ message_box::message_box() :
   quad_{gl::primitives::quad()},
 
   shader_{
-    resources::shader_plane_fs(),
+    resources::shader_plane_object_vs(),
     resources::shader_plane_solid_fs()
   },
 
@@ -80,5 +80,7 @@ void message_box::on_update() {
 
 
 void message_box::on_render() {
-
+  if (!visible_) {
+    return;
+  }
 }

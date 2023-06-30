@@ -7,6 +7,7 @@
 #include "phodispl/animation.hpp"
 #include "phodispl/config-types.hpp"
 #include "phodispl/image.hpp"
+#include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 
 #include <gl/mesh.hpp>
@@ -63,6 +64,7 @@ class image_display : public win::widget {
     scale_mode                  scale_mode_target_{dynamic_scale::fit};
     animation<win::vec2<float>> position_;
 
+    message_box                 message_box_;
     progress_circle             progress_circle_;
 
 
