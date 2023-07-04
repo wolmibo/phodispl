@@ -1,6 +1,7 @@
 #include "phodispl/config-types.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/image-display.hpp"
+#include "pixglot/exception.hpp"
 #include "pixglot/square-isometry.hpp"
 #include "resources.hpp"
 #include "win/widget-constraint.hpp"
@@ -168,9 +169,10 @@ void image_display::on_update() {
     }
 
     if (const auto* error = current_->error(); error != nullptr) {
-      message_box_.show_message("Error", error->what());
+      set_error(error);
     } else {
       message_box_.hide();
+      set_error(nullptr);
     }
   } else {
     message_box_.show_message(
@@ -378,4 +380,56 @@ win::mat4 image_display::matrix_for(frame& f) const {
   auto pos = win::vec2_mul(win::vec2_div(*position_, size), {2.f, -2.f});
 
   return matrix_from(sx, sy, pos.x, pos.y, f.orientation());
+}
+
+
+
+
+
+namespace {
+  [[nodiscard]] std::string bump_first(std::string_view in) {
+    std::string out{in};
+    if (!out.empty()) {
+      out[0] = toupper(out[0]);
+    }
+    return out;
+  }
+}
+
+
+
+void image_display::set_error(const pixglot::base_exception* error) {
+  if (active_error_ == error) {
+    return;
+  }
+
+  active_error_ = error;
+
+  if (error == nullptr) {
+    return;
+  }
+
+  if (const auto* err = dynamic_cast<const pixglot::no_stream_access*>(error)) {
+    message_box_.show_message(
+        "[404]  Data Not Found",
+        "Cannot access input data."
+    );
+  } else if (const auto* err = dynamic_cast<const pixglot::no_decoder*>(error)) {
+    message_box_.show_message(
+        "[415]  Unsupported Media Type",
+        "None of the decoders recognized this file type."
+    );
+  } else if (const auto* err = dynamic_cast<const pixglot::decode_error*>(error)) {
+    message_box_.show_message(
+        "[409]  Failed to Decode",
+        "The " + pixglot::to_string(err->decoder()) +
+        " decoder reports:\n" +
+        bump_first(err->plain())
+    );
+  } else {
+    message_box_.show_message(
+        "[500]  Internal Error",
+        std::string{error->message()}
+    );
+  }
 }

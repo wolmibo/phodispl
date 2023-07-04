@@ -67,6 +67,9 @@ class image_display : public win::widget {
     message_box                 message_box_;
     progress_circle             progress_circle_;
 
+    const pixglot::base_exception*
+                                active_error_;
+
 
 
     void on_update() override;
@@ -78,6 +81,10 @@ class image_display : public win::widget {
     [[nodiscard]] float     scale_any    (frame&, scale_mode)    const;
     [[nodiscard]] float     scale_dynamic(frame&, dynamic_scale) const;
     [[nodiscard]] win::mat4 matrix_for   (frame&)                const;
+
+
+
+    void set_error(const pixglot::base_exception*);
 };
 
 #endif // PHODISPL_IMAGE_DISPLAY_HPP_INCLUDED
