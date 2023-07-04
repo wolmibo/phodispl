@@ -98,6 +98,41 @@ win::vec2<float> win::viewport::draw_string(
 
 
 
+win::vec2<float> win::viewport::measure_string(
+    std::u32string_view text,
+    uint32_t            size
+) const {
+  if (!font_cache_) {
+    return {0.f, 0.f};
+  }
+
+  size = std::ceil(size * scale());
+  vec2<float> offset{0.f, 0.f};
+
+  for (char32_t c: text) {
+    if (c == 10) {
+      offset.x = 0.f;
+      offset.y -= 1.2 * size;
+    } else {
+      offset.x += font_cache_->get(c, size).advance_x();
+    }
+  }
+
+  return offset * (1.f / scale());
+}
+
+
+
+
+
+win::viewport::viewport() {
+  widget::viewport(*this);
+}
+
+
+
+
+
 void win::viewport::font(const std::filesystem::path& path) {
   font_cache_.emplace(path);
 }
@@ -128,5 +163,5 @@ void win::viewport::render() {
 
   glClear(GL_COLOR_BUFFER_BIT);
 
-  widget::render(*this);
+  widget::render();
 }

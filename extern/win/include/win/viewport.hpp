@@ -25,7 +25,7 @@ class viewport : public widget {
 
     ~viewport() override = default;
 
-    viewport() = default;
+    viewport();
 
 
 
@@ -39,6 +39,7 @@ class viewport : public widget {
 
 
     vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color) const;
+    vec2<float> measure_string(std::u32string_view, uint32_t) const;
 
 
 

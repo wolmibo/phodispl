@@ -49,7 +49,7 @@ win::vec2<float> win::widget::draw_string(
 
 const win::viewport& win::widget::viewport() const {
   if (root_ptr_ == nullptr) {
-    throw std::runtime_error{"viewport only available during rendering"};
+    throw std::runtime_error{"viewport not set"};
   }
 
   return *root_ptr_;
@@ -73,19 +73,11 @@ bool win::widget::invalid() const {
 
 
 
-void win::widget::render(const win::viewport& root) {
-  root_ptr_ = &root;
-
-  struct clear_root_ptr {
-    void operator()(widget* wid) { wid->root_ptr_ = nullptr; }
-  };
-
-  std::unique_ptr<widget, clear_root_ptr> root_ptr_guard{this};
-
+void win::widget::render() {
   on_render();
   invalid_ = false;
   for (const auto& [child, _]: children_) {
-    child->render(root);
+    child->render();
   }
 }
 
@@ -120,6 +112,8 @@ void win::widget::compute_layout(vec2<float> position, vec2<float> size, float s
     auto [x, y, w, h] = constraint.realize(realized_size_);
     child->compute_layout(vec2<float>{x, y} + position, {w, h}, scale);
   }
+
+  on_layout();
 }
 
 
@@ -131,7 +125,22 @@ void win::widget::add_child(widget* child, widget_constraint constraint) {
     return;
   }
 
+  if (root_ptr_ != nullptr) {
+    child->viewport(viewport());
+  }
+
   children_.emplace_back(child, constraint);
 
   invalidate();
+}
+
+
+
+
+
+void win::widget::viewport(const win::viewport& vp) {
+  root_ptr_ = &vp;
+  for (const auto& [child, _]: children_) {
+    child->viewport(viewport());
+  }
 }

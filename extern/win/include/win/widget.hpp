@@ -18,6 +18,8 @@ namespace win {
 class viewport;
 
 class widget {
+  friend class viewport;
+
   public:
     widget(const widget&) = delete;
     widget(widget&&)      = default;
@@ -58,11 +60,12 @@ class widget {
 
 
   protected:
-    void render(const viewport&);
+    void render();
     void update();
 
     virtual void on_render() {}
     virtual void on_update() {}
+    virtual void on_layout() {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 
@@ -89,6 +92,8 @@ class widget {
     std::vector<std::pair<widget*, widget_constraint>>
                             children_;
     const win::viewport*    root_ptr_{nullptr};
+
+    void viewport(const win::viewport&);
 };
 
 }
