@@ -41,10 +41,15 @@ class message_box : public win::widget {
     GLint            shader_trafo_;
     GLint            shader_color_;
 
+    bool             new_text_{false};
+
 
 
     void on_update() override;
     void on_render() override;
+    void on_layout() override;
+
+    void recalculate_string();
 };
 
 #endif // PHODISPL_MESSAGE_BOX_HPP_INCLUDED
