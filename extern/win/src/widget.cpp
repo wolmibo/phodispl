@@ -34,6 +34,19 @@ win::mat4 win::widget::trafo_mat_physical(vec2<float> position, vec2<float> size
 
 
 
+win::vec2<float> win::widget::draw_string(
+    vec2<float>         position,
+    std::u32string_view string,
+    uint32_t            font_size,
+    color               col
+) const {
+  return viewport().draw_string(position + logical_position(), string, font_size, col);
+}
+
+
+
+
+
 const win::viewport& win::widget::viewport() const {
   if (root_ptr_ == nullptr) {
     throw std::runtime_error{"viewport only available during rendering"};
