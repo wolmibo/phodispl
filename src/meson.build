@@ -54,6 +54,7 @@ source_files = [
   'config.cpp',
   'continuous-scale.cpp',
   'font-name.cpp',
+  'formatting.cpp',
   'fs-watcher.cpp',
   'image-cache.cpp',
   'image-display.cpp',
