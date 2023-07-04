@@ -159,7 +159,7 @@ void message_box::on_render() {
   win::set_uniform_mat4(shader_trafo_,
       trafo_mat_logical(anchor, {logical_size().x, 2.f}));
 
-  auto c = set_alpha(global_config().theme_heading_color, *alpha_);
+  auto c = set_alpha(global_config().theme_heading_color, *alpha_ * 0.5f);
   glUniform4f(shader_color_, c[0] * c[3], c[1] * c[3], c[2] * c[3], c[3]);
   quad_.draw();
 

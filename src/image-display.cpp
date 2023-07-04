@@ -40,7 +40,7 @@ image_display::image_display() :
 {
   add_child(&message_box_, win::widget_constraint {
       .width  = 512.f,
-      .height = 256.f,
+      .height = 192.f,
       .margin = win::margin_constraint{
         .start  = 0.f,
         .end    = 0.f,
@@ -173,7 +173,14 @@ void image_display::on_update() {
       message_box_.hide();
     }
   } else {
-    message_box_.show_message("No image", "No image available.");
+    message_box_.show_message(
+        "[204]  No Content",
+
+        "You did not start PhoDispl with any images to load.\n"
+        "\n"
+        "Make sure to pass an image file or a directory containing image files as "
+        "argument to PhoDispl."
+    );
   }
 
   if (current_ && current_->loading()) {
