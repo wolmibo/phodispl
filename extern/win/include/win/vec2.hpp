@@ -43,6 +43,24 @@ template<typename T>
   return lhs;
 }
 
+template<typename T>
+vec2<T>& operator+=(vec2<T>& lhs, vec2<T> rhs) {
+  lhs.x += rhs.x; lhs.y += rhs.y;
+  return lhs;
+}
+
+template<typename T>
+vec2<T>& operator-=(vec2<T>& lhs, vec2<T> rhs) {
+  lhs.x -= rhs.x; lhs.y -= rhs.y;
+  return lhs;
+}
+
+template<typename T>
+vec2<T>& operator*=(vec2<T>& lhs, float scalar) {
+  lhs.x *= scalar; lhs.y *= scalar;
+  return lhs;
+}
+
 
 
 template<typename T>
