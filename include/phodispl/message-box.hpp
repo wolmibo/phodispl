@@ -21,7 +21,9 @@ class message_box : public win::widget {
 
 
 
-    void show_message(const std::string&, const std::string&);
+    void message(const std::string&, const std::string&);
+
+    void show();
     void hide();
 
 

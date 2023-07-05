@@ -42,7 +42,7 @@ namespace {
 
 
 
-void message_box::show_message(const std::string& header, const std::string& message) {
+void message_box::message(const std::string& header, const std::string& message) {
   if (header_base_ != header || message_base_ != message) {
     header_base_  = header;
     message_base_ = message;
@@ -51,8 +51,14 @@ void message_box::show_message(const std::string& header, const std::string& mes
 
     invalidate();
   }
+}
 
-  if (visible_) {
+
+
+
+
+void message_box::show() {
+  if (visible_ && !might_hide_) {
     return;
   }
 
@@ -150,7 +156,7 @@ void message_box::on_render() {
 
 
   win::vec2<float> anchor{0.f, logical_size().y - global_config().theme_heading_size};
- 
+
   anchor.y -= draw_string(anchor, header_, global_config().theme_heading_size,
                 set_alpha(global_config().theme_heading_color, *alpha_)).y
                 + global_config().theme_heading_size * 0.4f;
