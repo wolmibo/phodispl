@@ -42,7 +42,7 @@ void progress_circle::value(float value) {
 
 
 void progress_circle::show() {
-  if (visible_) {
+  if (visible_ && !might_hide_) {
     return;
   }
 
