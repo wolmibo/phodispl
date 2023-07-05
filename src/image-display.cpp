@@ -269,6 +269,8 @@ void image_display::on_render() {
 
     win::set_uniform_mat4(shader_transform_b_, matrix_for(*frame));
     crossfade_image(1.f - factor, *exposure_, shader_factor_b_);
+
+    glActiveTexture(GL_TEXTURE0);
   } else {
     win::set_uniform_mat4(shader_transform_b_, out_of_range_matrix);
   }
