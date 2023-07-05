@@ -8,9 +8,9 @@
 class frame {
   public:
     explicit frame(pixglot::frame&& frame) :
-      or_     {frame.orientation},
-      gamma_  {frame.gamma},
-      texture_{std::move(frame.pixels.texture())}
+      or_     {frame.orientation()},
+      gamma_  {frame.gamma()},
+      texture_{std::move(frame.texture())}
     {}
 
 

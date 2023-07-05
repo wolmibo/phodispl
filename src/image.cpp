@@ -1,6 +1,5 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
-#include "pixglot/square-isometry.hpp"
 
 #include <gl/base.hpp>
 
@@ -59,9 +58,9 @@ void image::clear() {
 namespace {
   [[nodiscard]] sequence_clock frame_seq_from_image(const pixglot::image& img) {
     std::vector<std::chrono::microseconds> times;
-    times.reserve(img.frames.size());
-    for (const auto& frame: img.frames) {
-      times.emplace_back(frame.duration);
+    times.reserve(img.size());
+    for (const auto& frame: img.frames()) {
+      times.emplace_back(frame.duration());
     }
 
     return sequence_clock{std::span{times}};
@@ -86,21 +85,20 @@ void image::load() {
   });
 
   pixglot::output_format requested_format;
-  requested_format.target    = pixglot::pixel_target::gl_texture;
-  requested_format.alpha     = pixglot::alpha_mode::premultiplied;
-  requested_format.gamma     = global_config().gamma;
-  requested_format.endianess = std::endian::native;
+  requested_format.storage_type(pixglot::storage_type::gl_texture);
+  requested_format.alpha_mode  (pixglot::alpha_mode::premultiplied);
+  requested_format.gamma       (global_config().gamma);
 
   try {
     auto img = pixglot::decode(pixglot::reader{path_},
                  ptoken_.access_token(), requested_format);
 
-    for (const auto& w: img.warnings) {
+    for (const auto& w: img.warnings()) {
       logcerr::warn(w);
     }
     if (auto seq = frame_seq_from_image(img); !seq.equals_sequence(frame_sequence_)) {
       frame_sequence_ = std::move(seq);
-      if (!img.animated) {
+      if (!img.animated()) {
         frame_sequence_.pause();
       }
     }
