@@ -411,12 +411,12 @@ void image_display::set_error(const pixglot::base_exception* error) {
     return;
   }
 
-  if (const auto* err = dynamic_cast<const pixglot::no_stream_access*>(error)) {
+  if (dynamic_cast<const pixglot::no_stream_access*>(error) != nullptr) {
     message_box_.show_message(
         "[404]  Data Not Found",
         "Cannot access input data."
     );
-  } else if (const auto* err = dynamic_cast<const pixglot::no_decoder*>(error)) {
+  } else if (dynamic_cast<const pixglot::no_decoder*>(error) != nullptr) {
     message_box_.show_message(
         "[415]  Unsupported Media Type",
         "None of the decoders recognized this file type."
