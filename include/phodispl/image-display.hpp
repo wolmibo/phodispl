@@ -68,7 +68,7 @@ class image_display : public win::widget {
     progress_circle             progress_circle_;
 
     const pixglot::base_exception*
-                                active_error_;
+                                active_error_{nullptr};
 
 
 
