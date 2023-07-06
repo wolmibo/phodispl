@@ -51,6 +51,20 @@ struct config {
     uint32_t cache_load_backward{1};
     uint32_t cache_keep_forward{3};
     uint32_t cache_load_forward{2};
+
+
+
+    listing_mode fl_single_file           {listing_mode::always};
+    bool         fl_single_file_parent    {true};
+    listing_mode fl_single_file_parent_dir{listing_mode::supported};
+    bool         fl_single_file_demote    {true};
+
+    listing_mode fl_single_dir            {listing_mode::supported};
+    bool         fl_single_dir_missing    {true};
+
+    listing_mode fl_multi_file            {listing_mode::always};
+    listing_mode fl_multi_dir             {listing_mode::supported};
+    bool         fl_multi_dir_missing     {true};
 };
 
 

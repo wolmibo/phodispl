@@ -92,6 +92,17 @@ template<> struct iconfigp::case_insensitive_parse_lut<scale_filter> {
 
 
 
+template<> struct iconfigp::case_insensitive_parse_lut<listing_mode> {
+  static constexpr std::string_view name {"listing-mode"};
+  static constexpr std::array<std::pair<std::string_view, listing_mode>, 3> lut {
+    std::make_pair("always",    listing_mode::always),
+    std::make_pair("exists",    listing_mode::exists),
+    std::make_pair("supported", listing_mode::supported),
+  };
+};
+
+
+
 namespace {
   template<typename T> struct src_t { using type = T; };
   template<> struct src_t<std::chrono::milliseconds> { using type = uint32_t;         };
@@ -158,6 +169,22 @@ config::config(std::string_view content, bool strict) {
       update(animation_view_snap_curve, animation->unique_key("view-snap-interpolation"));
       update(animation_view_snap_curve, animation->unique_key("view-snap-curve"));
       update(animation_view_snap_ms,    animation->unique_key("view-snap-ms"));
+    }
+
+
+
+    if (auto fl = root.subsection("file-listing")) {
+      update(fl_single_file,            fl->unique_key("single-file"));
+      update(fl_single_file_parent,     fl->unique_key("single-file-parent"));
+      update(fl_single_file_parent_dir, fl->unique_key("single-file-parent-dir"));
+      update(fl_single_file_demote,     fl->unique_key("single-file-demote"));
+
+      update(fl_single_dir,             fl->unique_key("single-dir"));
+      update(fl_single_dir_missing,     fl->unique_key("single-dir-missing"));
+
+      update(fl_multi_file,             fl->unique_key("multi-file"));
+      update(fl_multi_dir,              fl->unique_key("multi-dir"));
+      update(fl_multi_dir_missing,      fl->unique_key("multi-dir-missing"));
     }
 
 
