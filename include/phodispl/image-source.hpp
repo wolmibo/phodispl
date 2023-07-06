@@ -2,6 +2,7 @@
 #define PHODISPL_IMAGE_SOURCE_HPP_INCLUDED
 
 #include "phodispl/damageable.hpp"
+#include "phodispl/file-listing.hpp"
 #include "phodispl/fs-watcher.hpp"
 #include "phodispl/image-cache.hpp"
 #include "phodispl/image.hpp"
@@ -70,12 +71,13 @@ class image_source {
     image_cache                         cache_;
     mutable std::mutex                  cache_mutex_;
 
+    file_listing                        file_listing_;
+
     using prio_shared_image = std::pair<size_t, std::shared_ptr<image>>;
     std::vector<prio_shared_image>      scheduled_images_;
     std::vector<const image*>           unscheduled_images_;
     std::mutex                          scheduled_images_lock_;
 
-    std::vector<std::filesystem::path>  startup_files_;
     std::jthread                        worker_thread_;
     std::mutex                          worker_mutex_;
     std::condition_variable             worker_wakeup_;
@@ -93,6 +95,7 @@ class image_source {
     void work_loop(const std::stop_token&);
 
     void file_event(const std::filesystem::path&, fs_watcher::action);
+    void on_file_changed(const std::filesystem::path&, fs_watcher::action);
 
 
 

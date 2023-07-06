@@ -1,4 +1,5 @@
 #include "phodispl/config.hpp"
+#include "phodispl/file-listing.hpp"
 #include "phodispl/fs-watcher.hpp"
 #include "phodispl/image-source.hpp"
 
@@ -20,24 +21,6 @@ namespace {
       std::invoke(std::forward<Fnc>(cb), std::forward<Args>(args)...);
     }
   }
-
-
-
-  [[nodiscard]] std::vector<std::filesystem::path> normalize_names(
-      std::vector<std::filesystem::path>&& files
-  ) {
-    if (files.empty()) {
-      files.emplace_back(".");
-
-    } else if (files.size() == 1) {
-      auto abs = std::filesystem::absolute(files.front());
-      if (!std::filesystem::is_directory(abs)) {
-        files.emplace_back(abs.parent_path());
-      }
-    }
-
-    return files;
-  }
 }
 
 
@@ -58,7 +41,10 @@ image_source::image_source(
     }
   },
 
-  startup_files_{normalize_names(std::move(fnames))},
+  file_listing_{
+    std::bind_front(&image_source::on_file_changed, this),
+    std::move(fnames)
+  },
 
   worker_thread_{
     [this, context = app.share_context()](const std::stop_token& stoken) {
@@ -75,8 +61,8 @@ image_source::image_source(
 {
   std::unique_lock lock{cache_mutex_};
 
-  if (!startup_files_.empty()) {
-    cache_.add(std::filesystem::absolute(startup_files_.front()));
+  if (auto initial = file_listing_.initial_file()) {
+    cache_.add(*initial);
   }
 
   populate_cache(std::move(lock));
@@ -218,6 +204,8 @@ void image_source::next_image() {
   cache_.next();
 
   invoke_save(callback_, cache_.current(), image_change::next);
+
+  file_listing_.demote_initial_file();
 }
 
 
@@ -228,6 +216,8 @@ void image_source::previous_image() {
   cache_.previous();
 
   invoke_save(callback_, cache_.current(), image_change::next);
+
+  file_listing_.demote_initial_file();
 }
 
 
@@ -244,45 +234,13 @@ void image_source::reload_current() {
 
 
 
-namespace {
-  [[nodiscard]] std::vector<std::filesystem::path> list_files(
-      std::span<const std::filesystem::path> initializer
-  ) {
-    std::vector<std::filesystem::path> files;
-
-    for (const auto& p: initializer) {
-      if (std::filesystem::is_directory(p)) {
-        files.emplace_back(p);
-        for (const auto& iter: std::filesystem::directory_iterator(p)) {
-          if (!std::filesystem::is_directory(iter.path())) {
-            files.emplace_back(std::filesystem::absolute(iter.path()));
-          }
-        }
-      } else {
-        files.emplace_back(std::filesystem::absolute(p));
-      }
-    }
-
-
-    std::ranges::sort(files, std::ranges::greater{});
-
-    auto remove = std::ranges::unique(files);
-    files.erase(remove.begin(), remove.end());
-
-    return files;
-  }
-}
-
-
-
-
 void image_source::populate_cache(std::unique_lock<std::mutex> cache_lock) {
   bool first_sent = !cache_.empty();
   if (first_sent) {
     invoke_save(callback_, cache_.current(), image_change::next);
   }
 
-  auto files = list_files(startup_files_);
+  auto files = file_listing_.populate();
 
   cache_.set(files);
 
@@ -369,4 +327,15 @@ void image_source::file_event(
       invoke_save(callback_, cache_.current(), image_change::next);
     }
   }
+}
+
+
+
+
+
+void image_source::on_file_changed(
+    const std::filesystem::path& /*path*/,
+    fs_watcher::action           /*action*/
+) {
+
 }
