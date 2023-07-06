@@ -18,6 +18,8 @@ struct config {
 
     explicit config(std::string_view, bool = false);
 
+    void assert_equal(const config&) const;
+
 
 
     scale_filter filter     {scale_filter::linear};

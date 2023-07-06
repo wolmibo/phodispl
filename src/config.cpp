@@ -207,3 +207,73 @@ config::config(std::string_view content, bool strict) {
     throw;
   }
 }
+
+
+
+
+
+namespace {
+  void throw_error(std::string_view str) {
+    throw std::runtime_error{"config value mismatch for " + std::string{str}};
+  }
+
+
+
+  template<typename L, typename R>
+  void assert_eq(L&& l, R&& r, std::string_view str) {
+    if (std::forward<L>(l) != std::forward<R>(r)) {
+      throw_error(str);
+    }
+  }
+
+
+
+  void assert_eq(const color& l, const color& r, std::string_view str) {
+    constexpr float delta = 1.f / 255.f;
+
+    if (std::abs(l[0] - r[0]) > delta ||
+        std::abs(l[1] - r[1]) > delta ||
+        std::abs(l[2] - r[2]) > delta ||
+        std::abs(l[3] - r[3]) > delta) {
+      throw_error(str);
+    }
+  }
+}
+
+
+
+void config::assert_equal(const config& rhs) const {
+#define ASSEQ(x) assert_eq(x, rhs.x, #x) //NOLINT(*-macro-usage)
+  ASSEQ(filter);
+  ASSEQ(watch_fs);
+  ASSEQ(gamma);
+  ASSEQ(input_speed);
+
+  ASSEQ(animation_view_next_curve);
+  ASSEQ(animation_view_next_ms);
+  ASSEQ(animation_view_snap_curve);
+  ASSEQ(animation_view_snap_ms);
+
+  ASSEQ(theme_heading_size);
+  ASSEQ(theme_text_size);
+  ASSEQ(theme_heading_color);
+  ASSEQ(theme_text_color);
+  ASSEQ(theme_background);
+  ASSEQ(theme_font);
+
+  ASSEQ(cache_keep_forward);
+  ASSEQ(cache_load_forward);
+  ASSEQ(cache_keep_backward);
+  ASSEQ(cache_load_backward);
+
+  ASSEQ(fl_single_file);
+  ASSEQ(fl_single_file_parent);
+  ASSEQ(fl_single_file_parent_dir);
+  ASSEQ(fl_single_file_demote);
+  ASSEQ(fl_single_dir);
+  ASSEQ(fl_single_dir_missing);
+  ASSEQ(fl_multi_file);
+  ASSEQ(fl_multi_dir);
+  ASSEQ(fl_multi_dir_missing);
+#undef ASSEQ
+}

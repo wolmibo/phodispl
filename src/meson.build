@@ -105,5 +105,5 @@ endif
 
 test('sample config',
   phodispl,
-  args : ['--check-config', files('../doc/config.ini')]
+  args : ['--check-default-config', files('../doc/config.ini')]
 )

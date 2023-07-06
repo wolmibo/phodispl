@@ -130,18 +130,18 @@ int main(int argc, char* argv[]) {
   std::optional<std::string> config_path{};
 
   std::optional<std::filesystem::path> desktop_file_path{};
-  std::optional<std::filesystem::path> check_config{};
+  std::optional<std::filesystem::path> check_default_config{};
 
   std::vector<std::filesystem::path> filenames;
 
   static std::array<option, 7> long_options = {
-    option{"help",         no_argument,       nullptr, 'h'},
-    option{"version",      no_argument,       nullptr, 'v'},
-    option{"verbose",      no_argument,       nullptr, 'V'},
-    option{"config",       required_argument, nullptr, 'c'},
-    option{"desktop-file", required_argument, nullptr, 1000},
-    option{"check-config", required_argument, nullptr, 1001},
-    option{nullptr,        0,                 nullptr, 0},
+    option{"help",                 no_argument,       nullptr, 'h'},
+    option{"version",              no_argument,       nullptr, 'v'},
+    option{"verbose",              no_argument,       nullptr, 'V'},
+    option{"config",               required_argument, nullptr, 'c'},
+    option{"desktop-file",         required_argument, nullptr, 1000},
+    option{"check-default-config", required_argument, nullptr, 1001},
+    option{nullptr,                0,                 nullptr, 0},
   };
 
   int c {-1};
@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
         break;
       case 1001:
         if (optarg != nullptr) {
-          check_config = std::filesystem::path{optarg};
+          check_default_config = std::filesystem::path{optarg};
         }
         break;
       default:
@@ -201,8 +201,9 @@ int main(int argc, char* argv[]) {
   int error{};
 
   try {
-    if (check_config) {
-      load_config(*check_config, true);
+    if (check_default_config) {
+      load_config(*check_default_config, true);
+      global_config().assert_equal(config{});
       return 0;
     }
 
