@@ -72,21 +72,6 @@ namespace {
     }
     return false;
   }
-
-
-
-  [[nodiscard]] std::optional<std::filesystem::path> find_file(
-      const std::filesystem::path& path,
-      listing_mode                 mode
-  ) {
-    for (const auto& p: std::filesystem::directory_iterator{path}) {
-      if (!p.is_directory() && satisfies(p.path(), mode)) {
-        return p.path();
-      }
-    }
-
-    return {};
-  }
 }
 
 
@@ -104,27 +89,22 @@ bool file_listing::fs_info::satisfied() const {
 std::optional<std::filesystem::path> file_listing::initial_file() const {
   switch (determine_startup_mode()) {
     case startup_mode::single_dir:
-      return find_file(initial_files_.front(), global_config().fl_single_dir);
+      return {};
 
     case startup_mode::single_file:
       if (satisfies(initial_files_.front(), global_config().fl_single_file)) {
         return initial_files_.front();
       }
 
-      if (!global_config().fl_single_file_parent) {
-        return {};
-      }
-
-      return find_file(initial_files_.front().parent_path(),
-          global_config().fl_single_file_parent_dir);
+      return {};
 
     case startup_mode::multi:
       for (const auto& p: initial_files_) {
         if (std::filesystem::is_directory(p)) {
-          if (auto init_file = find_file(p, global_config().fl_multi_dir)) {
-            return init_file;
-          }
-        } else if (satisfies(p, global_config().fl_multi_file)) {
+          return {};
+        }
+
+        if (satisfies(p, global_config().fl_multi_file)) {
           return p;
         }
       }
@@ -244,6 +224,8 @@ std::vector<std::filesystem::path> file_listing::populate() {
     default:
       break;
   }
+
+  std::ranges::sort(list);
 
   return list;
 }
