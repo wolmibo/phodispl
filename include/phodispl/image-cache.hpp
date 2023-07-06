@@ -25,6 +25,7 @@ class image_cache {
 
     void add       (const std::filesystem::path&);
     void remove    (const std::filesystem::path&);
+    void invalidate(const std::filesystem::path&);
 
     void invalidate(size_t);
 

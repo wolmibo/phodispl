@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <filesystem>
 
-#include <pixglot/codecs.hpp>
 
 
 
@@ -97,21 +96,10 @@ void image_cache::load_maybe(size_t index) const {
 
 
 void image_cache::add(const std::filesystem::path& path) {
-  bool valid = pixglot::determine_codec(path).has_value();
-
   auto it = std::lower_bound(images_.begin(), images_.end(), path);
 
   if (it != images_.end() && *it == path) {
-    if (valid) {
-      invalidate(it - images_.end());
-    } else {
-      images_.erase(it);
-      cleanup(1);
-    }
-    return;
-  }
-
-  if (!valid) {
+    invalidate(it - images_.begin());
     return;
   }
 
@@ -119,6 +107,18 @@ void image_cache::add(const std::filesystem::path& path) {
   load_maybe(inserted - images_.begin());
 
   cleanup(1);
+}
+
+
+
+
+
+void image_cache::invalidate(const std::filesystem::path& path) {
+  auto it = std::lower_bound(images_.begin(), images_.end(), path);
+
+  if (it != images_.end() && *it == path) {
+    invalidate(it - images_.begin());
+  }
 }
 
 
@@ -288,7 +288,7 @@ void image_cache::set(std::span<const std::filesystem::path> new_files) {
     if (it != images_.end() && (*it)->path() == path) {
       new_images.emplace_back(std::move(*it));
       images_.erase(it);
-    } else if (pixglot::determine_codec(path).has_value()) {
+    } else {
       new_images.emplace_back(image::create(path));
     }
   }

@@ -7,9 +7,6 @@
 #include <mutex>
 #include <optional>
 
-#include <pixglot/decode.hpp>
-#include <pixglot/exception.hpp>
-
 #include <logcerr/log.hpp>
 
 
