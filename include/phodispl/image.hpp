@@ -73,6 +73,7 @@ class image :
 
 
 
+
   private:
     std::filesystem::path                    path_;
 
@@ -91,43 +92,5 @@ class image :
 
     explicit image(std::filesystem::path path) : path_{std::move(path)} {}
 };
-
-
-
-
-
-inline auto operator<=>(const image& lhs, const image& rhs) {
-  return lhs.path() <=> rhs.path();
-}
-
-inline bool operator==(const image& lhs, const image& rhs) {
-  return lhs.path() == rhs.path();
-}
-
-inline auto operator<=>(const image& lhs, const std::filesystem::path& rhs) {
-  return lhs.path() <=> rhs;
-}
-
-inline bool operator==(const image& lhs, const std::filesystem::path& rhs) {
-  return lhs.path() == rhs;
-}
-
-
-
-inline auto operator<=>(
-    const std::shared_ptr<image>& img,
-    const std::filesystem::path&  rhs
-) {
-  return img->path() <=> rhs;
-}
-
-
-
-inline bool operator==(
-    const std::shared_ptr<image>& img,
-    const std::filesystem::path&  rhs
-) {
-  return img->path() == rhs;
-}
 
 #endif // PHODISPL_IMAGE_HPP_INCLUDED

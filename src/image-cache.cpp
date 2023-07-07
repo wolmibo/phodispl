@@ -1,8 +1,21 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image-cache.hpp"
+#include "phodispl/image.hpp"
+#include "win/key.hpp"
 
 #include <algorithm>
 #include <filesystem>
+
+
+
+
+namespace {
+  [[nodiscard]] const std::filesystem::path& path_of_shared_image(
+      const std::shared_ptr<image>& img
+  ) {
+    return img->path();
+  }
+}
 
 
 
@@ -20,9 +33,9 @@ std::shared_ptr<image> image_cache::current() const {
 
 
 void image_cache::remove(const std::filesystem::path& path) {
-  auto it = std::lower_bound(images_.begin(), images_.end(), path);
+  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
 
-  if (it == images_.end() || *it != path) {
+  if (it == images_.end() || (*it)->path() != path) {
     return;
   }
 
@@ -96,9 +109,9 @@ void image_cache::load_maybe(size_t index) const {
 
 
 void image_cache::add(const std::filesystem::path& path) {
-  auto it = std::lower_bound(images_.begin(), images_.end(), path);
+  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
 
-  if (it != images_.end() && *it == path) {
+  if (it != images_.end() && (*it)->path() == path) {
     invalidate(it - images_.begin());
     return;
   }
@@ -114,9 +127,9 @@ void image_cache::add(const std::filesystem::path& path) {
 
 
 void image_cache::invalidate(const std::filesystem::path& path) {
-  auto it = std::lower_bound(images_.begin(), images_.end(), path);
+  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
 
-  if (it != images_.end() && *it == path) {
+  if (it != images_.end() && (*it)->path() == path) {
     invalidate(it - images_.begin());
   }
 }
@@ -284,7 +297,7 @@ void image_cache::set(std::span<const std::filesystem::path> new_files) {
 
 
   for (const auto& path: new_files) {
-    auto it = std::lower_bound(images_.begin(), images_.end(), path);
+    auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
     if (it != images_.end() && (*it)->path() == path) {
       new_images.emplace_back(std::move(*it));
       images_.erase(it);
@@ -296,10 +309,10 @@ void image_cache::set(std::span<const std::filesystem::path> new_files) {
 
 
   images_ = std::move(new_images);
-  std::ranges::sort(images_, {}, [](const auto& img) { return img->path(); });
+  std::ranges::sort(images_, {}, &path_of_shared_image);
 
   if (current_path) {
-    if (auto it = std::find(images_.begin(), images_.end(), *current_path);
+    if (auto it = std::ranges::find(images_, *current_path, &path_of_shared_image);
         it != images_.end()) {
 
       index_ = it - images_.begin();
