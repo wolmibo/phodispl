@@ -42,7 +42,8 @@ class image_cache {
 
 
 
-    [[nodiscard]] bool empty() const { return images_.empty(); }
+    [[nodiscard]] bool   empty() const { return images_.empty(); }
+    [[nodiscard]] size_t size()  const { return images_.size(); }
 
 
 

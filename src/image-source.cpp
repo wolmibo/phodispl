@@ -201,6 +201,10 @@ void image_source::work_loop(const std::stop_token& stoken) {
 void image_source::next_image() {
   std::lock_guard<std::mutex> lock{cache_mutex_};
 
+  if (cache_.size() <= 1) {
+    return;
+  }
+
   cache_.next();
 
   invoke_save(callback_, cache_.current(), image_change::next);
@@ -212,6 +216,10 @@ void image_source::next_image() {
 
 void image_source::previous_image() {
   std::lock_guard<std::mutex> lock{cache_mutex_};
+
+  if (cache_.size() <= 1) {
+    return;
+  }
 
   cache_.previous();
 
