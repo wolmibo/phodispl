@@ -219,7 +219,9 @@ std::vector<std::filesystem::path> file_listing::populate() {
 
       populate_item(list, major, global_config().fl_single_file);
 
-      demotion_candidate_.emplace(major);
+      if (global_config().fl_single_file_demote) {
+        demotion_candidate_.emplace(major);
+      }
     } break;
 
     case startup_mode::empty: if (global_config().fl_empty_wd) {
