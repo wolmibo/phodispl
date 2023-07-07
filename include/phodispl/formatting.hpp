@@ -4,6 +4,7 @@
 #ifndef PHODISPL_FORMATTING_HPP_INCLUDED
 #define PHODISPL_FORMATTING_HPP_INCLUDED
 
+#include <filesystem>
 #include <functional>
 #include <string>
 #include <string_view>
@@ -17,5 +18,10 @@ using measure_function = std::move_only_function<float(T)>;
 
 [[nodiscard]] std::u32string wrap_text(std::u32string_view, float,
     measure_function<std::u32string_view>);
+
+
+
+
+[[nodiscard]] std::string nice_path(const std::filesystem::path&);
 
 #endif // PHODISPL_FORMATTING_HPP_INCLUDED

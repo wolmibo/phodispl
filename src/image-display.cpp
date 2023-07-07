@@ -1,12 +1,15 @@
 #include "phodispl/config-types.hpp"
 #include "phodispl/config.hpp"
+#include "phodispl/formatting.hpp"
 #include "phodispl/image-display.hpp"
-#include "pixglot/exception.hpp"
-#include "pixglot/square-isometry.hpp"
 #include "resources.hpp"
-#include "win/widget-constraint.hpp"
 
 #include <gl/primitives.hpp>
+
+#include <pixglot/exception.hpp>
+#include <pixglot/square-isometry.hpp>
+
+#include <win/widget-constraint.hpp>
 
 
 
@@ -415,7 +418,7 @@ void image_display::set_error(
     return;
   }
 
-  auto file_str = "\n\nFile: " + file.filename().string();
+  auto file_str = "\n\nFile: " + nice_path(file);
 
   if (dynamic_cast<const pixglot::no_stream_access*>(error) != nullptr) {
     message_box_.message(

@@ -1,5 +1,10 @@
 #include "phodispl/formatting.hpp"
 
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+
 
 
 namespace {
@@ -65,7 +70,35 @@ std::u32string wrap_text(
     output.append(nw);
     current_width += w;
   }
-  
+
 
   return output;
+}
+
+
+
+
+
+std::string nice_path(const std::filesystem::path& p) {
+  std::vector<std::string> candidates;
+  candidates.reserve(3);
+
+  candidates.emplace_back(std::filesystem::weakly_canonical(p).string());
+  const auto& canonical = candidates.front();
+
+  std::error_code ec{};
+  auto wd = std::filesystem::current_path(ec).string();
+  if (!ec) {
+    if (canonical.starts_with(wd)) {
+      candidates.emplace_back('.' + canonical.substr(wd.size()));
+    }
+  }
+
+  if (const auto* path = std::getenv("HOME"); path != nullptr && *path != 0) {
+    if (canonical.starts_with(path)) {
+      candidates.emplace_back('~' + canonical.substr(std::strlen(path)));
+    }
+  }
+
+  return std::move(*std::ranges::min_element(candidates, {}, &std::string::size));
 }
