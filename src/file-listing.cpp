@@ -211,12 +211,14 @@ std::vector<std::filesystem::path> file_listing::populate() {
     case startup_mode::single_file: {
       const auto& major = initial_files_.front();
 
-      for (const auto& p: std::filesystem::directory_iterator{major.parent_path()}) {
-        if (p.is_directory() || p.path() == major) {
-          continue;
-        }
+      if (auto parent = major.parent_path(); std::filesystem::is_directory(parent)) {
+        for (const auto& p: std::filesystem::directory_iterator{major.parent_path()}) {
+          if (p.is_directory() || p.path() == major) {
+            continue;
+          }
 
-        populate_item(list, p.path(), global_config().fl_single_file_parent_dir);
+          populate_item(list, p.path(), global_config().fl_single_file_parent_dir);
+        }
       }
 
       populate_item(list, major, global_config().fl_single_file);
