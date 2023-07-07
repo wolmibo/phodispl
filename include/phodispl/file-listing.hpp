@@ -39,20 +39,18 @@ class file_listing {
 
 
   private:
-    std::vector<std::filesystem::path> initial_files_;
-    fs_watcher::callback               callback_;
+    std::vector<std::filesystem::path>         initial_files_;
+    fs_watcher::callback                       callback_;
 
-    struct fs_info {
-      std::filesystem::path path;
-      listing_mode          mode;
+    std::mutex                                 mutex_;
 
-      [[nodiscard]] bool satisfied() const;
-    };
+    std::vector<std::filesystem::path>         file_list_;
+    std::vector<std::pair<listing_mode, bool>> mode_list_;
 
-    std::vector<fs_info>                 file_list_;
-    std::optional<std::filesystem::path> demotion_candidate_;
+    std::optional<std::filesystem::path>       demotion_candidate_;
 
-    std::optional<fs_watcher>            fs_watcher_;
+    std::optional<fs_watcher>                  fs_watcher_;
+
 
 
     enum class startup_mode {
@@ -68,10 +66,11 @@ class file_listing {
     void on_file_changed(const std::filesystem::path&, fs_watcher::action);
 
 
-    void populate_item(std::vector<std::filesystem::path>&,
-        const std::filesystem::path&, listing_mode);
-    void populate_directory(std::vector<std::filesystem::path>&,
-        const std::filesystem::path&, listing_mode);
+    void populate_item_unsafe     (const std::filesystem::path&, listing_mode);
+    void populate_directory_unsafe(const std::filesystem::path&, listing_mode);
+    void populate_lists_unsafe();
+
+    [[nodiscard]] listing_mode determine_mode_unsafe(const std::filesystem::path&) const;
 };
 
 #endif // PHODISPL_FILE_LISTING_HPP_INCLUDED

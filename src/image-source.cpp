@@ -1,6 +1,5 @@
 #include "phodispl/config.hpp"
 #include "phodispl/file-listing.hpp"
-#include "phodispl/fs-watcher.hpp"
 #include "phodispl/image-source.hpp"
 
 #include <algorithm>
