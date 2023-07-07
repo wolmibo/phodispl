@@ -208,14 +208,16 @@ std::vector<std::filesystem::path> file_listing::populate() {
 
     case startup_mode::single_file: {
       const auto& major = initial_files_.front();
+
       for (const auto& p: std::filesystem::directory_iterator{major.parent_path()}) {
-        if (p.is_directory()) {
+        if (p.is_directory() || p.path() == major) {
           continue;
         }
 
-        populate_item(list, p.path(), p.path() == major ?
-            global_config().fl_single_file : global_config().fl_single_file_parent_dir);
+        populate_item(list, p.path(), global_config().fl_single_file_parent_dir);
       }
+
+      populate_item(list, major, global_config().fl_single_file);
 
       demotion_candidate_.emplace(major);
     } break;
