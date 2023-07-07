@@ -75,6 +75,12 @@ image_source::image_source(
 image_source::~image_source() {
   worker_thread_.request_stop();
 
+  { std::lock_guard lock{scheduled_images_lock_};
+    if (loading_image_) {
+      (*loading_image_)->abort_loading();
+    }
+  }
+
   std::this_thread::sleep_for(std::chrono::milliseconds(1));
   {
     std::unique_lock<std::mutex> lock{worker_mutex_};
@@ -99,6 +105,12 @@ void image_source::schedule_image(const std::shared_ptr<image>& image, size_t pr
   {
     std::lock_guard lock{scheduled_images_lock_};
 
+    if (priority == 0) {
+      for (auto& [prio, _]: scheduled_images_) {
+        ++prio;
+      }
+    }
+
     auto it = std::ranges::find(scheduled_images_, image, &prio_shared_image::second);
 
     if (it == scheduled_images_.end()) {
@@ -112,6 +124,15 @@ void image_source::schedule_image(const std::shared_ptr<image>& image, size_t pr
     std::ranges::sort(scheduled_images_, std::ranges::greater(),
         &prio_shared_image::first);
 
+    if (!scheduled_images_.empty()) {
+      if (scheduled_images_.back().first == 0 &&
+          loading_image_ &&
+          scheduled_images_.back().second != *loading_image_) {
+
+        (*loading_image_)->abort_loading();
+        aborted_loading_ = true;
+      }
+    }
 
     auto jt = std::ranges::find(unscheduled_images_, image.get());
     if (jt != unscheduled_images_.end()) {
@@ -133,6 +154,11 @@ void image_source::unschedule_image(const std::shared_ptr<image>& image) {
 
   auto it = std::ranges::find(scheduled_images_, image, &prio_shared_image::second);
   if (it != scheduled_images_.end()) {
+    if (loading_image_ && *loading_image_ == it->second) {
+      (*loading_image_)->abort_loading();
+      aborted_loading_ = true;
+    }
+
     scheduled_images_.erase(it);
   } else if (std::ranges::find(unscheduled_images_, image.get())
              == unscheduled_images_.end()) {
@@ -154,6 +180,8 @@ std::shared_ptr<image> image_source::next_scheduled_image() {
   auto img = std::move(scheduled_images_.back().second);
   scheduled_images_.pop_back();
 
+  loading_image_ = img;
+
   return img;
 }
 
@@ -170,14 +198,24 @@ void image_source::work_loop(const std::stop_token& stoken) {
               reinterpret_cast<std::intptr_t>(img.get())); // NOLINT(*reinterpret-cast)
           img->load();
 
-          {
-            std::lock_guard lock{scheduled_images_lock_};
+          bool requires_recache{false};
+
+          { std::lock_guard lock{scheduled_images_lock_};
+            loading_image_.reset();
+            requires_recache = std::exchange(aborted_loading_, false);
+
             if (std::ranges::find(unscheduled_images_, img.get())
                 != unscheduled_images_.end()) {
               logcerr::debug("dropping image immediately after loading");
               img->clear();
             }
             unscheduled_images_.clear();
+          }
+
+          if (requires_recache) {
+            logcerr::debug("re-caching after aborting loading");
+            std::lock_guard lock{cache_mutex_};
+            cache_.ensure_loaded();
           }
         }
       } else {

@@ -36,6 +36,7 @@ class image_cache {
     void next()        { seek( 1); }
     void previous()    { seek(-1); }
 
+    void ensure_loaded() const;
 
 
     [[nodiscard]] std::shared_ptr<image> current() const;
@@ -67,7 +68,6 @@ class image_cache {
 
 
 
-    void ensure_loaded() const;
     void cleanup(size_t) const;
 };
 

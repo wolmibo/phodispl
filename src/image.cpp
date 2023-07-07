@@ -55,6 +55,16 @@ void image::clear() {
 
 
 
+void image::abort_loading() {
+  if (loading()) {
+    ptoken_.stop();
+  }
+}
+
+
+
+
+
 namespace {
   [[nodiscard]] sequence_clock frame_seq_from_image(const pixglot::image& img) {
     std::vector<std::chrono::microseconds> times;
@@ -102,6 +112,10 @@ void image::load() {
         frame_sequence_.pause();
       }
     }
+  } catch (pixglot::decoding_aborted& ex) {
+    logcerr::debug(ex.message());
+    clear();
+    return;
   } catch (pixglot::base_exception& ex) {
     logcerr::error(ex.message());
     error_ = ex.make_unique();

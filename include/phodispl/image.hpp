@@ -58,6 +58,8 @@ class image :
       return *this && !ptoken_.finished() && !error_;
     }
 
+    void abort_loading();
+
 
 
     [[nodiscard]] const pixglot::base_exception* error() const { return error_.get(); }

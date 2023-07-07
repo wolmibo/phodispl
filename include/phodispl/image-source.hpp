@@ -66,23 +66,25 @@ class image_source {
 
 
   private:
-    callback                            callback_;
-    image_cache                         cache_;
-    mutable std::mutex                  cache_mutex_;
+    callback                              callback_;
+    image_cache                           cache_;
+    mutable std::mutex                    cache_mutex_;
 
-    file_listing                        file_listing_;
+    file_listing                          file_listing_;
 
     using prio_shared_image = std::pair<size_t, std::shared_ptr<image>>;
-    std::vector<prio_shared_image>      scheduled_images_;
-    std::vector<const image*>           unscheduled_images_;
-    std::mutex                          scheduled_images_lock_;
+    std::vector<prio_shared_image>        scheduled_images_;
+    std::optional<std::shared_ptr<image>> loading_image_;
+    bool                                  aborted_loading_{false};
+    std::vector<const image*>             unscheduled_images_;
+    std::mutex                            scheduled_images_lock_;
 
-    std::jthread                        worker_thread_;
-    std::mutex                          worker_mutex_;
-    std::condition_variable             worker_wakeup_;
+    std::jthread                          worker_thread_;
+    std::mutex                            worker_mutex_;
+    std::condition_variable               worker_wakeup_;
 
-    win::context                        filesystem_context_;
-    std::thread::id                     main_thread_id_;
+    win::context                          filesystem_context_;
+    std::thread::id                       main_thread_id_;
 
 
 
