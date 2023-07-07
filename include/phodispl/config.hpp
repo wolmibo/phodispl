@@ -56,6 +56,9 @@ struct config {
 
 
 
+    bool         fl_empty_wd              {true};
+    listing_mode fl_empty_wd_dir          {listing_mode::supported};
+
     listing_mode fl_single_file           {listing_mode::always};
     bool         fl_single_file_parent    {true};
     listing_mode fl_single_file_parent_dir{listing_mode::supported};

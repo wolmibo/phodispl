@@ -222,7 +222,18 @@ std::vector<std::filesystem::path> file_listing::populate() {
       demotion_candidate_.emplace(major);
     } break;
 
-    case startup_mode::empty:
+    case startup_mode::empty: if (global_config().fl_empty_wd) {
+      std::error_code ec{};
+      auto wd = std::filesystem::current_path(ec);
+
+      if (ec || !std::filesystem::is_directory(wd)) {
+        break;
+      }
+
+      populate_directory(list, wd, global_config().fl_empty_wd_dir);
+
+    } break;
+
     default:
       break;
   }

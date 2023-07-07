@@ -174,6 +174,9 @@ config::config(std::string_view content, bool strict) {
 
 
     if (auto fl = root.subsection("file-listing")) {
+      update(fl_empty_wd,               fl->unique_key("empty-wd"));
+      update(fl_empty_wd_dir,           fl->unique_key("empty-wd-dir"));
+
       update(fl_single_file,            fl->unique_key("single-file"));
       update(fl_single_file_parent,     fl->unique_key("single-file-parent"));
       update(fl_single_file_parent_dir, fl->unique_key("single-file-parent-dir"));
@@ -266,6 +269,8 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(cache_keep_backward);
   ASSEQ(cache_load_backward);
 
+  ASSEQ(fl_empty_wd);
+  ASSEQ(fl_empty_wd_dir);
   ASSEQ(fl_single_file);
   ASSEQ(fl_single_file_parent);
   ASSEQ(fl_single_file_parent_dir);
