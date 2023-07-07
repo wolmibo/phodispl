@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <mutex>
 #include <optional>
+#include <thread>
 
 #include <logcerr/log.hpp>
 
@@ -56,8 +57,8 @@ image_source::image_source(
     }
   },
 
-  filesystem_watcher_{std::bind_front(&image_source::file_event, this)},
-  filesystem_context_{app.share_context()}
+  filesystem_context_{app.share_context()},
+  main_thread_id_    {std::this_thread::get_id()}
 {
   std::unique_lock lock{cache_mutex_};
 
@@ -199,15 +200,16 @@ void image_source::work_loop(const std::stop_token& stoken) {
 
 
 void image_source::next_image() {
-  std::lock_guard<std::mutex> lock{cache_mutex_};
+  { std::lock_guard<std::mutex> lock{cache_mutex_};
 
-  if (cache_.size() <= 1) {
-    return;
+    if (cache_.size() <= 1) {
+      return;
+    }
+
+    cache_.next();
+
+    invoke_save(callback_, cache_.current(), image_change::next);
   }
-
-  cache_.next();
-
-  invoke_save(callback_, cache_.current(), image_change::next);
 
   file_listing_.demote_initial_file();
 }
@@ -215,15 +217,16 @@ void image_source::next_image() {
 
 
 void image_source::previous_image() {
-  std::lock_guard<std::mutex> lock{cache_mutex_};
+  { std::lock_guard<std::mutex> lock{cache_mutex_};
 
-  if (cache_.size() <= 1) {
-    return;
+    if (cache_.size() <= 1) {
+      return;
+    }
+
+    cache_.previous();
+
+    invoke_save(callback_, cache_.current(), image_change::next);
   }
-
-  cache_.previous();
-
-  invoke_save(callback_, cache_.current(), image_change::next);
 
   file_listing_.demote_initial_file();
 }
@@ -243,24 +246,20 @@ void image_source::reload_current() {
 
 
 void image_source::populate_cache(std::unique_lock<std::mutex> cache_lock) {
+  auto lock = std::move(cache_lock);
+
   bool first_sent = !cache_.empty();
   if (first_sent) {
     invoke_save(callback_, cache_.current(), image_change::next);
   }
 
+  file_listing_.clear();
   auto files = file_listing_.populate();
 
   cache_.set(files);
 
   if (!first_sent && !cache_.empty()) {
     invoke_save(callback_, cache_.current(), image_change::next);
-  }
-
-  cache_lock.unlock();
-
-  if (global_config().watch_fs) {
-    filesystem_watcher_.unwatch();
-    filesystem_watcher_.watch(files);
   }
 }
 
@@ -291,33 +290,32 @@ std::shared_ptr<image> image_source::current() const {
 
 
 
-namespace {
-  [[nodiscard]] bool is_current(
-      const std::filesystem::path& path,
-      const std::shared_ptr<image>& image
-  ) {
-    return image && image->path() == path;
-  }
-}
 
-
-void image_source::file_event(
+void image_source::on_file_changed(
     const std::filesystem::path& path,
     fs_watcher::action           action
 ) {
-  win::context_guard context{filesystem_context_};
-  std::lock_guard    lock   {cache_mutex_};
+  std::lock_guard lock{cache_mutex_};
 
-  bool is_cur = is_current(path, cache_.current());
+  std::optional<win::context_guard> context;
+  if (std::this_thread::get_id() != main_thread_id_) {
+    context.emplace(filesystem_context_);
+  }
+
+  auto current    = cache_.current();
+  bool is_current = current && current->path() == path;
+
 
   if (action == fs_watcher::action::removed) {
     logcerr::debug("file removed: {}", path.string());
 
     cache_.remove(path);
 
-    invoke_save(callback_, cache_.current(), image_change::replace_deleted);
+    if (is_current) {
+      invoke_save(callback_, cache_.current(), image_change::replace_deleted);
+    }
 
-  } else if (is_cur) {
+  } else if (is_current) {
     logcerr::debug("file changed: {}*", path.string());
 
     cache_.invalidate_current();
@@ -327,7 +325,7 @@ void image_source::file_event(
   } else {
     logcerr::debug("file changed: {}", path.string());
 
-    bool first = !cache_.current();
+    bool first = !current;
 
     cache_.add(path);
 
@@ -335,15 +333,4 @@ void image_source::file_event(
       invoke_save(callback_, cache_.current(), image_change::next);
     }
   }
-}
-
-
-
-
-
-void image_source::on_file_changed(
-    const std::filesystem::path& /*path*/,
-    fs_watcher::action           /*action*/
-) {
-
 }

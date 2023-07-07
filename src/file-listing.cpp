@@ -145,6 +145,8 @@ void file_listing::demote_initial_file() {
       invoke_save(callback_, it->path, fs_watcher::action::removed);
     }
   }
+
+  demotion_candidate_.reset();
 }
 
 
