@@ -84,7 +84,7 @@ class image_display : public win::widget {
 
 
 
-    void set_error(const pixglot::base_exception*);
+    void set_error(const pixglot::base_exception*, const std::filesystem::path&);
 };
 
 #endif // PHODISPL_IMAGE_DISPLAY_HPP_INCLUDED

@@ -169,10 +169,10 @@ void image_display::on_update() {
     }
 
     if (const auto* error = current_->error(); error != nullptr) {
-      set_error(error);
+      set_error(error, current_->path());
     } else {
       message_box_.hide();
-      set_error(nullptr);
+      set_error(nullptr, current_->path());
     }
   } else {
     message_box_.message(
@@ -401,7 +401,10 @@ namespace {
 
 
 
-void image_display::set_error(const pixglot::base_exception* error) {
+void image_display::set_error(
+    const pixglot::base_exception* error,
+    const std::filesystem::path&   file
+) {
   if (active_error_ == error) {
     return;
   }
@@ -412,27 +415,29 @@ void image_display::set_error(const pixglot::base_exception* error) {
     return;
   }
 
+  auto file_str = "\n\nFile: " + file.filename().string();
+
   if (dynamic_cast<const pixglot::no_stream_access*>(error) != nullptr) {
     message_box_.message(
         "[404]  Data Not Found",
-        "Cannot access input data."
+        "Cannot access input data." + file_str
     );
   } else if (dynamic_cast<const pixglot::no_decoder*>(error) != nullptr) {
     message_box_.message(
         "[415]  Unsupported Media Type",
-        "None of the decoders recognized this file type."
+        "None of the decoders recognized this file type." + file_str
     );
   } else if (const auto* err = dynamic_cast<const pixglot::decode_error*>(error)) {
     message_box_.message(
         "[409]  Failed to Decode",
         "The " + pixglot::to_string(err->decoder()) +
         " decoder reports:\n" +
-        bump_first(err->plain())
+        bump_first(err->plain()) + file_str
     );
   } else {
     message_box_.message(
         "[500]  Internal Error",
-        std::string{error->message()}
+        std::string{error->message()} + file_str
     );
   }
 
