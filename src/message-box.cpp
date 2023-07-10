@@ -172,9 +172,9 @@ void message_box::on_render() {
 
   win::vec2<float> anchor{0.f, logical_size().y - global_config().theme_heading_size};
 
-  anchor.y -= draw_string(anchor, header_, global_config().theme_heading_size,
+  anchor.y += draw_string(anchor, header_, global_config().theme_heading_size,
                 set_alpha(global_config().theme_heading_color, *alpha_)).y
-                + global_config().theme_heading_size * 0.4f;
+                - global_config().theme_heading_size * 0.4f;
 
   shader_.use();
   win::set_uniform_mat4(shader_trafo_,
