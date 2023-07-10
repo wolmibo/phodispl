@@ -49,7 +49,7 @@ image_display::image_display() :
         .start  = 0.f,
         .end    = 0.f,
         .top    = 0.f,
-        .bottom = 0.f
+        .bottom = global_config().theme_text_size,
       }
   });
 

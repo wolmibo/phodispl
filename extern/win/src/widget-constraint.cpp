@@ -39,7 +39,7 @@ namespace {
       return outer - extent - *end;
     }
 
-    return (outer - extent - *start - *end) / 2.f;
+    return (outer - extent - *end - *start) / 2.f + *end;
   }
 }
 
