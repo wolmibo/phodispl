@@ -1,4 +1,5 @@
 #include "win/viewport.hpp"
+#include "win/widget-constraint.hpp"
 #include "win/widget.hpp"
 
 #include <algorithm>
@@ -76,7 +77,11 @@ bool win::widget::invalid() const {
 void win::widget::render() {
   on_render();
   invalid_ = false;
-  for (const auto& [child, _]: children_) {
+  for (const auto& [child, constraint]: children_) {
+    if (child->invalid_layout_) {
+      compute_child_layout(child, constraint);
+    }
+
     child->render();
   }
 }
@@ -97,23 +102,44 @@ void win::widget::update() {
 
 
 
+void win::widget::compute_child_layout(widget* child, widget_constraint constraint) {
+  auto size_request = constraint.realize_size(realized_size_);
+
+  child->scale_ = scale_;
+  child->on_layout(size_request);
+
+  if (std::holds_alternative<dimension_compute_constraint>(constraint.width)) {
+    constraint.width = size_request.x.value_or(0.f);
+  }
+  if (std::holds_alternative<dimension_compute_constraint>(constraint.height)) {
+    constraint.height = size_request.y.value_or(0.f);
+  }
+
+  auto [x, y, w, h] = constraint.realize(realized_size_);
+
+  child->compute_layout(vec2<float>{x, y} + position_, {w, h}, scale_);
+}
+
+
+
+
+
 void win::widget::compute_layout(vec2<float> position, vec2<float> size, float scale) {
   if (position_ == position && realized_size_ == size && scale_ == scale) {
     return;
   }
 
-  position_      = position;
-  realized_size_ = size;
-  scale_         = scale;
+  position_       = position;
+  realized_size_  = size;
+  scale_          = scale;
+
+  invalid_layout_ = false;
 
   invalidate();
 
-  for (const auto& [child, constraint]: children_) {
-    auto [x, y, w, h] = constraint.realize(realized_size_);
-    child->compute_layout(vec2<float>{x, y} + position, {w, h}, scale);
+  for (auto [child, constraint]: children_) {
+    compute_child_layout(child, constraint);
   }
-
-  on_layout();
 }
 
 

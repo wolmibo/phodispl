@@ -1,3 +1,4 @@
+#include "logcerr/log.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/formatting.hpp"
 #include "phodispl/message-box.hpp"
@@ -49,7 +50,7 @@ void message_box::message(const std::string& header, const std::string& message)
 
     new_text_ = true;
 
-    invalidate();
+    invalidate_layout();
   }
 }
 
@@ -72,13 +73,13 @@ void message_box::show() {
 
 
 
-void message_box::recalculate_string() {
+void message_box::recalculate_string(float width) {
   new_text_ = false;
 
   if (header_base_.empty()) {
     header_.clear();
   } else {
-    header_ = wrap_text(convert_string(header_base_), logical_size().x, [&](auto text) {
+    header_ = wrap_text(convert_string(header_base_), width, [&](auto text) {
         return viewport().measure_string(text, global_config().theme_heading_size).x;
     });
   }
@@ -86,7 +87,7 @@ void message_box::recalculate_string() {
   if (message_base_.empty()) {
     message_.clear();
   } else {
-    message_ = wrap_text(convert_string(message_base_), logical_size().x, [&](auto text) {
+    message_ = wrap_text(convert_string(message_base_), width, [&](auto text) {
         return viewport().measure_string(text, global_config().theme_text_size).x;
     });
   }
@@ -96,8 +97,22 @@ void message_box::recalculate_string() {
 
 
 
-void message_box::on_layout() {
-  recalculate_string();
+void message_box::on_layout(win::vec2<std::optional<float>>& size) {
+  if (auto width = size.x; width) {
+    recalculate_string(*width);
+
+    float height{0.f};
+
+    height -= std::ranges::count(header_, U'\n') * viewport().measure_string(U"\n",
+                  global_config().theme_heading_size).y;
+
+    height += global_config().theme_heading_size * 1.2f;
+
+    height -= (std::ranges::count(message_, U'\n') + 1) * viewport().measure_string(U"\n",
+                  global_config().theme_text_size).y;
+
+    size.y = height;
+  }
 }
 
 
@@ -150,7 +165,7 @@ void message_box::on_render() {
   }
 
   if (new_text_) {
-    recalculate_string();
+    recalculate_string(logical_size().x);
   }
 
 

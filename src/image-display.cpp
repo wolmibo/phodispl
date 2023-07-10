@@ -44,7 +44,7 @@ image_display::image_display() :
 {
   add_child(&message_box_, win::widget_constraint {
       .width  = 512.f,
-      .height = 192.f,
+      .height = win::dimension_compute_constraint{},
       .margin = win::margin_constraint{
         .start  = 0.f,
         .end    = 0.f,

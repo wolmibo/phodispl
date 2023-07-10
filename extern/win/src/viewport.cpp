@@ -143,6 +143,10 @@ void win::viewport::font(const std::filesystem::path& path) {
 
 void win::viewport::resize(vec2<float> size, float scale) {
   glViewport(0, 0, size.x * scale, size.y * scale);
+
+  auto size_request = make_vec2<std::optional<float>>(size.x, size.y);
+  on_layout(size_request);
+
   compute_layout({0.f, 0.f}, size, scale);
 }
 

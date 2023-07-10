@@ -24,8 +24,13 @@ struct margin_constraint {
 
 
 struct dimension_fill_constraint{};
+struct dimension_compute_constraint{};
 
-using dimension_constraint = std::variant<dimension_fill_constraint, float>;
+using dimension_constraint = std::variant<
+  dimension_fill_constraint,
+  dimension_compute_constraint,
+  float
+>;
 
 
 
@@ -35,7 +40,8 @@ struct widget_constraint {
 
   margin_constraint    margin;
 
-  [[nodiscard]] std::array<float, 4> realize(vec2<float>) const;
+  [[nodiscard]] std::array<float, 4>       realize(vec2<float>)      const;
+  [[nodiscard]] vec2<std::optional<float>> realize_size(vec2<float>) const;
 };
 
 }

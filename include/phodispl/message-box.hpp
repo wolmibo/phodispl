@@ -49,9 +49,9 @@ class message_box : public win::widget {
 
     void on_update() override;
     void on_render() override;
-    void on_layout() override;
+    void on_layout(win::vec2<std::optional<float>>& /*size*/) override;
 
-    void recalculate_string();
+    void recalculate_string(float);
 };
 
 #endif // PHODISPL_MESSAGE_BOX_HPP_INCLUDED

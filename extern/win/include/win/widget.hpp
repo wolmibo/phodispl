@@ -51,6 +51,10 @@ class widget {
 
 
 
+    void invalidate_layout()         { invalid_layout_ = true; }
+
+
+
 
 
     void add_child(widget*, widget_constraint);
@@ -65,7 +69,7 @@ class widget {
 
     virtual void on_render() {}
     virtual void on_update() {}
-    virtual void on_layout() {}
+    virtual void on_layout(vec2<std::optional<float>>& /*size*/) {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 
@@ -83,17 +87,22 @@ class widget {
 
 
   private:
-    vec2<float>             realized_size_{ 0.f,  0.f};
-    vec2<float>             position_     { 0.f,  0.f};
-    float                   scale_        {1.f};
+    vec2<float>             realized_size_ { 0.f,  0.f};
+    vec2<float>             position_      { 0.f,  0.f};
+    float                   scale_         {1.f};
 
-    bool                    invalid_      {true};
+    bool                    invalid_       {true};
+    bool                    invalid_layout_{false};
 
     std::vector<std::pair<widget*, widget_constraint>>
                             children_;
     const win::viewport*    root_ptr_{nullptr};
 
     void viewport(const win::viewport&);
+
+
+
+    void compute_child_layout(widget*, widget_constraint);
 };
 
 }
