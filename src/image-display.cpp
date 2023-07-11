@@ -218,7 +218,7 @@ void image_display::on_update() {
 
 
 namespace {
-  [[nodiscard]] std::shared_ptr<frame> current_frame(image* img) {
+  [[nodiscard]] std::optional<pixglot::frame_view> current_frame(image* img) {
     if (img == nullptr) {
       return {};
     }
@@ -286,7 +286,7 @@ void image_display::on_render() {
 
 
 
-float image_display::scale_any(frame& f, scale_mode mode) const {
+float image_display::scale_any(const pixglot::frame_view& f, scale_mode mode) const {
   if (auto* dynamic = std::get_if<dynamic_scale>(&mode)) {
     return scale_dynamic(f, *dynamic);
   }
@@ -318,16 +318,32 @@ float image_display::current_scale(scale_mode mode) const {
 
 
 
-float image_display::scale_dynamic(frame& f, dynamic_scale scale) const {
-  auto size = logical_size();
+namespace {
+  [[nodiscard]] win::vec2<float> real_size(const pixglot::frame_view& f) {
+    auto size = win::make_vec2<float>(f.width(), f.height());
 
-  float scale_x = size.x / f.real_width();
-  float scale_y = size.y / f.real_height();
+    if (pixglot::flips_xy(f.orientation())) {
+      std::swap(size.x, size.y);
+    }
 
-  if (scale == dynamic_scale::fit) {
-    return std::min(scale_x, scale_y);
+    return size;
   }
-  return std::max(scale_x, scale_y);
+}
+
+
+
+
+
+float image_display::scale_dynamic(
+    const pixglot::frame_view& f,
+    dynamic_scale              scale_mode
+) const {
+  auto scale = win::vec2_div(logical_size(), real_size(f));
+
+  if (scale_mode == dynamic_scale::fit) {
+    return std::min(scale.x, scale.y);
+  }
+  return std::max(scale.x, scale.y);
 }
 
 
@@ -370,7 +386,7 @@ namespace {
 
 
 
-win::mat4 image_display::matrix_for(frame& f) const {
+win::mat4 image_display::matrix_for(const pixglot::frame_view& f) const {
   auto size = logical_size();
 
   float s_source = scale_any(f, scale_mode_);
@@ -380,12 +396,11 @@ win::mat4 image_display::matrix_for(frame& f) const {
 
   float s = (1.f - factor) * s_source + factor * s_target;
 
-  float sx = s * f.real_width()  / size.x;
-  float sy = s * f.real_height() / size.y;
+  auto scale = s * win::vec2_div(real_size(f), size);
 
   auto pos = win::vec2_mul(win::vec2_div(*position_, size), {2.f, -2.f});
 
-  return matrix_from(sx, sy, pos.x, pos.y, f.orientation());
+  return matrix_from(scale.x, scale.y, pos.x, pos.y, f.orientation());
 }
 
 

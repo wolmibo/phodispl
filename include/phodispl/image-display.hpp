@@ -77,10 +77,10 @@ class image_display : public win::widget {
 
 
 
-    [[nodiscard]] float     current_scale(scale_mode)            const;
-    [[nodiscard]] float     scale_any    (frame&, scale_mode)    const;
-    [[nodiscard]] float     scale_dynamic(frame&, dynamic_scale) const;
-    [[nodiscard]] win::mat4 matrix_for   (frame&)                const;
+    [[nodiscard]] float     current_scale(scale_mode)                               const;
+    [[nodiscard]] float     scale_any    (const pixglot::frame_view&, scale_mode)   const;
+    [[nodiscard]] float     scale_dynamic(const pixglot::frame_view&, dynamic_scale)const;
+    [[nodiscard]] win::mat4 matrix_for   (const pixglot::frame_view&)               const;
 
 
 

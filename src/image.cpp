@@ -90,7 +90,10 @@ void image::load() {
   auto weak_this = weak_from_this();
   ptoken_.frame_callback([weak_this](pixglot::frame& f) {
     if (auto lock = weak_this.lock()) {
-      lock->append_frame(f);
+      { std::lock_guard guard{lock->frames_mutex_};
+        lock->frames_.emplace_back(f);
+      }
+      lock->damage();
     }
   });
 
@@ -137,26 +140,13 @@ void image::load() {
 
 
 
-std::shared_ptr<frame> image::current_frame() const {
+std::optional<pixglot::frame_view> image::current_frame() const {
   std::lock_guard lock{frames_mutex_};
 
   if (current_frame_ < frames_.size()) {
     return frames_[current_frame_];
   }
   return {};
-}
-
-
-
-
-
-void image::append_frame(pixglot::frame& f) {
-  {
-    std::lock_guard lock{frames_mutex_};
-
-    frames_.emplace_back(std::make_shared<frame>(std::move(f)));
-  }
-  damage();
 }
 
 
