@@ -88,7 +88,7 @@ void image::load() {
   loading_started_ = true;
 
   auto weak_this = weak_from_this();
-  ptoken_.frame_callback([weak_this](pixglot::frame& f) {
+  ptoken_.frame_begin_callback([weak_this](const pixglot::frame_view& f) {
     if (auto lock = weak_this.lock()) {
       { std::lock_guard guard{lock->frames_mutex_};
         lock->frames_.emplace_back(f);
