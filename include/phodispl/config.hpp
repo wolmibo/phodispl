@@ -74,9 +74,9 @@ struct config {
 
 
     bool                      il_partial          {true};
+    bool                      il_partial_flush    {true};
     std::chrono::milliseconds il_partial_threshold{250};
     std::chrono::milliseconds il_partial_interval {20};
-    bool                      il_partial_flush    {true};
 };
 
 
