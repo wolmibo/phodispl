@@ -183,11 +183,9 @@ config::config(std::string_view content, bool strict) {
       update(fl_single_file_demote,     fl->unique_key("single-file-demote"));
 
       update(fl_single_dir,             fl->unique_key("single-dir"));
-      update(fl_single_dir_missing,     fl->unique_key("single-dir-missing"));
 
       update(fl_multi_file,             fl->unique_key("multi-file"));
       update(fl_multi_dir,              fl->unique_key("multi-dir"));
-      update(fl_multi_dir_missing,      fl->unique_key("multi-dir-missing"));
     }
 
 
@@ -285,10 +283,8 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(fl_single_file_parent_dir);
   ASSEQ(fl_single_file_demote);
   ASSEQ(fl_single_dir);
-  ASSEQ(fl_single_dir_missing);
   ASSEQ(fl_multi_file);
   ASSEQ(fl_multi_dir);
-  ASSEQ(fl_multi_dir_missing);
 
   ASSEQ(il_partial);
   ASSEQ(il_partial_threshold);

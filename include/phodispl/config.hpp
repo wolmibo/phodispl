@@ -65,11 +65,9 @@ struct config {
     bool         fl_single_file_demote    {true};
 
     listing_mode fl_single_dir            {listing_mode::supported};
-    bool         fl_single_dir_missing    {true};
 
     listing_mode fl_multi_file            {listing_mode::always};
     listing_mode fl_multi_dir             {listing_mode::supported};
-    bool         fl_multi_dir_missing     {true};
 
 
 
