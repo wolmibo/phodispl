@@ -86,6 +86,10 @@ class image :
     size_t                                   current_frame_{0};
     sequence_clock                           frame_sequence_;
 
+    std::chrono::steady_clock::time_point    frame_partial_load_begin_;
+    std::chrono::steady_clock::time_point    frame_partial_last_update_;
+
+
 
 
     void seek_frame(ssize_t);

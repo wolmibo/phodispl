@@ -1,6 +1,8 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
 
+#include <bits/chrono.h>
+#include <chrono>
 #include <gl/base.hpp>
 
 #include <pixglot/decode.hpp>
@@ -89,13 +91,18 @@ void image::load() {
 
   auto weak_this = weak_from_this();
   ptoken_.frame_begin_callback([weak_this](const pixglot::frame_view& f) {
-    if (auto lock = weak_this.lock()) {
-      { std::lock_guard guard{lock->frames_mutex_};
-        lock->frames_.emplace_back(f);
+    if (auto self = weak_this.lock()) {
+      { std::lock_guard guard{self->frames_mutex_};
+        self->frames_.emplace_back(f);
+
+        self->frame_partial_last_update_ =
+          self->frame_partial_load_begin_ = std::chrono::steady_clock::now();
       }
-      lock->damage();
+      self->damage();
     }
   });
+
+  ptoken_.flush_uploads(global_config().il_partial_flush);
 
   pixglot::output_format requested_format;
   requested_format.storage_type(pixglot::storage_type::gl_texture);
@@ -175,6 +182,23 @@ void image::update() {
   auto next = frame_sequence_.position_index();
   damage(next != current_frame_);
   current_frame_ = next;
+
+
+  if (global_config().il_partial) {
+    using namespace std::chrono;
+
+    auto now = steady_clock::now();
+
+    if (duration_cast<milliseconds>(now - frame_partial_load_begin_) >
+        global_config().il_partial_threshold) {
+      if (duration_cast<milliseconds>(now - frame_partial_last_update_) >
+          global_config().il_partial_interval) {
+        frame_partial_last_update_ = now;
+
+        ptoken_.upload_available();
+      }
+    }
+  }
 }
 
 
