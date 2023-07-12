@@ -70,6 +70,13 @@ struct config {
     listing_mode fl_multi_file            {listing_mode::always};
     listing_mode fl_multi_dir             {listing_mode::supported};
     bool         fl_multi_dir_missing     {true};
+
+
+
+    bool                      il_partial          {true};
+    std::chrono::milliseconds il_partial_threshold{250};
+    std::chrono::milliseconds il_partial_interval {20};
+    bool                      il_partial_flush    {true};
 };
 
 

@@ -192,6 +192,15 @@ config::config(std::string_view content, bool strict) {
 
 
 
+    if (auto il = root.subsection("image-loading")) {
+      update(il_partial,           il->unique_key("partial"));
+      update(il_partial_threshold, il->unique_key("partial-threshold-ms"));
+      update(il_partial_interval,  il->unique_key("partial-interval-ms"));
+      update(il_partial_flush,     il->unique_key("partial-flush"));
+    }
+
+
+
 
 
     if (auto message =
@@ -280,5 +289,10 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(fl_multi_file);
   ASSEQ(fl_multi_dir);
   ASSEQ(fl_multi_dir_missing);
+
+  ASSEQ(il_partial);
+  ASSEQ(il_partial_threshold);
+  ASSEQ(il_partial_interval);
+  ASSEQ(il_partial_flush);
 #undef ASSEQ
 }
