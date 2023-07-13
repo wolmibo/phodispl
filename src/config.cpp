@@ -195,6 +195,8 @@ config::config(std::string_view content, bool strict) {
       update(il_partial_threshold, il->unique_key("partial-threshold-ms"));
       update(il_partial_interval,  il->unique_key("partial-interval-ms"));
       update(il_partial_flush,     il->unique_key("partial-flush"));
+
+      update(il_play_available,    il->unique_key("play-available"));
     }
 
 
@@ -290,5 +292,6 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(il_partial_threshold);
   ASSEQ(il_partial_interval);
   ASSEQ(il_partial_flush);
+  ASSEQ(il_play_available);
 #undef ASSEQ
 }

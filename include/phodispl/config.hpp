@@ -71,6 +71,8 @@ struct config {
 
 
 
+    bool                      il_play_available   {true};
+
     bool                      il_partial          {true};
     bool                      il_partial_flush    {true};
     std::chrono::milliseconds il_partial_threshold{250};

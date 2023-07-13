@@ -102,6 +102,21 @@ void image::load() {
     }
   });
 
+  bool build_sequence{global_config().il_play_available && frame_sequence_.size() == 0};
+  bool animated      {false};
+
+  ptoken_.frame_callback([weak_this, build_sequence, &animated](pixglot::frame& f) {
+    if (auto self = weak_this.lock(); self && build_sequence) {
+      self->frame_sequence_.append(f.duration());
+
+      animated = animated || (f.duration() > std::chrono::milliseconds{0});
+
+      if (!animated) {
+        self->frame_sequence_.pause();
+      }
+    }
+  });
+
   ptoken_.flush_uploads(global_config().il_partial_flush);
 
   pixglot::output_format requested_format;
