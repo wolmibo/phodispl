@@ -102,8 +102,11 @@ void image::load() {
     }
   });
 
-  bool build_sequence{global_config().il_play_available && frame_sequence_.size() == 0};
   bool animated      {false};
+  bool build_sequence{global_config().il_play_available &&
+                      global_config().il_show_loading &&
+                      frame_sequence_.size() == 0};
+
 
   ptoken_.frame_callback([weak_this, build_sequence, &animated](pixglot::frame& f) {
     if (auto self = weak_this.lock(); self && build_sequence) {
@@ -199,7 +202,7 @@ void image::update() {
   current_frame_ = next;
 
 
-  if (global_config().il_partial) {
+  if (global_config().il_partial && global_config().il_show_loading) {
     using namespace std::chrono;
 
     auto now = steady_clock::now();

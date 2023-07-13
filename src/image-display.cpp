@@ -222,6 +222,11 @@ namespace {
     if (img == nullptr) {
       return {};
     }
+
+    if (!global_config().il_show_loading && img->loading()) {
+      return {};
+    }
+
     return img->current_frame();
   }
 

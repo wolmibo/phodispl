@@ -71,6 +71,8 @@ struct config {
 
 
 
+    bool                      il_show_loading     {true};
+
     bool                      il_play_available   {true};
 
     bool                      il_partial          {true};
