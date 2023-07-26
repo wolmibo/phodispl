@@ -43,6 +43,8 @@ subdir('extern/win')
 
 subdir('src')
 
+subdir('tests')
+
 
 
 summary({

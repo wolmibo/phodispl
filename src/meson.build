@@ -102,10 +102,3 @@ if get_option('desktop-file')
     install:     true
   )
 endif
-
-
-
-test('sample config',
-  phodispl,
-  args : ['--check-default-config', files('../doc/config.ini')]
-)
