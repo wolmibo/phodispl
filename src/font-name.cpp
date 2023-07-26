@@ -58,6 +58,6 @@ namespace {
     throw std::runtime_error{"unable to obtain filename for font " + name};
   }
 
-  //NOLINTNEXTLINE(*-reinterpret-cast)
+  //NOLINTNEXTLINE(*-reinterpret-cast) sizeof(FcChar8) == sizeof(char) asserted above
   return reinterpret_cast<const char*>(file);
 }
