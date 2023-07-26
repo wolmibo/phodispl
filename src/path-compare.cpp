@@ -1,5 +1,6 @@
 #include "phodispl/path-compare.hpp"
 
+#include <algorithm>
 #include <compare>
 #include <utility>
 
@@ -10,8 +11,29 @@
 //NOLINTBEGIN(*-use-nullptr)
 
 namespace {
-  [[nodiscard]] bool is_number(char c) {
-    return '0' <= c && c <= '9';
+  enum class char_type {
+    path_component = 0,
+    number         = 1,
+    alpha          = 2,
+    special        = 3,
+  };
+
+
+
+  [[nodiscard]] char_type determine_char_type(char c) {
+    if (c == '.' || c == '/' || c == '\\') {
+      return char_type::path_component;
+    }
+
+    if ('0' <= c && c <= '9') {
+      return char_type::number;
+    }
+
+    if (c < 0 || ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z')) {
+      return char_type::alpha;
+    }
+
+    return char_type::special;
   }
 
 
@@ -34,27 +56,13 @@ namespace {
 
 
 
-
-
-  enum class compare_mode : int {
-    case_insensitive = 'a' - 'A',
-    case_sensitive   = 512 - 'A'
-  };
-
-
-
-  [[nodiscard]] int relocate(char c, compare_mode mode) {
+  [[nodiscard]] int alpha_to_upper(char c) {
     if (c < 0) {
-      // non-ascii after all ascii
       return c + 1024;
     }
 
-    if ('A' <= c && c <= 'Z') {
-      return c + std::to_underlying(mode);
-    }
-
-    if (c > 'z') {
-      return c - 'z' + 'A';
+    if (c >= 'a') {
+      return c - 'a' + 'A';
     }
 
     return c;
@@ -62,44 +70,68 @@ namespace {
 
 
 
-  [[nodiscard]] std::strong_ordering compare_same_size_lexicographic(
+  [[nodiscard]] std::strong_ordering compare_alpha_case_insensitive(
       std::string_view lhs,
-      std::string_view rhs,
-      compare_mode     mode
+      std::string_view rhs
   ) {
-    for (size_t i = 0; i < lhs.size(); ++i) {
-      if (auto res = (relocate(lhs[i], mode) <=> relocate(rhs[i], mode)); res != 0) {
+    auto min = std::min(lhs.size(), rhs.size());
+
+    for (size_t i = 0; i < min; ++i) {
+      if (auto res = (alpha_to_upper(lhs[i]) <=> alpha_to_upper(rhs[i])); res != 0) {
         return res;
       }
     }
 
-    return std::strong_ordering::equal;
+    return lhs.size() <=> rhs.size();
   }
 
 
 
-
-
   struct word {
-    std::string_view number;
-    int              next_character;
+    char_type        ctype;
+    std::string_view text;
+
+
+
+    [[nodiscard]] std::strong_ordering operator<=>(const word& rhs) const {
+      if (ctype == rhs.ctype) {
+        switch (ctype) {
+          case char_type::number: return compare_number(text, rhs.text);
+          case char_type::alpha:  return compare_alpha_case_insensitive(text, rhs.text);
+          default:                return text <=> rhs.text;
+        }
+      }
+
+      return std::to_underlying(ctype) <=> std::to_underlying(rhs.ctype);
+    }
   };
 
-  [[nodiscard]] word next_word_from_nonempty(std::string_view& str) {
-    if (!is_number(str.front())) {
-      word out {{}, relocate(str.front(), compare_mode::case_insensitive)};
-      str.remove_prefix(1);
-      return out;
-    }
 
+
+  [[nodiscard]] word next_word_from_nonempty(std::string_view& str) {
+    auto type = determine_char_type(str.front());
 
     size_t i{1};
-    while (i < str.size() && is_number(str[i])) { ++i; }
+    while (i < str.size() && determine_char_type(str[i]) == type) { ++i; }
 
-    word out{str.substr(0, i), '0'};
+    word out{type, str.substr(0, i)};
     str.remove_prefix(i);
 
     return out;
+  }
+
+
+
+  [[nodiscard]] char swap_case(char c) {
+    if ('A' <= c && c <= 'Z') {
+      return c - 'A' + 'a';
+    }
+
+    if ('a' <= c && c <= 'z') {
+      return c - 'a' + 'A';
+    }
+
+    return c;
   }
 }
 
@@ -110,26 +142,17 @@ bool semantic_compare(std::string_view lhs, std::string_view rhs) {
   auto rhss{rhs};
 
   while (!lhss.empty() && !rhss.empty()) {
-    auto lw = next_word_from_nonempty(lhss);
-    auto rw = next_word_from_nonempty(rhss);
-
-    if (lw.number.empty() && rw.number.empty()) {
-      if (lw.next_character < rw.next_character) { return true;  }
-      if (lw.next_character > rw.next_character) { return false; }
-
-    } else if (lw.number.empty() || rw.number.empty()) {
-      return lw.next_character < rw.next_character;
-
-    } else if (auto res = compare_number(lw.number, rw.number); res != 0) {
+    if (auto res = (next_word_from_nonempty(lhss) <=> next_word_from_nonempty(rhss));
+        res != 0) {
       return res < 0;
     }
   }
 
-  if (auto res = (lhs.size() <=> rhs.size()); res != 0) {
-    return res < 0;
+  if (lhss.size() != rhss.size()) {
+    return lhss.size() < rhs.size();
   }
 
-  return compare_same_size_lexicographic(lhs, rhs, compare_mode::case_sensitive) < 0;
+  return std::ranges::lexicographical_compare(lhs, rhs, {}, swap_case, swap_case);
 }
 
 //NOLINTEND(*-use-nullptr)

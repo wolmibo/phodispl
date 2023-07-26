@@ -4,6 +4,7 @@
 #include <iostream>
 #include <filesystem>
 #include <random>
+#include <source_location>
 #include <span>
 #include <vector>
 
@@ -16,6 +17,18 @@
     case path_compare_method::lexicographic: return "lexicographic";
   }
   return "<unknown>";
+}
+
+
+
+void assert(
+    bool                 expression,
+    std::source_location location = std::source_location::current()
+) {
+  if (!expression) {
+    std::cout << "assertion failed: " << location.line() << std::endl;
+    exit(1);
+  }
 }
 
 
@@ -46,15 +59,20 @@ void test(
 
 int main() {
   std::vector<std::filesystem::path> config_source{
-    "file.dat", "file1.dat", "File2.dat", "file2v2.dat", "file10.dat", "filefile.dat"
+    "file.dat", "file1.dat", "File1.dat", "File2.dat", "file2v2.dat", "file10.dat",
+    "filefile.dat"
   };
   std::vector<std::filesystem::path> config_semantic{config_source};
 
   std::vector<std::filesystem::path> config_lexi{
-    "File2.dat", "file.dat", "file1.dat", "file10.dat", "file2v2.dat", "filefile.dat"
+    "File1.dat", "File2.dat", "file.dat", "file1.dat", "file10.dat", "file2v2.dat",
+    "filefile.dat"
   };
 
 
   test(path_compare_method::lexicographic, config_source, config_lexi);
   test(path_compare_method::semantic,      config_source, config_semantic);
+
+
+  assert(semantic_compare("earth", "electron"));
 }
