@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <filesystem>
+#include <random>
 #include <span>
 #include <vector>
 
@@ -24,15 +25,20 @@ void test(
     std::span<std::filesystem::path>       input,
     std::span<const std::filesystem::path> correct
 ) {
-  std::ranges::sort(input, path_compare{mode});
+  std::mt19937_64 rng{};
 
-  if (!std::ranges::equal(input, correct)) {
-    std::cout << "mode: " << stringify(mode) << '\n';
-    std::cout << "sorted:\n";
-    std::ranges::for_each(input,   [](auto&& c) { std::cout << c << '\n'; });
-    std::cout << "expected sorting:" << std::endl;
-    std::ranges::for_each(correct, [](auto&& c) { std::cout << c << '\n'; });
-    exit(1);
+  for (size_t i = 0; i < 1000; ++i) {
+    std::ranges::shuffle(input, rng);
+    std::ranges::sort(input, path_compare{mode});
+
+    if (!std::ranges::equal(input, correct)) {
+      std::cout << "mode: " << stringify(mode) << '\n';
+      std::cout << "sorted:\n";
+      std::ranges::for_each(input,   [](auto&& c) { std::cout << c << '\n'; });
+      std::cout << "expected sorting:" << std::endl;
+      std::ranges::for_each(correct, [](auto&& c) { std::cout << c << '\n'; });
+      exit(1);
+    }
   }
 }
 

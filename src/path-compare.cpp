@@ -62,14 +62,12 @@ namespace {
 
 
 
-  [[nodiscard]] std::strong_ordering compare_prefix(
+  [[nodiscard]] std::strong_ordering compare_same_size_lexicographic(
       std::string_view lhs,
       std::string_view rhs,
       compare_mode     mode
   ) {
-    auto min = std::min(lhs.size(), rhs.size());
-
-    for (size_t i = 0; i < min; ++i) {
+    for (size_t i = 0; i < lhs.size(); ++i) {
       if (auto res = (relocate(lhs[i], mode) <=> relocate(rhs[i], mode)); res != 0) {
         return res;
       }
@@ -98,12 +96,8 @@ namespace {
     size_t i{1};
     while (i < str.size() && is_number(str[i])) { ++i; }
 
-    word out{str.substr(0, i), -1};
+    word out{str.substr(0, i), '0'};
     str.remove_prefix(i);
-
-    if (!str.empty()) {
-      out.next_character = relocate(str.front(), compare_mode::case_insensitive);
-    }
 
     return out;
   }
@@ -119,23 +113,23 @@ bool semantic_compare(std::string_view lhs, std::string_view rhs) {
     auto lw = next_word_from_nonempty(lhss);
     auto rw = next_word_from_nonempty(rhss);
 
-    if (!lw.number.empty() && !rw.number.empty()) {
-      if (auto res = compare_number(lw.number, rw.number); res != 0) {
-        return res < 0;
-      }
-    }
+    if (lw.number.empty() && rw.number.empty()) {
+      if (lw.next_character < rw.next_character) { return true;  }
+      if (lw.next_character > rw.next_character) { return false; }
 
-    if (lw.next_character < rw.next_character) { return true;  }
-    if (lw.next_character > rw.next_character) { return false; }
+    } else if (lw.number.empty() || rw.number.empty()) {
+      return lw.next_character < rw.next_character;
+
+    } else if (auto res = compare_number(lw.number, rw.number); res != 0) {
+      return res < 0;
+    }
   }
 
-
-
-  if (auto res = compare_prefix(lhs, rhs, compare_mode::case_sensitive); res != 0 ) {
+  if (auto res = (lhs.size() <=> rhs.size()); res != 0) {
     return res < 0;
   }
 
-  return lhs.size() < rhs.size();
+  return compare_same_size_lexicographic(lhs, rhs, compare_mode::case_sensitive) < 0;
 }
 
 //NOLINTEND(*-use-nullptr)
