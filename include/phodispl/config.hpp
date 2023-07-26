@@ -3,6 +3,7 @@
 
 #include "phodispl/animation.hpp"
 #include "phodispl/config-types.hpp"
+#include "phodispl/path-compare.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -68,6 +69,8 @@ struct config {
 
     listing_mode fl_multi_file            {listing_mode::always};
     listing_mode fl_multi_dir             {listing_mode::supported};
+
+    path_compare fl_compare_function      {path_compare_method::semantic};
 
 
 

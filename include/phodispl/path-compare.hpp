@@ -25,6 +25,8 @@ class path_compare {
   public:
     path_compare(path_compare_method method) : method_{method} {}
 
+    [[nodiscard]] auto operator<=>(const path_compare&) const = default;
+
 
 
     [[nodiscard]] bool operator()(

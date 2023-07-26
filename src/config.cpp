@@ -1,4 +1,5 @@
 #include "phodispl/config.hpp"
+#include "phodispl/path-compare.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -103,10 +104,21 @@ template<> struct iconfigp::case_insensitive_parse_lut<listing_mode> {
 
 
 
+template<> struct iconfigp::case_insensitive_parse_lut<path_compare_method> {
+  static constexpr std::string_view name {"path-compare-method"};
+  static constexpr std::array<std::pair<std::string_view, path_compare_method>, 2> lut {
+    std::make_pair("lexicographic", path_compare_method::lexicographic),
+    std::make_pair("semantic",      path_compare_method::semantic),
+  };
+};
+
+
+
 namespace {
   template<typename T> struct src_t { using type = T; };
-  template<> struct src_t<std::chrono::milliseconds> { using type = uint32_t;         };
-  template<> struct src_t<std::string>               { using type = std::string_view; };
+  template<> struct src_t<std::chrono::milliseconds>{ using type = uint32_t;            };
+  template<> struct src_t<std::string>              { using type = std::string_view;    };
+  template<> struct src_t<path_compare>             { using type = path_compare_method; };
 
   template<typename S>
   void update(S& value, iconfigp::opt_ref<const iconfigp::key_value> pair) {
@@ -186,6 +198,8 @@ config::config(std::string_view content, bool strict) {
 
       update(fl_multi_file,             fl->unique_key("multi-file"));
       update(fl_multi_dir,              fl->unique_key("multi-dir"));
+
+      update(fl_compare_function,       fl->unique_key("sort-mode"));
     }
 
 

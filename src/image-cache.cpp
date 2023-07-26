@@ -33,7 +33,8 @@ std::shared_ptr<image> image_cache::current() const {
 
 
 void image_cache::remove(const std::filesystem::path& path) {
-  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
+  auto it = std::ranges::lower_bound(images_, path,
+      global_config().fl_compare_function, &path_of_shared_image);
 
   if (it == images_.end() || (*it)->path() != path) {
     return;
@@ -109,7 +110,8 @@ void image_cache::load_maybe(size_t index) const {
 
 
 void image_cache::add(const std::filesystem::path& path) {
-  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
+  auto it = std::ranges::lower_bound(images_, path,
+      global_config().fl_compare_function, &path_of_shared_image);
 
   if (it != images_.end() && (*it)->path() == path) {
     invalidate(it - images_.begin());
@@ -127,7 +129,8 @@ void image_cache::add(const std::filesystem::path& path) {
 
 
 void image_cache::invalidate(const std::filesystem::path& path) {
-  auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
+  auto it = std::ranges::lower_bound(images_, path,
+      global_config().fl_compare_function, &path_of_shared_image);
 
   if (it != images_.end() && (*it)->path() == path) {
     invalidate(it - images_.begin());
@@ -297,7 +300,9 @@ void image_cache::set(std::span<const std::filesystem::path> new_files) {
 
 
   for (const auto& path: new_files) {
-    auto it = std::ranges::lower_bound(images_, path, {}, &path_of_shared_image);
+    auto it = std::ranges::lower_bound(images_, path,
+        global_config().fl_compare_function, &path_of_shared_image);
+
     if (it != images_.end() && (*it)->path() == path) {
       new_images.emplace_back(std::move(*it));
       images_.erase(it);
@@ -309,7 +314,7 @@ void image_cache::set(std::span<const std::filesystem::path> new_files) {
 
 
   images_ = std::move(new_images);
-  std::ranges::sort(images_, {}, &path_of_shared_image);
+  std::ranges::sort(images_, global_config().fl_compare_function, &path_of_shared_image);
 
   if (current_path) {
     if (auto it = std::ranges::find(images_, *current_path, &path_of_shared_image);
