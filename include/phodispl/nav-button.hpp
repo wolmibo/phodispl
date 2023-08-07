@@ -6,6 +6,8 @@
 
 #include "phodispl/animation.hpp"
 
+#include <chrono>
+
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
 
@@ -16,6 +18,10 @@
 class nav_button : public win::widget {
   public:
     nav_button();
+
+
+
+    void show();
 
 
   
@@ -29,9 +35,13 @@ class nav_button : public win::widget {
     GLint            shader_color_;
     GLint            shader_trafo_;
 
+    std::chrono::steady_clock::time_point
+                     last_movement_;
+
 
 
     void on_render() override;
+    void on_update() override;
 };
 
 #endif // PHODISPL_NAV_BUTTON_HPP_INCLUDED

@@ -12,6 +12,19 @@
 
 
 
+namespace {
+  [[nodiscard]] bool activation_area(
+      const win::vec2<float>& pos,
+      const win::vec2<float>& size
+  ) {
+    return pos.x < 112.f || pos.x > size.x - 122.f;
+  }
+}
+
+
+
+
+
 window::window(std::vector<std::filesystem::path> sl) :
   win::application{"phodispl"},
 
@@ -383,6 +396,13 @@ void window::on_pointer_move(win::vec2<float> pos) {
     image_display_.translate(pos - last_position_);
 
     last_position_ = pos;
+  }
+
+
+
+  if (!dragging_ && activation_area(pos, logical_size())) {
+    nav_left_.show();
+    nav_right_.show();
   }
 }
 
