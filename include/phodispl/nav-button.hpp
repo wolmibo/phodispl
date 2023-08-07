@@ -4,18 +4,16 @@
 #ifndef PHODISPL_NAV_BUTTON_HPP_INCLUDED
 #define PHODISPL_NAV_BUTTON_HPP_INCLUDED
 
-#include "phodispl/animation.hpp"
+#include "phodispl/fade-widget.hpp"
 
 #include <chrono>
 
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
 
-#include <win/widget.hpp>
 
 
-
-class nav_button : public win::widget {
+class nav_button : public fade_widget {
   public:
     nav_button();
 
@@ -24,12 +22,8 @@ class nav_button : public win::widget {
     void show();
 
 
-  
-  private:
-    bool             visible_   {false};
-    bool             might_hide_{false};
-    animation<float> alpha_;
 
+  private:
     gl::mesh         quad_;
     gl::program      shader_;
     GLint            shader_color_;
@@ -40,8 +34,8 @@ class nav_button : public win::widget {
 
 
 
-    void on_render() override;
-    void on_update() override;
+    void on_render()    override;
+    void on_update_fw() override;
 };
 
 #endif // PHODISPL_NAV_BUTTON_HPP_INCLUDED
