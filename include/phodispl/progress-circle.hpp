@@ -1,33 +1,24 @@
 #ifndef PHODISPL_PROGRESS_CIRCLE_HPP_INCLUDED
 #define PHODISPL_PROGRESS_CIRCLE_HPP_INCLUDED
 
-#include "phodispl/animation.hpp"
+#include "phodispl/fade-widget.hpp"
 
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
 
-#include <win/widget.hpp>
 
 
-
-
-class progress_circle : public win::widget {
+class progress_circle : public fade_widget {
   public:
     explicit progress_circle();
 
-
-    void show();
-    void hide();
 
     void value(float);
 
 
 
   private:
-    bool             visible_   {false};
-    bool             might_hide_{false};
     float            value_     {0.f};
-    animation<float> alpha_;
 
     gl::mesh         quad_;
     gl::program      shader_;
@@ -38,8 +29,8 @@ class progress_circle : public win::widget {
 
 
 
-    void on_update() override;
-    void on_render() override;
+    void on_update_fw() override;
+    void on_render()    override;
 };
 
 #endif // PHODISPL_PROGRESS_CIRCLE_HPP_INCLUDED

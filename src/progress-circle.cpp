@@ -1,4 +1,3 @@
-#include "phodispl/config.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "resources.hpp"
 
@@ -11,12 +10,6 @@
 
 
 progress_circle::progress_circle() :
-  alpha_(
-    0.f,
-    global_config().animation_view_next_ms.count(),
-    global_config().animation_view_next_curve
-  ),
-
   quad_{gl::primitives::quad()},
 
   shader_{
@@ -41,44 +34,8 @@ void progress_circle::value(float value) {
 
 
 
-void progress_circle::show() {
-  if (visible_ && !might_hide_) {
-    return;
-  }
-
-  alpha_.animate_to(1.f);
-
-  visible_    = true;
-  might_hide_ = false;
-}
-
-
-
-
-
-void progress_circle::hide() {
-  if (!visible_ || might_hide_) {
-    return;
-  }
-
-  alpha_.animate_to(0.f);
-
-  might_hide_ = true;
-}
-
-
-
-
-
-void progress_circle::on_update() {
-  if (might_hide_ && *alpha_ < 1e-4f) {
-    might_hide_ = false;
-    visible_    = false;
-    alpha_.set_to(0.f);
-    invalidate();
-  }
-
-  if (visible_) {
+void progress_circle::on_update_fw() {
+  if (visible()) {
     invalidate();
   }
 }
@@ -103,13 +60,13 @@ namespace {
 
 
 void progress_circle::on_render() {
-  if (!visible_) {
+  if (!visible()) {
     return;
   }
 
   shader_.use();
   glUniform1f(shader_progress_, value_);
-  glUniform1f(shader_alpha_,    *alpha_);
+  glUniform1f(shader_alpha_,    opacity());
 
   float rotation = std::chrono::duration_cast<std::chrono::milliseconds>(
       std::chrono::steady_clock::now().time_since_epoch()).count() / 100.f;

@@ -4,18 +4,16 @@
 #ifndef PHODISPL_MESSAGE_BOX_HPP_INCLUDED
 #define PHODISPL_MESSAGE_BOX_HPP_INCLUDED
 
-#include "phodispl/animation.hpp"
+#include "phodispl/fade-widget.hpp"
 
 #include <string>
 
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
 
-#include <win/widget.hpp>
 
 
-
-class message_box : public win::widget {
+class message_box : public fade_widget {
   public:
     message_box();
 
@@ -23,16 +21,9 @@ class message_box : public win::widget {
 
     void message(const std::string&, const std::string&);
 
-    void show();
-    void hide();
-
 
 
   private:
-    bool             visible_   {false};
-    bool             might_hide_{false};
-    animation<float> alpha_;
-
     std::string      header_base_;
     std::u32string   header_;
     std::string      message_base_;
@@ -47,7 +38,6 @@ class message_box : public win::widget {
 
 
 
-    void on_update() override;
     void on_render() override;
     void on_layout(win::vec2<std::optional<float>>& /*size*/) override;
 
