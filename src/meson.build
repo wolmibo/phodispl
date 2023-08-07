@@ -63,6 +63,7 @@ source_files = [
   'image.cpp',
   'main.cpp',
   'message-box.cpp',
+  'nav-button.cpp',
   'path-compare.cpp',
   'progress-circle.cpp',
   'window.cpp',

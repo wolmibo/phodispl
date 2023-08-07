@@ -30,14 +30,36 @@ window::window(std::vector<std::filesystem::path> sl) :
   logcerr::verbose("font file: {}", font_path.string());
   font(font_path);
 
-  add_child(&image_display_, win::widget_constraint {
+  add_child(&image_display_, win::widget_constraint{
       .width  = win::dimension_fill_constraint{},
       .height = win::dimension_fill_constraint{},
-      .margin = win::margin_constraint {
+      .margin = win::margin_constraint{
         .start  = 0.f,
         .end    = 0.f,
         .top    = 0.f,
         .bottom = 0.f
+      }
+  });
+
+  add_child(&nav_left_, win::widget_constraint{
+      .width  = 64.f,
+      .height = 64.f,
+      .margin = win::margin_constraint{
+        .start  = 24.f,
+        .end    = {},
+        .top    = 24.f,
+        .bottom = 24.f,
+      }
+  });
+
+  add_child(&nav_right_, win::widget_constraint{
+      .width  = 64.f,
+      .height = 64.f,
+      .margin = win::margin_constraint{
+        .start  = {},
+        .end    = 24.f,
+        .top    = 24.f,
+        .bottom = 24.f,
       }
   });
 }

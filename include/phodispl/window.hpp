@@ -5,6 +5,7 @@
 #include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-display.hpp"
 #include "phodispl/image-source.hpp"
+#include "phodispl/nav-button.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -32,6 +33,9 @@ class window : public win::application {
   private:
     image_display                    image_display_;
     image_source                     image_source_;
+
+    nav_button                       nav_left_;
+    nav_button                       nav_right_;
 
     std::chrono::steady_clock::time_point
                                      last_left_click_{};
