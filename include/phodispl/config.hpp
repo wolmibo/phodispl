@@ -36,6 +36,9 @@ struct config {
     animation_curve           animation_view_snap_curve{animation_curve::sinusoidal};
     std::chrono::milliseconds animation_view_snap_ms{0};
 
+    animation_curve           animation_ui_fade_curve{animation_curve::sinusoidal};
+    std::chrono::milliseconds animation_ui_fade_ms{250};
+
 
 
     uint32_t    theme_heading_size {32};

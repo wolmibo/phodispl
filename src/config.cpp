@@ -181,6 +181,9 @@ config::config(std::string_view content, bool strict) {
       update(animation_view_snap_curve, animation->unique_key("view-snap-interpolation"));
       update(animation_view_snap_curve, animation->unique_key("view-snap-curve"));
       update(animation_view_snap_ms,    animation->unique_key("view-snap-ms"));
+
+      update(animation_ui_fade_curve,   animation->unique_key("ui-fade-curve"));
+      update(animation_ui_fade_ms,      animation->unique_key("ui-fade-ms"));
     }
 
 
