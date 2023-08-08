@@ -184,6 +184,9 @@ config::config(std::string_view content, bool strict) {
 
       update(animation_ui_fade_curve,   animation->unique_key("ui-fade-curve"));
       update(animation_ui_fade_ms,      animation->unique_key("ui-fade-ms"));
+
+      update(animation_ui_highlight_curve, animation->unique_key("ui-highlight-curve"));
+      update(animation_ui_highlight_ms,    animation->unique_key("ui-highlight-ms"));
     }
 
 
@@ -284,6 +287,10 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(animation_view_next_ms);
   ASSEQ(animation_view_snap_curve);
   ASSEQ(animation_view_snap_ms);
+  ASSEQ(animation_ui_fade_curve);
+  ASSEQ(animation_ui_fade_ms);
+  ASSEQ(animation_ui_highlight_curve);
+  ASSEQ(animation_ui_highlight_ms);
 
   ASSEQ(theme_heading_size);
   ASSEQ(theme_text_size);
@@ -306,6 +313,7 @@ void config::assert_equal(const config& rhs) const {
   ASSEQ(fl_single_dir);
   ASSEQ(fl_multi_file);
   ASSEQ(fl_multi_dir);
+  ASSEQ(fl_compare_function);
 
   ASSEQ(il_show_loading);
   ASSEQ(il_partial);

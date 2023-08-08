@@ -32,16 +32,13 @@ class nav_button : public fade_widget {
     GLint                                 shader_color_front_;
     GLint                                 shader_trafo_;
     GLint                                 shader_scale_x_;
+    GLint                                 shader_scale_r_;
 
     std::chrono::steady_clock::time_point last_movement_;
+    animation<float>                      highlight_;
+    bool                                  mouse_down_{false};
 
     std::move_only_function<void(void)>   on_click_;
-
-    enum class state {
-      normal,
-      hover,
-      down,
-    }                mouse_state_{state::normal};
 
 
     void on_render() override;

@@ -19,7 +19,7 @@ nav_button::nav_button(bool left, std::move_only_function<void(void)> on_click) 
   quad_{gl::primitives::quad()},
 
   shader_{
-    resources::shader_plane_object_vs(),
+    resources::shader_nav_button_vs(),
     resources::shader_nav_button_fs()
   },
 
@@ -27,6 +27,13 @@ nav_button::nav_button(bool left, std::move_only_function<void(void)> on_click) 
   shader_color_front_{shader_.uniform("colorFront")},
   shader_trafo_      {shader_.uniform("transform")},
   shader_scale_x_    {shader_.uniform("scaleX")},
+  shader_scale_r_    {shader_.uniform("scaleR")},
+
+  highlight_(
+      0.f,
+      global_config().animation_ui_highlight_ms.count(),
+      global_config().animation_ui_highlight_curve
+  ),
 
   on_click_{std::move(on_click)}
 {}
@@ -46,7 +53,11 @@ void nav_button::show() {
 
 
 void nav_button::on_update() {
-  if (mouse_state_ == state::normal &&
+  if (highlight_.changed()) {
+    invalidate();
+  }
+
+  if (!mouse_down_ &&
       std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::steady_clock::now() - last_movement_).count() > 2) {
     fade_widget::hide();
@@ -73,22 +84,18 @@ void nav_button::on_render() {
 
   shader_.use();
 
-  switch (mouse_state_) {
-    case state::normal:
-      gray(shader_color_front_, 0.f, opacity() * 0.5f);
-      gray(shader_color_back_,  1.f, opacity() * 0.8f);
-      break;
-    case state::hover:
-      gray(shader_color_front_, 0.f, opacity() * 0.7f);
-      gray(shader_color_back_,  1.f, opacity() * 0.9f);
-      break;
-    case state::down:
-      gray(shader_color_front_, 0.2f, opacity() * 0.8f);
-      gray(shader_color_back_,   1.f, opacity());
-      break;
+  if (mouse_down_) {
+    gray(shader_color_front_, 0.2f, opacity() * 0.8f);
+    gray(shader_color_back_,   1.f, opacity());
+
+  } else {
+    gray(shader_color_front_, 0.f, opacity() * (0.5f + *highlight_ * 0.2f));
+    gray(shader_color_back_,  1.f, opacity() * (0.8f + *highlight_ * 0.1f));
   }
 
+
   glUniform1f(shader_scale_x_, left_ ? -1.f : 1.f);
+  glUniform1f(shader_scale_r_, 1.1f - (*highlight_ * 0.1f));
 
   win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
   quad_.draw();
@@ -100,7 +107,8 @@ void nav_button::on_render() {
 
 void nav_button::on_pointer_enter(win::vec2<float> /*pos*/) {
   last_movement_ = std::chrono::steady_clock::now();
-  mouse_state_ = state::hover;
+  highlight_.animate_to(1.f);
+
   invalidate();
 }
 
@@ -108,7 +116,8 @@ void nav_button::on_pointer_enter(win::vec2<float> /*pos*/) {
 
 void nav_button::on_pointer_leave() {
   last_movement_ = std::chrono::steady_clock::now();
-  mouse_state_ = state::normal;
+  highlight_.animate_to(0.f);
+
   invalidate();
 }
 
@@ -117,7 +126,8 @@ void nav_button::on_pointer_leave() {
 void nav_button::on_pointer_press(win::vec2<float> /*pos*/, win::mouse_button btn) {
   if (btn == win::mouse_button::left) {
     last_movement_ = std::chrono::steady_clock::now();
-    mouse_state_ = state::down;
+    mouse_down_ = true;
+
     invalidate();
   }
 }
@@ -125,12 +135,13 @@ void nav_button::on_pointer_press(win::vec2<float> /*pos*/, win::mouse_button bt
 
 
 void nav_button::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button btn) {
-  if (btn == win::mouse_button::left && mouse_state_ == state::down) {
+  if (btn == win::mouse_button::left && mouse_down_) {
     last_movement_ = std::chrono::steady_clock::now();
-    mouse_state_ = state::hover;
+    mouse_down_ = false;
     if (visible() && on_click_) {
       on_click_();
     }
+
     invalidate();
   }
 }
