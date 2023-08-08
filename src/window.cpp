@@ -33,7 +33,10 @@ window::window(std::vector<std::filesystem::path> sl) :
       image_display_.active(std::move(img));
     },
     std::move(sl), *this
-  }
+  },
+
+  nav_left_ {[this]() { image_source_.previous_image(); }},
+  nav_right_{[this]() { image_source_.next_image();     }}
 {
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 
