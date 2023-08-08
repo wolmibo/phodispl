@@ -142,7 +142,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
 
 
 void win::window_wayland::on_new_parent() {
-  wayland_.input_manager().register_listener(surface_.get(), parent());
+  wayland_.input_manager().register_listener(surface_.get(), parent(), parent());
 }
 
 

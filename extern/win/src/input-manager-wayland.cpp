@@ -1,5 +1,6 @@
 #include "win/input-manager-wayland.hpp"
 #include "win/modifier.hpp"
+#include "win/widget.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-wayland.hpp"
 
@@ -17,9 +18,10 @@
 
 void win::input_manager_wayland::select_listener(wl_surface* surface) {
   if (auto index = listeners_.find_index(surface)) {
-    active_listener_ = listeners_.value(*index);
+    std::tie(active_listener_, active_widget_) = listeners_.value(*index);
   } else {
     active_listener_ = nullptr;
+    active_widget_   = nullptr;
     logcerr::debug("wayland input: active surface not found");
   }
 }
@@ -30,12 +32,13 @@ void win::input_manager_wayland::select_listener(wl_surface* surface) {
 
 void win::input_manager_wayland::register_listener(
     wl_surface*      surface,
-    window_listener* listener
+    window_listener* listener,
+    widget*          widg
 ) {
   if (auto index = listeners_.find_index(surface)) {
-    listeners_.value(*index) = listener;
+    listeners_.value(*index) = std::make_pair(listener, widg);
   } else {
-    listeners_.emplace(surface, listener);
+    listeners_.emplace(surface, listener, widg);
   }
 }
 
@@ -43,8 +46,14 @@ void win::input_manager_wayland::register_listener(
 
 void win::input_manager_wayland::unregister_listener(wl_surface* surface) {
   if (auto index = listeners_.find_index(surface)) {
-    if (active_listener_ == listeners_.value(*index)) {
+    auto [list, wid] = listeners_.value(*index);
+
+    if (active_listener_ == list) {
       active_listener_ = nullptr;
+    }
+
+    if (active_widget_ == wid) {
+      active_widget_ = nullptr;
     }
 
     listeners_.erase(*index);
@@ -224,13 +233,13 @@ namespace {
 
 
     if (state->enter > 0) {
-      self->event(&win::window_listener::on_pointer_enter, state->position);
+      self->widget_event(&win::widget::pointer_move, state->position);
     }
 
 
 
     if (state->moved) {
-      self->event(&win::window_listener::on_pointer_move, state->position);
+      self->widget_event(&win::widget::pointer_move, state->position);
     }
 
     if (state->delta != win::vec2<float>{0.f, 0.f}) {
@@ -241,10 +250,10 @@ namespace {
 
     for (size_t i = 0; i < state->pressed.size(); ++i) {
       if (state->pressed.value(i) > 0) {
-        self->event(&win::window_listener::on_pointer_press,
+        self->widget_event(&win::widget::pointer_press,
             state->position, static_cast<win::mouse_button>(state->pressed.key(i)));
       } else if (state->pressed.value(i) < 0) {
-        self->event(&win::window_listener::on_pointer_release,
+        self->widget_event(&win::widget::pointer_release,
             state->position, static_cast<win::mouse_button>(state->pressed.key(i)));
       }
     }
@@ -252,7 +261,7 @@ namespace {
 
 
     if (state->enter < 0) {
-      self->event(&win::window_listener::on_pointer_leave);
+      self->widget_event(&win::widget::pointer_leave);
     }
 
 

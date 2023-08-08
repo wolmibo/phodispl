@@ -16,6 +16,7 @@
 namespace win {
 
 class window_listener;
+class widget;
 
 struct pointer_state;
 struct keyboard_state;
@@ -36,7 +37,7 @@ class input_manager_wayland {
     void seat(wl_ptr<wl_seat>);
     void gestures(wl_ptr<zwp_pointer_gestures_v1>);
 
-    void register_listener  (wl_surface*, window_listener*);
+    void register_listener  (wl_surface*, window_listener*, widget*);
     void unregister_listener(wl_surface*);
 
     [[nodiscard]] wl_seat*                 seat()     const { return seat_.get();     }
@@ -49,6 +50,14 @@ class input_manager_wayland {
       if (active_listener_ != nullptr) {
         std::invoke(std::forward<Fnc>(fnc),
             active_listener_, std::forward<Args>(args)...);
+      }
+    }
+
+    template<typename Fnc, typename... Args>
+    void widget_event(Fnc&& fnc, Args&&... args) {
+      if (active_widget_ != nullptr) {
+        std::invoke(std::forward<Fnc>(fnc),
+            active_widget_, std::forward<Args>(args)...);
       }
     }
 
@@ -72,8 +81,10 @@ class input_manager_wayland {
     wl_ptr<zwp_pointer_gesture_swipe_v1>     swipe_;
     wl_ptr<zwp_pointer_gesture_pinch_v1>     pinch_;
 
-    chaos_map<wl_surface*, window_listener*> listeners_;
+    chaos_map<wl_surface*, std::pair<window_listener*, widget*>>
+                                             listeners_;
     window_listener*                         active_listener_{nullptr};
+    widget*                                  active_widget_{nullptr};
 
     std::unique_ptr<win::pointer_state>      pointer_state_;
     std::unique_ptr<win::keyboard_state>     keyboard_state_;

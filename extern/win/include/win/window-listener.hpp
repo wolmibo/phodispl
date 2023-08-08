@@ -32,13 +32,6 @@ class window_listener {
 
     virtual void on_scroll(vec2<float> /*position*/, vec2<float> /*direction*/) {}
 
-    virtual void on_pointer_press  (vec2<float> /*position*/, mouse_button /*button*/) {}
-    virtual void on_pointer_release(vec2<float> /*position*/, mouse_button /*button*/) {}
-
-    virtual void on_pointer_enter(vec2<float> /*entry_point*/)  {}
-    virtual void on_pointer_move (vec2<float> /*new_position*/) {}
-    virtual void on_pointer_leave(){}
-
     virtual void on_swipe_begin (vec2<float> /*position*/, uint32_t /*finger_count*/) {}
     virtual void on_swipe_update(vec2<float> /*position*/) {}
     virtual void on_swipe_cancel() {}

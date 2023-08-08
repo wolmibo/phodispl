@@ -1,3 +1,4 @@
+#include "win/mouse-button.hpp"
 #include "win/viewport.hpp"
 #include "win/widget-constraint.hpp"
 #include "win/widget.hpp"
@@ -168,5 +169,76 @@ void win::widget::viewport(const win::viewport& vp) {
   root_ptr_ = &vp;
   for (const auto& [child, _]: children_) {
     child->viewport(viewport());
+  }
+}
+
+
+
+
+
+namespace {
+  [[nodiscard]] bool affects(win::vec2<float> pos, const win::widget& widget) {
+    auto lpos  = widget.logical_position();
+    auto lsize = widget.logical_size();
+
+    return lpos.x <= pos.x && pos.x <= lpos.x + lsize.x &&
+      lpos.y <= pos.y && pos.y <= lpos.y + lsize.y;
+  }
+}
+
+
+
+void win::widget::pointer_press(vec2<float> pos, mouse_button button) {
+  on_pointer_press(pos, button);
+
+  for (const auto& [child, _]: children_) {
+    if (affects(pos, *child)) {
+      child->pointer_press(pos, button);
+    }
+  }
+}
+
+
+
+void win::widget::pointer_release(vec2<float> pos, mouse_button button) {
+  on_pointer_release(pos, button);
+
+  for (const auto& [child, _]: children_) {
+    if (affects(pos, *child)) {
+      child->pointer_release(pos, button);
+    }
+  }
+}
+
+
+
+void win::widget::pointer_move(vec2<float> pos) {
+  if (!mouse_entered_) {
+    mouse_entered_ = true;
+    on_pointer_enter(pos);
+  } else {
+    on_pointer_move(pos);
+  }
+
+  for (const auto& [child, _]: children_) {
+    if (affects(pos, *child)) {
+      child->pointer_move(pos);
+
+    } else if (child->mouse_entered_) {
+      child->pointer_leave();
+    }
+  }
+}
+
+
+
+void win::widget::pointer_leave() {
+  mouse_entered_ = false;
+  on_pointer_leave();
+
+  for (const auto& [child, _]: children_) {
+    if (child->mouse_entered_) {
+      child->pointer_leave();
+    }
   }
 }

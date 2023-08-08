@@ -249,9 +249,9 @@ void win::window_glfw::mouse_btn_cb(
   glfwGetCursorPos(window, &x, &y);
 
   if (action == GLFW_PRESS) {
-    glfw->parent()->on_pointer_press(make_vec2<float>(x, y), convert_button(button));
+    glfw->parent()->pointer_press(make_vec2<float>(x, y), convert_button(button));
   } else {
-    glfw->parent()->on_pointer_release(make_vec2<float>(x, y), convert_button(button));
+    glfw->parent()->pointer_release(make_vec2<float>(x, y), convert_button(button));
   }
 }
 
@@ -264,9 +264,9 @@ void win::window_glfw::mouse_enter_cb(GLFWwindow* window, int enter) {
     double x{0.};
     double y{0.};
     glfwGetCursorPos(window, &x, &y);
-    glfw->parent()->on_pointer_enter(make_vec2<float>(x, y));
+    glfw->parent()->pointer_move(make_vec2<float>(x, y));
   } else {
-    glfw->parent()->on_pointer_leave();
+    glfw->parent()->pointer_leave();
   }
 }
 
@@ -288,5 +288,5 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
 void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
   auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
-  glfw->parent()->on_pointer_move(make_vec2<float>(x, y));
+  glfw->parent()->pointer_move(make_vec2<float>(x, y));
 }

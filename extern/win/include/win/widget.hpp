@@ -4,6 +4,7 @@
 #ifndef WIN_WIDGET_HPP_INCLUDED
 #define WIN_WIDGET_HPP_INCLUDED
 
+#include "win/mouse-button.hpp"
 #include "win/types.hpp"
 #include "win/vec2.hpp"
 #include "win/widget-constraint.hpp"
@@ -61,6 +62,14 @@ class widget {
 
 
 
+    void pointer_press  (vec2<float>, mouse_button);
+    void pointer_release(vec2<float>, mouse_button);
+
+    void pointer_move (vec2<float>);
+    void pointer_leave();
+
+
+
 
 
   protected:
@@ -70,6 +79,13 @@ class widget {
     virtual void on_render() {}
     virtual void on_update() {}
     virtual void on_layout(vec2<std::optional<float>>& /*size*/) {}
+
+    virtual void on_pointer_press  (vec2<float> /*position*/, mouse_button /*button*/) {}
+    virtual void on_pointer_release(vec2<float> /*position*/, mouse_button /*button*/) {}
+
+    virtual void on_pointer_enter(vec2<float> /*entry_point*/)  {}
+    virtual void on_pointer_move (vec2<float> /*new_position*/) {}
+    virtual void on_pointer_leave(){}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 
@@ -97,6 +113,8 @@ class widget {
     std::vector<std::pair<widget*, widget_constraint>>
                             children_;
     const win::viewport*    root_ptr_{nullptr};
+
+    bool                    mouse_entered_{false};
 
     void viewport(const win::viewport&);
 
