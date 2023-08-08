@@ -16,7 +16,7 @@
 
 class nav_button : public fade_widget {
   public:
-    nav_button(std::move_only_function<void(void)>);
+    nav_button(bool, std::move_only_function<void(void)>);
 
 
 
@@ -25,10 +25,13 @@ class nav_button : public fade_widget {
 
 
   private:
+    bool                                  left_;
     gl::mesh                              quad_;
     gl::program                           shader_;
-    GLint                                 shader_color_;
+    GLint                                 shader_color_back_;
+    GLint                                 shader_color_front_;
     GLint                                 shader_trafo_;
+    GLint                                 shader_scale_x_;
 
     std::chrono::steady_clock::time_point last_movement_;
 

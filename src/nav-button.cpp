@@ -3,22 +3,30 @@
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
 #include "resources.hpp"
-#include "win/mouse-button.hpp"
-#include "win/types.hpp"
+
 #include <chrono>
+#include <string_view>
+
+#include <win/mouse-button.hpp>
+#include <win/types.hpp>
+#include <win/viewport.hpp>
 
 
 
-nav_button::nav_button(std::move_only_function<void(void)> on_click) :
+nav_button::nav_button(bool left, std::move_only_function<void(void)> on_click) :
+  left_{left},
+
   quad_{gl::primitives::quad()},
 
   shader_{
     resources::shader_plane_object_vs(),
-    resources::shader_plane_solid_fs()
+    resources::shader_nav_button_fs()
   },
 
-  shader_color_{shader_.uniform("color")},
-  shader_trafo_{shader_.uniform("transform")},
+  shader_color_back_ {shader_.uniform("colorBack")},
+  shader_color_front_{shader_.uniform("colorFront")},
+  shader_trafo_      {shader_.uniform("transform")},
+  shader_scale_x_    {shader_.uniform("scaleX")},
 
   on_click_{std::move(on_click)}
 {}
@@ -49,25 +57,40 @@ void nav_button::on_update() {
 
 
 
+namespace {
+  void gray(GLint uni, float value, float alpha) {
+    glUniform4f(uni, value * alpha, value * alpha, value * alpha, alpha);
+  }
+}
+
+
+
+
 void nav_button::on_render() {
   if (!visible()) {
     return;
   }
 
   shader_.use();
+
   switch (mouse_state_) {
     case state::normal:
-      glUniform4f(shader_color_, opacity(), 0.f, opacity(), opacity());
+      gray(shader_color_front_, 0.f, opacity() * 0.5f);
+      gray(shader_color_back_,  1.f, opacity() * 0.8f);
       break;
     case state::hover:
-      glUniform4f(shader_color_, opacity(), 0.f, 0.f, opacity());
+      gray(shader_color_front_, 0.f, opacity() * 0.7f);
+      gray(shader_color_back_,  1.f, opacity() * 0.9f);
       break;
     case state::down:
-      glUniform4f(shader_color_, 0.f, 0.f, opacity(), opacity());
+      gray(shader_color_front_, 0.2f, opacity() * 0.8f);
+      gray(shader_color_back_,   1.f, opacity());
       break;
   }
-  win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
 
+  glUniform1f(shader_scale_x_, left_ ? -1.f : 1.f);
+
+  win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
   quad_.draw();
 }
 

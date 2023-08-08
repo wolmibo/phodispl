@@ -9,6 +9,8 @@ resource_files = [
   ['shader_progress_circle_vs', shader_dir / 'vertex/progress-circle.vs.glsl'],
   ['shader_progress_circle_fs', shader_dir / 'fragment/progress-circle.fs.glsl'],
 
+  ['shader_nav_button_fs',      shader_dir / 'fragment/nav-button.fs.glsl'],
+
   ['shader_crossfade_vs',       shader_dir / 'vertex/crossfade.vs.glsl'],
   ['shader_crossfade_fs',       shader_dir / 'fragment/crossfade.fs.glsl'],
 ]

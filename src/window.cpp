@@ -35,8 +35,8 @@ window::window(std::vector<std::filesystem::path> sl) :
     std::move(sl), *this
   },
 
-  nav_left_ {[this]() { image_source_.previous_image(); }},
-  nav_right_{[this]() { image_source_.next_image();     }}
+  nav_left_ {true,  [this]() { image_source_.previous_image(); }},
+  nav_right_{false, [this]() { image_source_.next_image();     }}
 {
   logcerr::verbose("window backend: {}", win::to_string(backend()));
 
