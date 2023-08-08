@@ -93,7 +93,14 @@ void win::widget::render() {
 
 
 void win::widget::update() {
+  for (auto& func: update_functions_) {
+    if (func) {
+      func();
+    }
+  }
+
   on_update();
+
   for (const auto& [child, _]: children_) {
     child->update();
   }
@@ -253,4 +260,12 @@ void win::widget::scroll(vec2<float> pos, vec2<float> delta) {
       child->scroll(pos, delta);
     }
   }
+}
+
+
+
+
+
+void win::widget::register_update_function(std::move_only_function<void(void)> func) {
+  update_functions_.emplace_back(std::move(func));
 }

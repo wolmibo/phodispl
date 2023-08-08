@@ -9,6 +9,7 @@
 #include "win/vec2.hpp"
 #include "win/widget-constraint.hpp"
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -70,6 +71,8 @@ class widget {
 
     void scroll(vec2<float>, vec2<float>);
 
+    void register_update_function(std::move_only_function<void(void)>);
+
 
 
 
@@ -119,6 +122,9 @@ class widget {
     const win::viewport*    root_ptr_{nullptr};
 
     bool                    mouse_entered_{false};
+
+    std::vector<std::move_only_function<void(void)>>
+                            update_functions_;
 
     void viewport(const win::viewport&);
 

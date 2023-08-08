@@ -37,7 +37,7 @@ void nav_button::show() {
 
 
 
-void nav_button::on_update_fw() {
+void nav_button::on_update() {
   if (mouse_state_ == state::normal &&
       std::chrono::duration_cast<std::chrono::seconds>(
         std::chrono::steady_clock::now() - last_movement_).count() > 2) {

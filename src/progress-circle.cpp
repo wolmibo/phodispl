@@ -34,7 +34,7 @@ void progress_circle::value(float value) {
 
 
 
-void progress_circle::on_update_fw() {
+void progress_circle::on_update() {
   if (visible()) {
     invalidate();
   }

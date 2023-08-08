@@ -9,7 +9,9 @@ fade_widget::fade_widget() :
     global_config().animation_ui_fade_ms.count(),
     global_config().animation_ui_fade_curve
   )
-{}
+{
+  register_update_function(std::bind_front(&fade_widget::update, this));
+}
 
 
 
@@ -44,7 +46,7 @@ void fade_widget::hide() {
 
 
 
-void fade_widget::on_update() {
+void fade_widget::update() {
   if (might_hide_ && *opacity_ < 1e-4f) {
     might_hide_ = false;
     visible_    = false;
@@ -55,6 +57,4 @@ void fade_widget::on_update() {
   if (opacity_.changed()) {
     invalidate();
   }
-
-  on_update_fw();
 }

@@ -29,8 +29,8 @@ class progress_circle : public fade_widget {
 
 
 
-    void on_update_fw() override;
-    void on_render()    override;
+    void on_update() override;
+    void on_render() override;
 };
 
 #endif // PHODISPL_PROGRESS_CIRCLE_HPP_INCLUDED

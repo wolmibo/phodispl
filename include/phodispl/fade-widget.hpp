@@ -22,11 +22,6 @@ class fade_widget : public win::widget {
 
 
 
-  protected:
-    virtual void on_update_fw() {};
-
-
-
   private:
     bool             visible_   {false};
     bool             might_hide_{false};
@@ -34,7 +29,7 @@ class fade_widget : public win::widget {
 
 
 
-    void on_update() final;
+    void update();
 };
 
 #endif // PHODISPL_FADE_WIDGET_HPP_INCLUDED

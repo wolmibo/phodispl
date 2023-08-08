@@ -41,8 +41,8 @@ class nav_button : public fade_widget {
     }                mouse_state_{state::normal};
 
 
-    void on_render()    override;
-    void on_update_fw() override;
+    void on_render() override;
+    void on_update() override;
 
 
     void on_pointer_enter  (win::vec2<float> /*pos*/)                            override;
