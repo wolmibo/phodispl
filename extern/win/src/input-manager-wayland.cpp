@@ -243,7 +243,7 @@ namespace {
     }
 
     if (state->delta != win::vec2<float>{0.f, 0.f}) {
-      self->event(&win::window_listener::on_scroll, state->position, state->delta);
+      self->widget_event(&win::widget::scroll, state->position, state->delta);
     }
 
 

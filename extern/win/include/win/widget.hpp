@@ -68,6 +68,8 @@ class widget {
     void pointer_move (vec2<float>);
     void pointer_leave();
 
+    void scroll(vec2<float>, vec2<float>);
+
 
 
 
@@ -86,6 +88,8 @@ class widget {
     virtual void on_pointer_enter(vec2<float> /*entry_point*/)  {}
     virtual void on_pointer_move (vec2<float> /*new_position*/) {}
     virtual void on_pointer_leave(){}
+
+    virtual void on_scroll(vec2<float> /*position*/, vec2<float> /*direction*/) {}
 
     void compute_layout(vec2<float>, vec2<float>, float);
 

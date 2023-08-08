@@ -242,3 +242,15 @@ void win::widget::pointer_leave() {
     }
   }
 }
+
+
+
+void win::widget::scroll(vec2<float> pos, vec2<float> delta) {
+  on_scroll(pos, delta);
+
+  for (const auto& [child, _]: children_) {
+    if (affects(pos, *child)) {
+      child->scroll(pos, delta);
+    }
+  }
+}

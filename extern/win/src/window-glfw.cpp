@@ -279,8 +279,7 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
   double y{0.};
   glfwGetCursorPos(window, &x, &y);
 
-  glfw->parent()->on_scroll(make_vec2<float>(x, y),
-      make_vec2<float>(dx * -15.f, dy * 15.f));
+  glfw->parent()->scroll(make_vec2<float>(x, y), make_vec2<float>(dx * -15.f, dy * 15.f));
 }
 
 

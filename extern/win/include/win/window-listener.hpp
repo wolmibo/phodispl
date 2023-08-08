@@ -30,8 +30,6 @@ class window_listener {
     virtual void on_key_leave() {}
     virtual void on_key_enter() {}
 
-    virtual void on_scroll(vec2<float> /*position*/, vec2<float> /*direction*/) {}
-
     virtual void on_swipe_begin (vec2<float> /*position*/, uint32_t /*finger_count*/) {}
     virtual void on_swipe_update(vec2<float> /*position*/) {}
     virtual void on_swipe_cancel() {}
