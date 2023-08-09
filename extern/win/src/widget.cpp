@@ -189,7 +189,7 @@ namespace {
     auto lsize = widget.logical_size();
 
     return lpos.x <= pos.x && pos.x <= lpos.x + lsize.x &&
-      lpos.y <= pos.y && pos.y <= lpos.y + lsize.y;
+      lpos.y <= pos.y && pos.y <= lpos.y + lsize.y && widget.stencil(pos);
   }
 }
 

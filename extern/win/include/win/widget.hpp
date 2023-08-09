@@ -73,6 +73,7 @@ class widget {
 
     void register_update_function(std::move_only_function<void(void)>);
 
+    [[nodiscard]] virtual bool stencil(vec2<float> /*position*/) const { return true; }
 
 
 

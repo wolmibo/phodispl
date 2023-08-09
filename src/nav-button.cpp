@@ -1,11 +1,12 @@
 #include "phodispl/nav-button.hpp"
-#include "gl/primitives.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
 #include "resources.hpp"
 
 #include <chrono>
 #include <string_view>
+
+#include <gl/primitives.hpp>
 
 #include <win/mouse-button.hpp>
 #include <win/types.hpp>
@@ -72,6 +73,12 @@ namespace {
   void gray(GLint uni, float value, float alpha) {
     glUniform4f(uni, value * alpha, value * alpha, value * alpha, alpha);
   }
+
+
+
+  [[nodiscard]] float inv_scale(float value) {
+    return 1.1f - (value * 0.1f);
+  }
 }
 
 
@@ -95,7 +102,7 @@ void nav_button::on_render() {
 
 
   glUniform1f(shader_scale_x_, left_ ? -1.f : 1.f);
-  glUniform1f(shader_scale_r_, 1.1f - (*highlight_ * 0.1f));
+  glUniform1f(shader_scale_r_, inv_scale(*highlight_));
 
   win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
   quad_.draw();
@@ -144,4 +151,16 @@ void nav_button::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button 
 
     invalidate();
   }
+}
+
+
+
+
+
+bool nav_button::stencil(win::vec2<float> pos) const {
+  auto center = logical_position() + 0.5f * logical_size();
+  auto diff   = win::vec2_div((pos - center) * inv_scale(*highlight_),
+                              0.5f * logical_size());
+
+  return diff.x * diff.x + diff.y * diff.y <= 1.f;
 }
