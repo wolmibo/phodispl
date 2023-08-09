@@ -34,7 +34,7 @@ pixglot_dep = dependency(
     'install_as_subproject=false',
     'tests=false'
   ],
-  version: '>=0.1.1'
+  version: '>=0.1.2'
 )
 
 
