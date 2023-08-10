@@ -12,6 +12,7 @@
 
 #include <pixglot/exception.hpp>
 #include <pixglot/frame.hpp>
+#include <pixglot/metadata.hpp>
 #include <pixglot/progress-token.hpp>
 
 
@@ -52,9 +53,8 @@ class image :
     [[nodiscard]] operator bool()  const { return loading_started_;   }
 
     [[nodiscard]] float progress() const { return ptoken_.progress(); }
-    [[nodiscard]] bool  loading()  const {
-      return *this && !ptoken_.finished() && !error_;
-    }
+    [[nodiscard]] bool  loading()  const { return loading_started_ && !loading_finished_;}
+    [[nodiscard]] bool  finished() const { return loading_finished_; }
 
     void abort_loading();
 
@@ -71,13 +71,18 @@ class image :
 
 
 
+    [[nodiscard]] const pixglot::metadata& metadata() const { return metadata_; }
+    [[nodiscard]] pixglot::codec           codec()    const { return codec_;    }
+
+
 
 
 
   private:
     std::filesystem::path                    path_;
 
-    std::atomic<bool>                        loading_started_{false};
+    std::atomic<bool>                        loading_started_ {false};
+    std::atomic<bool>                        loading_finished_{false};
     pixglot::progress_token                  ptoken_;
     std::unique_ptr<pixglot::base_exception> error_;
 
@@ -88,6 +93,9 @@ class image :
 
     std::chrono::steady_clock::time_point    frame_partial_load_begin_;
     std::chrono::steady_clock::time_point    frame_partial_last_update_;
+
+    pixglot::metadata                        metadata_;
+    pixglot::codec                           codec_{pixglot::codec::ppm};
 
 
 

@@ -47,7 +47,8 @@ void image::clear() {
 
   logcerr::debug("cleared image \"{}\" ({})", path_.string(), ptr_to_int(this));
 
-  loading_started_ = false;
+  loading_started_  = false;
+  loading_finished_ = false;
   error_.reset();
   frames_.clear();
   ptoken_ = {};
@@ -82,7 +83,7 @@ namespace {
 
 
 void image::load() {
-  if (loading_started_) {
+  if (loading_started_ || loading_finished_) {
     logcerr::debug("attempting to load \"{}\"", path_.string());
     return;
   }
@@ -140,6 +141,10 @@ void image::load() {
         frame_sequence_.pause();
       }
     }
+
+    metadata_ = std::move(img.metadata());
+    codec_    = img.codec();
+
   } catch (pixglot::decoding_aborted& ex) {
     logcerr::debug(ex.message());
     clear();
@@ -159,6 +164,7 @@ void image::load() {
   damage();
 
   logcerr::debug("finished loading \"{}\"", path_.string());
+  loading_finished_ = true;
 }
 
 
