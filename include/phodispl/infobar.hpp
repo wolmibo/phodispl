@@ -9,6 +9,14 @@
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
 
+#include <pixglot/codecs.hpp>
+
+namespace pixglot {
+  class frame_view;
+}
+
+class image;
+
 
 
 class infobar : public fade_widget {
@@ -16,6 +24,9 @@ class infobar : public fade_widget {
     infobar();
 
     void show();
+
+    void set_frame(const pixglot::frame_view&);
+    void set_image(const image&);
 
 
 
@@ -27,6 +38,12 @@ class infobar : public fade_widget {
 
     std::chrono::steady_clock::time_point mouse_leave_;
     bool                                  mouse_inside_{false};
+
+    std::u32string                        str_format_;
+    std::u32string                        str_size_;
+    pixglot::codec                        codec_;
+    std::u32string                        str_name_;
+    std::u32string                        str_path_;
 
     void on_render() override;
     void on_update() override;

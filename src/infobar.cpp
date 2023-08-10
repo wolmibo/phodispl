@@ -1,5 +1,6 @@
 #include "phodispl/infobar.hpp"
 #include "phodispl/fade-widget.hpp"
+#include "phodispl/image.hpp"
 #include "resources.hpp"
 
 #include <codecvt>
@@ -10,12 +11,24 @@
 #include <gl/primitives.hpp>
 
 #include <pixglot/codecs.hpp>
+#include <pixglot/frame.hpp>
 #include <pixglot/frame-source-info.hpp>
 
 
 
 
 namespace {
+  template<typename T>
+  [[nodiscard]] bool assign_diff(T& target, T source) {
+    if (source != target) {
+      target = std::move(source);
+      return true;
+    }
+    return false;
+  }
+
+
+
   [[nodiscard]] std::u32string convert_string(std::string_view str) {
     return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
               .from_bytes(str.begin(), str.end());
@@ -107,6 +120,25 @@ namespace {
 
 
 
+void infobar::set_frame(const pixglot::frame_view& frame) {
+  invalidate(assign_diff(str_format_, format_fsi (frame.source_info())));
+  invalidate(assign_diff(str_size_,   format_size(frame.width(), frame.height())));
+}
+
+
+
+
+
+void infobar::set_image(const image& img) {
+  invalidate(assign_diff(str_path_, img.path().parent_path().u32string()));
+  invalidate(assign_diff(str_name_, img.path().filename().u32string()));
+  invalidate(assign_diff(codec_,    img.codec()));
+}
+
+
+
+
+
 infobar::infobar() :
   quad_  {gl::primitives::quad()},
   shader_{
@@ -114,7 +146,8 @@ infobar::infobar() :
     resources::shader_plane_solid_fs()
   },
   shader_trafo_{shader_.uniform("transform")},
-  shader_color_{shader_.uniform("color")}
+  shader_color_{shader_.uniform("color")},
+  codec_       {pixglot::codec::ppm}
 {}
 
 
