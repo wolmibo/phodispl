@@ -82,12 +82,12 @@ void message_box::on_layout(win::vec2<std::optional<float>>& size) {
 
     float height{0.f};
 
-    height -= std::ranges::count(header_, U'\n') * viewport().measure_string(U"\n",
+    height += (std::ranges::count(header_, U'\n') + 1) * viewport().measure_string(U"\n",
                   global_config().theme_heading_size).y;
 
-    height += global_config().theme_heading_size * 1.2f;
+    height += global_config().theme_heading_size * 0.4f;
 
-    height -= (std::ranges::count(message_, U'\n') + 1) * viewport().measure_string(U"\n",
+    height += (std::ranges::count(message_, U'\n') + 1) * viewport().measure_string(U"\n",
                   global_config().theme_text_size).y;
 
     size.y = height;
@@ -118,11 +118,11 @@ void message_box::on_render() {
 
 
 
-  win::vec2<float> anchor{0.f, logical_size().y - global_config().theme_heading_size};
+  win::vec2<float> anchor(0.f, global_config().theme_heading_size);
 
   anchor.y += draw_string(anchor, header_, global_config().theme_heading_size,
                 set_alpha(global_config().theme_heading_color, opacity())).y
-                - global_config().theme_heading_size * 0.4f;
+                + global_config().theme_heading_size * 0.4f;
 
   shader_.use();
   win::set_uniform_mat4(shader_trafo_,
@@ -132,7 +132,7 @@ void message_box::on_render() {
   glUniform4f(shader_color_, c[0] * c[3], c[1] * c[3], c[2] * c[3], c[3]);
   quad_.draw();
 
-  anchor.y -= global_config().theme_heading_size * 0.8f;
+  anchor.y += global_config().theme_heading_size * 0.8f;
 
   draw_string(anchor, message_, global_config().theme_text_size,
       set_alpha(global_config().theme_text_color, opacity()));

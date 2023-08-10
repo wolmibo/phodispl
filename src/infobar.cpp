@@ -66,7 +66,7 @@ void infobar::on_render() {
   glUniform4f(shader_color_, 0.f, 0.f, 0.f, 0.7f * opacity());
 
   win::set_uniform_mat4(shader_trafo_,
-      trafo_mat_logical(logical_position(), logical_size()));
+      trafo_mat_logical({0.f, 0.f}, logical_size()));
 
   quad_.draw();
 }

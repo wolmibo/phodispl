@@ -73,7 +73,7 @@ win::vec2<float> win::viewport::draw_string(
   for (char32_t c: string) {
     if (c == 10) {
       offset.x = 0.f;
-      offset.y -= 1.2 * size;
+      offset.y += 1.2 * size;
     } else if (c == 32) {
       offset.x += font_cache_->get(c, size).advance_x();
     } else {
@@ -81,7 +81,7 @@ win::vec2<float> win::viewport::draw_string(
 
       auto pos = position + offset;
       pos.x = std::floor(pos.x + g.left());
-      pos.y = std::floor(pos.y + g.top() - g.height());
+      pos.y = std::floor(pos.y - g.top());
 
       set_uniform_mat4(0, trafo_mat_physical(pos, {g.width(), g.height()}));
       g.tex().bind();
@@ -112,7 +112,7 @@ win::vec2<float> win::viewport::measure_string(
   for (char32_t c: text) {
     if (c == 10) {
       offset.x = 0.f;
-      offset.y -= 1.2 * size;
+      offset.y += 1.2 * size;
     } else {
       offset.x += font_cache_->get(c, size).advance_x();
     }

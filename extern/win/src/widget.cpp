@@ -15,8 +15,13 @@ win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size)
   auto vpsize = root_ptr_->logical_size();
 
   vec2<float> s = vec2_div(size, vpsize);
-  vec2<float> p = 2.f * vec2_div(position + logical_position()
-                                 - (vpsize - size) * 0.5f, vpsize);
+
+  auto pos = position + logical_position();
+
+  pos.x =  pos.x - 0.5f * (vpsize.x - size.x);
+  pos.y = -pos.y + 0.5f * (vpsize.y - size.y);
+
+  vec2<float> p = 2.f * vec2_div(pos, vpsize);
 
   return {
     s.x, 0.f, 0.f, p.x,
