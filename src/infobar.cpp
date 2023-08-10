@@ -94,6 +94,13 @@ namespace {
 
     return output;
   }
+
+
+
+  [[nodiscard]] std::u32string format_size(size_t width, size_t height) {
+    return convert_string(std::to_string(width)) + U'×'
+      + convert_string(std::to_string(height));
+  }
 }
 
 
