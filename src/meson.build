@@ -65,6 +65,7 @@ source_files = [
   'image-display.cpp',
   'image-source.cpp',
   'image.cpp',
+  'infobar.cpp',
   'main.cpp',
   'message-box.cpp',
   'nav-button.cpp',

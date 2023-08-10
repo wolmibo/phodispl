@@ -1,5 +1,6 @@
 #include "phodispl/config.hpp"
 #include "phodispl/font-name.hpp"
+#include "phodispl/infobar.hpp"
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
@@ -17,7 +18,7 @@ namespace {
       const win::vec2<float>& pos,
       const win::vec2<float>& size
   ) {
-    return pos.x < 112.f || pos.x > size.x - 122.f;
+    return pos.x < 112.f || pos.x > size.x - 122.f || pos.y < 128.f;
   }
 }
 
@@ -76,6 +77,17 @@ window::window(std::vector<std::filesystem::path> sl) :
         .end    = 24.f,
         .top    = 24.f,
         .bottom = 24.f,
+      }
+  });
+
+  add_child(&infobar_, win::widget_constraint{
+      .width  = win::dimension_fill_constraint{},
+      .height = 128.f,
+      .margin = win::margin_constraint{
+        .start  = 0.f,
+        .end    = 0.f,
+        .top    = 0.f,
+        .bottom = {}
       }
   });
 }
@@ -406,6 +418,7 @@ void window::on_pointer_move(win::vec2<float> pos) {
   if (!dragging_ && activation_area(pos, logical_size())) {
     nav_left_.show();
     nav_right_.show();
+    infobar_.show();
   }
 }
 
