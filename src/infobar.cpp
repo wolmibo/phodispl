@@ -136,7 +136,7 @@ void infobar::set_image(const image& img) {
   invalidate(assign_diff(str_name_, img.path().filename().u32string()));
 
   if (img.finished()) {
-    invalidate(assign_diff(*codec_, img.codec()));
+    invalidate(assign_diff(codec_, img.codec()));
   }
 }
 

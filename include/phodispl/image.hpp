@@ -71,8 +71,8 @@ class image :
 
 
 
-    [[nodiscard]] const pixglot::metadata& metadata() const { return metadata_; }
-    [[nodiscard]] pixglot::codec           codec()    const { return codec_;    }
+    [[nodiscard]] const pixglot::metadata&      metadata() const { return metadata_; }
+    [[nodiscard]] std::optional<pixglot::codec> codec()    const { return codec_;    }
 
 
 
@@ -95,7 +95,7 @@ class image :
     std::chrono::steady_clock::time_point    frame_partial_last_update_;
 
     pixglot::metadata                        metadata_;
-    pixglot::codec                           codec_{pixglot::codec::ppm};
+    std::optional<pixglot::codec>            codec_;
 
 
 

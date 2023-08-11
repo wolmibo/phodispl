@@ -1,5 +1,7 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
+#include "pixglot/codecs-magic.hpp"
+#include "pixglot/codecs.hpp"
 
 #include <bits/chrono.h>
 #include <chrono>
@@ -88,6 +90,11 @@ void image::load() {
     return;
   }
 
+  pixglot::reader reader{path_};
+  std::vector<std::byte> buffer(pixglot::recommended_magic_size);
+  std::ignore = reader.peek(buffer);
+  codec_ = pixglot::determine_codec(buffer);
+
   loading_started_ = true;
 
   auto weak_this = weak_from_this();
@@ -129,8 +136,7 @@ void image::load() {
   requested_format.gamma       (global_config().gamma);
 
   try {
-    auto img = pixglot::decode(pixglot::reader{path_},
-                 ptoken_.access_token(), requested_format);
+    auto img = pixglot::decode(reader, ptoken_.access_token(), requested_format);
 
     for (const auto& w: img.warnings()) {
       logcerr::warn(w);
@@ -143,7 +149,6 @@ void image::load() {
     }
 
     metadata_ = std::move(img.metadata());
-    codec_    = img.codec();
 
   } catch (pixglot::decoding_aborted& ex) {
     logcerr::debug(ex.message());
