@@ -132,7 +132,10 @@ void infobar::set_frame(const pixglot::frame_view& frame) {
 void infobar::set_image(const image& img) {
   invalidate(assign_diff(str_path_, img.path().parent_path().u32string()));
   invalidate(assign_diff(str_name_, img.path().filename().u32string()));
-  invalidate(assign_diff(codec_,    img.codec()));
+
+  if (img.finished()) {
+    invalidate(assign_diff(*codec_, img.codec()));
+  }
 }
 
 
@@ -146,8 +149,7 @@ infobar::infobar() :
     resources::shader_plane_solid_fs()
   },
   shader_trafo_{shader_.uniform("transform")},
-  shader_color_{shader_.uniform("color")},
-  codec_       {pixglot::codec::ppm}
+  shader_color_{shader_.uniform("color")}
 {}
 
 
