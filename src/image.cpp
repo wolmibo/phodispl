@@ -54,6 +54,9 @@ void image::clear() {
   error_.reset();
   frames_.clear();
   ptoken_ = {};
+
+  codec_ = {};
+  metadata_ = {};
 }
 
 
