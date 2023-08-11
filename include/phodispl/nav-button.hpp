@@ -5,12 +5,13 @@
 #define PHODISPL_NAV_BUTTON_HPP_INCLUDED
 
 #include "phodispl/fade-widget.hpp"
-#include "win/mouse-button.hpp"
 
 #include <chrono>
 
 #include <gl/mesh.hpp>
 #include <gl/program.hpp>
+
+#include <win/mouse-button.hpp>
 
 
 

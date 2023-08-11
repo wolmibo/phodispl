@@ -4,11 +4,11 @@
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
-#include "win/modifier.hpp"
-#include "win/widget-constraint.hpp"
 
 #include <logcerr/log.hpp>
 
+#include <win/modifier.hpp>
+#include <win/widget-constraint.hpp>
 
 
 

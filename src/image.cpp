@@ -1,15 +1,15 @@
 #include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
-#include "pixglot/codecs-magic.hpp"
-#include "pixglot/codecs.hpp"
 
-#include <bits/chrono.h>
 #include <chrono>
+
 #include <gl/base.hpp>
 
-#include <pixglot/decode.hpp>
-
 #include <logcerr/log.hpp>
+
+#include <pixglot/codecs.hpp>
+#include <pixglot/codecs-magic.hpp>
+#include <pixglot/decode.hpp>
 
 
 
