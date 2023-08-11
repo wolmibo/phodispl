@@ -1,4 +1,5 @@
 #include "phodispl/infobar.hpp"
+#include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
 #include "phodispl/image.hpp"
 #include "resources.hpp"
@@ -14,6 +15,7 @@
 #include <pixglot/frame.hpp>
 #include <pixglot/frame-source-info.hpp>
 
+#include <win/viewport.hpp>
 
 
 
@@ -193,6 +195,36 @@ void infobar::on_update() {
 
 
 
+namespace {
+  [[nodiscard]] color premultiply(color c, float alpha) {
+    return {c[0] * c[3] * alpha, c[1] * c[3] * alpha, c[2] * c[3] * alpha, c[3] * alpha};
+  }
+
+
+
+  void print(
+      std::u32string_view  key,
+      std::u32string_view  value,
+      win::vec2<float>&    position,
+      const win::viewport& viewport,
+      float                alpha
+  ) {
+    viewport.draw_string(position, key, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, alpha));
+
+    auto pos = position + win::vec2<float>{global_config().theme_text_size * 6.f, 0.f};
+
+    position.y += viewport.draw_string(pos, value, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, alpha)).y;
+
+    position.y += global_config().theme_text_size * 1.25f;
+  }
+}
+
+
+
+
+
 void infobar::on_render() {
   if (!visible()) {
     return;
@@ -205,4 +237,27 @@ void infobar::on_render() {
       trafo_mat_logical({0.f, 0.f}, logical_size()));
 
   quad_.draw();
+
+  auto start = logical_position() + static_cast<float>(global_config().theme_text_size)
+                                      * win::vec2<float>{1.0f, 1.5f};
+
+  auto offset = start;
+
+  offset += viewport().draw_string(offset, str_name_, global_config().theme_text_size,
+      premultiply(global_config().theme_text_color, opacity()));
+
+  offset.x += global_config().theme_text_size * 1.f;
+
+  offset.y += viewport().draw_string(offset, str_path_, global_config().theme_text_size,
+      premultiply(global_config().theme_text_color, 0.75f * opacity())).y;
+
+  offset.y += global_config().theme_text_size * 1.5f;
+  offset.x = start.x;
+
+
+  if (codec_) {
+    print(U"Format:",       ::stringify(*codec_), offset, viewport(), opacity());
+    print(U"Pixel Format:", str_format_,          offset, viewport(), opacity());
+    print(U"Size:",         str_size_,            offset, viewport(), opacity());
+  }
 }
