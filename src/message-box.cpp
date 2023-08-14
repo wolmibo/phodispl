@@ -37,10 +37,18 @@ namespace {
 
 
 
-void message_box::message(const std::string& header, const std::string& message) {
-  if (header_base_ != header || message_base_ != message) {
-    header_base_  = header;
-    message_base_ = message;
+void message_box::message(
+    std::string           header,
+    std::string           message,
+    std::filesystem::path path
+) {
+  if (header_base_  != header ||
+      message_base_ != message ||
+      path_base_    != path
+  ) {
+    header_base_  = std::move(header);
+    message_base_ = std::move(message);
+    path_base_    = std::move(path);
 
     new_text_ = true;
 
@@ -64,9 +72,19 @@ void message_box::recalculate_string(float width) {
   }
 
   if (message_base_.empty()) {
-    message_.clear();
+    body_.clear();
   } else {
-    message_ = wrap_text(convert_string(message_base_), width, [&](auto text) {
+    body_ = wrap_text(convert_string(message_base_), width, [&](auto text) {
+        return viewport().measure_string(text, global_config().theme_text_size).x;
+    });
+  }
+
+  if (!path_base_.empty()) {
+    if (!body_.empty()) {
+      body_ += U"\n\n";
+    }
+
+    body_ += shorten_path(path_base_, width, [&](auto text) {
         return viewport().measure_string(text, global_config().theme_text_size).x;
     });
   }
@@ -87,8 +105,8 @@ void message_box::on_layout(win::vec2<std::optional<float>>& size) {
 
     height += global_config().theme_heading_size * 0.4f;
 
-    height += (std::ranges::count(message_, U'\n') + 1) * viewport().measure_string(U"\n",
-                  global_config().theme_text_size).y;
+    height += (std::ranges::count(body_, U'\n') + 1)
+                 * viewport().measure_string(U"\n", global_config().theme_text_size).y;
 
     size.y = height;
   }
@@ -134,6 +152,6 @@ void message_box::on_render() {
 
   anchor.y += global_config().theme_heading_size * 0.8f;
 
-  draw_string(anchor, message_, global_config().theme_text_size,
+  draw_string(anchor, body_, global_config().theme_text_size,
       set_alpha(global_config().theme_text_color, opacity()));
 }

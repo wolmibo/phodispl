@@ -6,6 +6,7 @@
 
 #include "phodispl/fade-widget.hpp"
 
+#include <filesystem>
 #include <string>
 
 #include <gl/mesh.hpp>
@@ -19,22 +20,23 @@ class message_box : public fade_widget {
 
 
 
-    void message(const std::string&, const std::string&);
+    void message(std::string, std::string, std::filesystem::path = "");
 
 
 
   private:
-    std::string      header_base_;
-    std::u32string   header_;
-    std::string      message_base_;
-    std::u32string   message_;
+    std::string           header_base_;
+    std::u32string        header_;
+    std::string           message_base_;
+    std::filesystem::path path_base_;
+    std::u32string        body_;
 
-    gl::mesh         quad_;
-    gl::program      shader_;
-    GLint            shader_trafo_;
-    GLint            shader_color_;
+    gl::mesh              quad_;
+    gl::program           shader_;
+    GLint                 shader_trafo_;
+    GLint                 shader_color_;
 
-    bool             new_text_{false};
+    bool                  new_text_{false};
 
 
 

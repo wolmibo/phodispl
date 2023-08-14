@@ -438,29 +438,31 @@ void image_display::set_error(
     return;
   }
 
-  auto file_str = "\n\nFile: " + nice_path(file).native();
-
   if (dynamic_cast<const pixglot::no_stream_access*>(error) != nullptr) {
     message_box_.message(
         "[404]  Data Not Found",
-        "Cannot access input data." + file_str
+        "Cannot access input data.",
+        nice_path(file)
     );
   } else if (dynamic_cast<const pixglot::no_decoder*>(error) != nullptr) {
     message_box_.message(
         "[415]  Unsupported Media Type",
-        "None of the decoders recognized this file type." + file_str
+        "None of the decoders recognized this file type.",
+        nice_path(file)
     );
   } else if (const auto* err = dynamic_cast<const pixglot::decode_error*>(error)) {
     message_box_.message(
         "[409]  Failed to Decode",
         "The " + pixglot::to_string(err->decoder()) +
         " decoder reports:\n" +
-        bump_first(err->plain()) + file_str
+        bump_first(err->plain()),
+        nice_path(file)
     );
   } else {
     message_box_.message(
         "[500]  Internal Error",
-        std::string{error->message()} + file_str
+        std::string{error->message()},
+        nice_path(file)
     );
   }
 
