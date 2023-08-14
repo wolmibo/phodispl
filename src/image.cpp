@@ -55,8 +55,7 @@ void image::clear() {
   frames_.clear();
   ptoken_ = {};
 
-  codec_ = {};
-  metadata_ = {};
+  image_ = {};
 }
 
 
@@ -139,19 +138,17 @@ void image::load() {
     requested_format.alpha_mode  (pixglot::alpha_mode::premultiplied);
     requested_format.gamma       (global_config().gamma);
 
-    auto img = pixglot::decode(reader, ptoken_.access_token(), requested_format);
+    image_.emplace(pixglot::decode(reader, ptoken_.access_token(), requested_format));
 
-    for (const auto& w: img.warnings()) {
+    for (const auto& w: image_->warnings()) {
       logcerr::warn(w);
     }
-    if (auto seq = frame_seq_from_image(img); !seq.equals_sequence(frame_sequence_)) {
+    if (auto seq = frame_seq_from_image(*image_); !seq.equals_sequence(frame_sequence_)) {
       frame_sequence_ = std::move(seq);
-      if (!img.animated()) {
+      if (!image_->animated()) {
         frame_sequence_.pause();
       }
     }
-
-    metadata_ = std::move(img.metadata());
 
   } catch (pixglot::decoding_aborted& ex) {
     logcerr::debug(ex.message());
