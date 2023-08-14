@@ -22,6 +22,8 @@ using measure_function = std::move_only_function<float(T)>;
 
 
 
-[[nodiscard]] std::string nice_path(const std::filesystem::path&);
+[[nodiscard]] std::string    nice_path   (const std::filesystem::path&);
+[[nodiscard]] std::u32string shorten_path(const std::filesystem::path&, float,
+    measure_function<std::u32string_view>);
 
 #endif // PHODISPL_FORMATTING_HPP_INCLUDED
