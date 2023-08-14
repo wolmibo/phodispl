@@ -80,7 +80,7 @@ std::u32string wrap_text(
 
 
 
-std::string nice_path(const std::filesystem::path& p) {
+std::filesystem::path nice_path(const std::filesystem::path& p) {
   std::vector<std::string> candidates;
   candidates.reserve(3);
 

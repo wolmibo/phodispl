@@ -438,7 +438,7 @@ void image_display::set_error(
     return;
   }
 
-  auto file_str = "\n\nFile: " + nice_path(file);
+  auto file_str = "\n\nFile: " + nice_path(file).native();
 
   if (dynamic_cast<const pixglot::no_stream_access*>(error) != nullptr) {
     message_box_.message(
