@@ -93,52 +93,52 @@ void image::load() {
     return;
   }
 
-  pixglot::reader reader{path_};
-  std::vector<std::byte> buffer(pixglot::recommended_magic_size);
-  std::ignore = reader.peek(buffer);
-  codec_ = pixglot::determine_codec(buffer);
-
-  loading_started_ = true;
-
-  auto weak_this = weak_from_this();
-  ptoken_.frame_begin_callback([weak_this](const pixglot::frame_view& f) {
-    if (auto self = weak_this.lock()) {
-      { std::lock_guard guard{self->frames_mutex_};
-        self->frames_.emplace_back(f);
-
-        self->frame_partial_last_update_ =
-          self->frame_partial_load_begin_ = std::chrono::steady_clock::now();
-      }
-      self->damage();
-    }
-  });
-
-  bool animated      {false};
-  bool build_sequence{global_config().il_play_available &&
-                      global_config().il_show_loading &&
-                      frame_sequence_.size() == 0};
-
-
-  ptoken_.frame_callback([weak_this, build_sequence, &animated](pixglot::frame& f) {
-    if (auto self = weak_this.lock(); self && build_sequence) {
-      self->frame_sequence_.append(f.duration());
-
-      animated = animated || (f.duration() > std::chrono::milliseconds{0});
-
-      if (!animated) {
-        self->frame_sequence_.pause();
-      }
-    }
-  });
-
-  ptoken_.flush_uploads(global_config().il_partial_flush);
-
-  pixglot::output_format requested_format;
-  requested_format.storage_type(pixglot::storage_type::gl_texture);
-  requested_format.alpha_mode  (pixglot::alpha_mode::premultiplied);
-  requested_format.gamma       (global_config().gamma);
-
   try {
+    pixglot::reader reader{path_};
+    std::vector<std::byte> buffer(pixglot::recommended_magic_size);
+    std::ignore = reader.peek(buffer);
+    codec_ = pixglot::determine_codec(buffer);
+
+    loading_started_ = true;
+
+    auto weak_this = weak_from_this();
+    ptoken_.frame_begin_callback([weak_this](const pixglot::frame_view& f) {
+      if (auto self = weak_this.lock()) {
+        { std::lock_guard guard{self->frames_mutex_};
+          self->frames_.emplace_back(f);
+
+          self->frame_partial_last_update_ =
+            self->frame_partial_load_begin_ = std::chrono::steady_clock::now();
+        }
+        self->damage();
+      }
+    });
+
+    bool animated      {false};
+    bool build_sequence{global_config().il_play_available &&
+                        global_config().il_show_loading &&
+                        frame_sequence_.size() == 0};
+
+
+    ptoken_.frame_callback([weak_this, build_sequence, &animated](pixglot::frame& f) {
+      if (auto self = weak_this.lock(); self && build_sequence) {
+        self->frame_sequence_.append(f.duration());
+
+        animated = animated || (f.duration() > std::chrono::milliseconds{0});
+
+        if (!animated) {
+          self->frame_sequence_.pause();
+        }
+      }
+    });
+
+    ptoken_.flush_uploads(global_config().il_partial_flush);
+
+    pixglot::output_format requested_format;
+    requested_format.storage_type(pixglot::storage_type::gl_texture);
+    requested_format.alpha_mode  (pixglot::alpha_mode::premultiplied);
+    requested_format.gamma       (global_config().gamma);
+
     auto img = pixglot::decode(reader, ptoken_.access_token(), requested_format);
 
     for (const auto& w: img.warnings()) {
@@ -172,7 +172,7 @@ void image::load() {
   damage();
 
   logcerr::debug("finished loading \"{}\"", path_.string());
-  loading_finished_ = true;
+  loading_started_ = loading_finished_ = true;
 }
 
 
