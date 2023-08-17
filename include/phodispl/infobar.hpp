@@ -26,6 +26,9 @@ class infobar : public fade_widget {
     void set_frame(const pixglot::frame_view&);
     void set_image(const image&);
 
+    void clear_frame();
+    void clear_image();
+
 
 
   private:

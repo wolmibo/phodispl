@@ -129,15 +129,32 @@ void infobar::set_frame(const pixglot::frame_view& frame) {
 
 
 
+void infobar::clear_frame() {
+  invalidate(assign_diff<std::u32string>(str_format_, U""));
+  invalidate(assign_diff<std::u32string>(str_size_,   U""));
+}
+
+
+
 
 
 void infobar::set_image(const image& img) {
   invalidate(assign_diff(str_path_, img.path().parent_path().u32string()));
   invalidate(assign_diff(str_name_, img.path().filename().u32string()));
 
-  if (img.finished()) {
+  if (img.loading() || img.finished()) {
     invalidate(assign_diff(codec_, img.codec()));
+  } else {
+    invalidate(assign_diff(codec_, {}));
   }
+}
+
+
+
+void infobar::clear_image() {
+  invalidate(assign_diff<std::u32string>(str_path_, U""));
+  invalidate(assign_diff<std::u32string>(str_name_, U""));
+  invalidate(assign_diff(codec_, {}));
 }
 
 

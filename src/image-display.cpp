@@ -99,7 +99,11 @@ void image_display::active(std::shared_ptr<image> next_image) {
     current_frame_ = current_->current_frame();
     if (current_frame_) {
       infobar_.set_frame(*current_frame_);
+    } else {
+      infobar_.clear_frame();
     }
+  } else {
+    infobar_.clear_image();
   }
 }
 
@@ -194,7 +198,12 @@ void image_display::on_update() {
       current_frame_ = current_->current_frame();
 
       infobar_.set_image(*current_);
-      infobar_.set_frame(*current_frame_);
+
+      if (current_frame_) {
+        infobar_.set_frame(*current_frame_);
+      } else {
+        infobar_.clear_frame();
+      }
     }
 
     if (const auto* error = current_->error(); error != nullptr) {
