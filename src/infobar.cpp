@@ -159,6 +159,7 @@ infobar::infobar() :
 
 
 void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
+  show();;
   mouse_inside_ = true;
 }
 

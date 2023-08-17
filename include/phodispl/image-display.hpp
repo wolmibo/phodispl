@@ -7,6 +7,7 @@
 #include "phodispl/animation.hpp"
 #include "phodispl/config-types.hpp"
 #include "phodispl/image.hpp"
+#include "phodispl/infobar.hpp"
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 
@@ -66,6 +67,7 @@ class image_display : public win::widget {
 
     message_box                 message_box_;
     progress_circle             progress_circle_;
+    infobar                     infobar_;
 
     const pixglot::base_exception*
                                 active_error_{nullptr};

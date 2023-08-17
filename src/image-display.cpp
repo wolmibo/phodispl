@@ -64,6 +64,17 @@ image_display::image_display() :
       }
   });
 
+  add_child(&infobar_, win::widget_constraint{
+      .width  = win::dimension_fill_constraint{},
+      .height = 128.f,
+      .margin = win::margin_constraint{
+        .start  = 0.f,
+        .end    = 0.f,
+        .top    = 0.f,
+        .bottom = {}
+      }
+  });
+
   shader_.use();
   glUniform1i(shader_.uniform("textureSamplerA"), 0);
   glUniform1i(shader_.uniform("textureSamplerB"), 1);
