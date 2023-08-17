@@ -41,7 +41,7 @@ namespace {
   [[nodiscard]] std::u32string_view stringify(pixglot::color_model model) {
     using enum pixglot::color_model;
     switch (model) {
-      case yuv:     return U"YUV";
+      case yuv:     return U"yuv";
       case rgb:     return U"RGB";
       case palette: return U"Palette";
       case value:   return U"Value";
@@ -83,7 +83,6 @@ namespace {
     }
 
     output.push_back(U' ');
-    output.push_back(U'(');
 
     auto format = fsi.color_model_format();
     output += convert_string(pixglot::stringify(format[0]));
@@ -105,7 +104,6 @@ namespace {
       }
     }
 
-    output.push_back(U')');
 
     return output;
   }
