@@ -114,6 +114,20 @@ template<> struct iconfigp::case_insensitive_parse_lut<path_compare_method> {
 
 
 
+template<> struct iconfigp::value_parser<font_name> {
+  static constexpr std::string_view name{"font name"};
+
+  static std::string_view format() {
+    return "(<font name> | <path to font file>)";
+  }
+
+  static std::optional<font_name> parse(std::string_view str) {
+    return font_name{std::string{str}};
+  }
+};
+
+
+
 namespace {
   template<typename T> struct src_t { using type = T; };
   template<> struct src_t<std::chrono::milliseconds>{ using type = uint32_t;            };

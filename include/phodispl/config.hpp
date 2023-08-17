@@ -3,6 +3,7 @@
 
 #include "phodispl/animation.hpp"
 #include "phodispl/config-types.hpp"
+#include "phodispl/font-name.hpp"
 #include "phodispl/path-compare.hpp"
 
 #include <chrono>
@@ -52,7 +53,7 @@ struct config {
 
     color       theme_background   {0.f, 0.f, 0.f, 1.f};
 
-    std::string theme_font{"Sans"};
+    font_name   theme_font{"Sans"};
 
 
 

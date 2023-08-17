@@ -42,8 +42,8 @@ window::window(std::vector<std::filesystem::path> sl) :
 
   background_color(global_config().theme_background);
 
-  auto font_path = resolve_font_name(global_config().theme_font);
-  logcerr::verbose("font file: {}", font_path.string());
+  const auto& font_path = global_config().theme_font.path();
+  logcerr::verbose("font file: {}", font_path.native());
   font(font_path);
 
   add_child(&image_display_, win::widget_constraint{
