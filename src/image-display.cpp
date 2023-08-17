@@ -88,8 +88,18 @@ void image_display::active(std::shared_ptr<image> next_image) {
   previous_ = std::move(current_);
   current_  = std::move(next_image);
 
-  if (previous_.get() != current_.get()) {
-    crossfade_.start();
+  if (previous_.get() == current_.get()) {
+    return;
+  }
+
+  crossfade_.start();
+
+  if (current_) {
+    infobar_.set_image(*current_);
+    current_frame_ = current_->current_frame();
+    if (current_frame_) {
+      infobar_.set_frame(*current_frame_);
+    }
   }
 }
 
@@ -180,6 +190,11 @@ void image_display::on_update() {
 
     if (current_->take_damage()) {
       invalidate();
+
+      current_frame_ = current_->current_frame();
+
+      infobar_.set_image(*current_);
+      infobar_.set_frame(*current_frame_);
     }
 
     if (const auto* error = current_->error(); error != nullptr) {
@@ -271,12 +286,12 @@ void image_display::on_render() {
 
   float factor = *crossfade_;
 
-  if (auto frame = current_frame(current_.get())) {
+  if (current_frame_) {
     glActiveTexture(GL_TEXTURE0);
-    frame->texture().bind();
+    current_frame_->texture().bind();
     set_scale_filter(scale_filter_);
 
-    win::set_uniform_mat4(shader_transform_a_, matrix_for(*frame));
+    win::set_uniform_mat4(shader_transform_a_, matrix_for(*current_frame_));
     crossfade_image(factor, *exposure_, shader_factor_a_);
   } else {
     win::set_uniform_mat4(shader_transform_a_, out_of_range_matrix);

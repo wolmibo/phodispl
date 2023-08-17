@@ -49,6 +49,9 @@ class image_display : public win::widget {
     std::shared_ptr<image>      current_;
     std::shared_ptr<image>      previous_;
 
+    std::optional<pixglot::frame_view>
+                                current_frame_;
+
     animation_time              crossfade_;
 
     gl::mesh                    quad_;
@@ -70,7 +73,7 @@ class image_display : public win::widget {
     infobar                     infobar_;
 
     const pixglot::base_exception*
-                                active_error_{nullptr};
+                                active_error_   {nullptr};
 
 
 
