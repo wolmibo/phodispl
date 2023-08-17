@@ -159,7 +159,10 @@ infobar::infobar() :
 
 
 void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
-  show();;
+  mouse_leave_ = std::chrono::steady_clock::now();
+
+  fade_widget::show();
+
   mouse_inside_ = true;
 }
 
@@ -168,16 +171,6 @@ void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
 void infobar::on_pointer_leave() {
   mouse_inside_ = false;
   mouse_leave_ = std::chrono::steady_clock::now();
-}
-
-
-
-
-
-void infobar::show() {
-  mouse_leave_ = std::chrono::steady_clock::now();
-
-  fade_widget::show();
 }
 
 
