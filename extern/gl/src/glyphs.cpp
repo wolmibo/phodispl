@@ -1,4 +1,5 @@
 #include "gl/glyphs.hpp"
+#include "freetype/freetype.h"
 #include "gl/texture.hpp"
 
 #include <logcerr/log.hpp>
@@ -61,6 +62,24 @@ namespace {
         "Unable to initialize font face \"" + path.string() + "\"");
     return face;
   }
+
+
+
+  [[nodiscard]] FT_Face create_face(
+      FT_Library                 library,
+      std::span<const std::byte> data
+  ) {
+    FT_Face face{nullptr};
+
+    static_assert(sizeof(FT_Byte) == sizeof(std::byte));
+    // NOLINTNEXTLINE(*-reinterpret-cast)
+    const auto* ptr = reinterpret_cast<const FT_Byte*>(data.data());
+
+    ft_assert(FT_New_Memory_Face(library, ptr, data.size(), 0, &face),
+        "Unable to initialize font face from memory (" + std::to_string(data.size()) +
+        " bytes)");
+    return face;
+  }
 }
 
 
@@ -82,6 +101,13 @@ void gl::glyphs::face_destructor::operator()(FT_Face face) noexcept {
 gl::glyphs::glyphs(const std::filesystem::path& path) :
   library_{create_library()},
   face_   {create_face(library_.get(), path)}
+{}
+
+
+
+gl::glyphs::glyphs(std::span<const std::byte> data) :
+  library_{create_library()},
+  face_   {create_face(library_.get(), data)}
 {}
 
 

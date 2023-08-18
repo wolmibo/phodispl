@@ -55,6 +55,8 @@ class glyphs {
   public:
     explicit glyphs(const std::filesystem::path&);
 
+    [[nodiscard]] static glyphs from_static_memory(std::span<const std::byte>);
+
 
 
     [[nodiscard]] const glyph& get(char32_t, uint32_t) const;
@@ -72,6 +74,8 @@ class glyphs {
     std::unique_ptr<FT_FaceRec_,    face_destructor> face_;
 
     mutable chaos_map<uint32_t, chaos_map<char32_t, glyph>> cache_;
+
+    explicit glyphs(std::span<const std::byte>);
 };
 
 }
