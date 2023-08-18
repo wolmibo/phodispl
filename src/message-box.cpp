@@ -1,5 +1,5 @@
-#include "logcerr/log.hpp"
 #include "phodispl/config.hpp"
+#include "phodispl/fonts.hpp"
 #include "phodispl/formatting.hpp"
 #include "phodispl/message-box.hpp"
 #include "resources.hpp"
@@ -67,7 +67,8 @@ void message_box::recalculate_string(float width) {
     header_.clear();
   } else {
     header_ = wrap_text(convert_string(header_base_), width, [&](auto text) {
-        return viewport().measure_string(text, global_config().theme_heading_size).x;
+        return viewport().measure_string(text,
+            font_main, global_config().theme_heading_size).x;
     });
   }
 
@@ -75,7 +76,8 @@ void message_box::recalculate_string(float width) {
     body_.clear();
   } else {
     body_ = wrap_text(convert_string(message_base_), width, [&](auto text) {
-        return viewport().measure_string(text, global_config().theme_text_size).x;
+        return viewport().measure_string(text,
+            font_main, global_config().theme_text_size).x;
     });
   }
 
@@ -85,7 +87,8 @@ void message_box::recalculate_string(float width) {
     }
 
     body_ += shorten_path(path_base_, width, [&](auto text) {
-        return viewport().measure_string(text, global_config().theme_text_size).x;
+        return viewport().measure_string(text,
+            font_main, global_config().theme_text_size).x;
     });
   }
 }
@@ -101,12 +104,13 @@ void message_box::on_layout(win::vec2<std::optional<float>>& size) {
     float height{0.f};
 
     height += (std::ranges::count(header_, U'\n') + 1) * viewport().measure_string(U"\n",
-                  global_config().theme_heading_size).y;
+                  font_main, global_config().theme_heading_size).y;
 
     height += global_config().theme_heading_size * 0.4f;
 
     height += (std::ranges::count(body_, U'\n') + 1)
-                 * viewport().measure_string(U"\n", global_config().theme_text_size).y;
+                 * viewport().measure_string(U"\n",
+                     font_main, global_config().theme_text_size).y;
 
     size.y = height;
   }
@@ -138,7 +142,7 @@ void message_box::on_render() {
 
   win::vec2<float> anchor(0.f, global_config().theme_heading_size);
 
-  anchor.y += draw_string(anchor, header_, global_config().theme_heading_size,
+  anchor.y += draw_string(anchor, header_, font_main, global_config().theme_heading_size,
                 set_alpha(global_config().theme_heading_color, opacity())).y
                 + global_config().theme_heading_size * 0.4f;
 
@@ -152,6 +156,6 @@ void message_box::on_render() {
 
   anchor.y += global_config().theme_heading_size * 0.8f;
 
-  draw_string(anchor, body_, global_config().theme_text_size,
+  draw_string(anchor, body_, font_main, global_config().theme_text_size,
       set_alpha(global_config().theme_text_color, opacity()));
 }

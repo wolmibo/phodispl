@@ -34,12 +34,13 @@ class viewport : public widget {
 
 
 
-    void font(const std::filesystem::path&);
+    size_t add_font(gl::glyphs);
 
 
 
-    vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color) const;
-    vec2<float> measure_string(std::u32string_view, uint32_t) const;
+    vec2<float> draw_string(vec2<float>, std::u32string_view,
+        size_t, uint32_t, color) const;
+    vec2<float> measure_string(std::u32string_view, size_t, uint32_t) const;
 
 
 
@@ -50,11 +51,11 @@ class viewport : public widget {
 
 
   private:
-    mutable gl::program       font_shader_;
-    mutable gl::mesh          font_plane_;
-    std::optional<gl::glyphs> font_cache_;
+    mutable gl::program     font_shader_;
+    mutable gl::mesh        font_plane_;
+    std::vector<gl::glyphs> font_cache_;
 
-    color                     bg_color_{0.f, 0.f, 0.f, 1.f};
+    color                   bg_color_{0.f, 0.f, 0.f, 1.f};
 };
 
 }

@@ -48,10 +48,11 @@ void main() {
 win::vec2<float> win::viewport::draw_string(
     vec2<float>         position,
     std::u32string_view string,
+    size_t              font_index,
     uint32_t            size,
     color               col
 ) const {
-  if (!font_cache_) {
+  if (font_index >= font_cache_.size()) {
     return {0.f, 0.f};
   }
 
@@ -75,9 +76,9 @@ win::vec2<float> win::viewport::draw_string(
       offset.x = 0.f;
       offset.y += 1.2 * size;
     } else if (c == 32) {
-      offset.x += font_cache_->get(c, size).advance_x();
+      offset.x += font_cache_[font_index].get(c, size).advance_x();
     } else {
-      const auto& g = font_cache_->get(c, size);
+      const auto& g = font_cache_[font_index].get(c, size);
 
       auto pos = position + offset;
       pos.x = std::floor(pos.x + g.left());
@@ -100,9 +101,10 @@ win::vec2<float> win::viewport::draw_string(
 
 win::vec2<float> win::viewport::measure_string(
     std::u32string_view text,
+    size_t              font_index,
     uint32_t            size
 ) const {
-  if (!font_cache_) {
+  if (font_index >= font_cache_.size()) {
     return {0.f, 0.f};
   }
 
@@ -114,7 +116,7 @@ win::vec2<float> win::viewport::measure_string(
       offset.x = 0.f;
       offset.y += 1.2 * size;
     } else {
-      offset.x += font_cache_->get(c, size).advance_x();
+      offset.x += font_cache_[font_index].get(c, size).advance_x();
     }
   }
 
@@ -133,8 +135,9 @@ win::viewport::viewport() {
 
 
 
-void win::viewport::font(const std::filesystem::path& path) {
-  font_cache_.emplace(path);
+size_t win::viewport::add_font(gl::glyphs glyphs) {
+  font_cache_.emplace_back(std::move(glyphs));
+  return font_cache_.size() - 1;
 }
 
 

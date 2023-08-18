@@ -1,6 +1,7 @@
 #include "phodispl/infobar.hpp"
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
+#include "phodispl/fonts.hpp"
 #include "phodispl/image.hpp"
 #include "resources.hpp"
 
@@ -218,12 +219,13 @@ namespace {
       const win::viewport& viewport,
       float                alpha
   ) {
-    viewport.draw_string(position, key, global_config().theme_text_size,
+    viewport.draw_string(position, key, font_main, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, alpha));
 
     auto pos = position + win::vec2<float>{global_config().theme_text_size * 6.f, 0.f};
 
-    position.y += viewport.draw_string(pos, value, global_config().theme_text_size,
+    position.y += viewport.draw_string(pos, value,
+        font_main, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, alpha)).y;
 
     position.y += global_config().theme_text_size * 1.25f;
@@ -252,12 +254,14 @@ void infobar::on_render() {
 
   auto offset = start;
 
-  offset += viewport().draw_string(offset, str_name_, global_config().theme_text_size,
+  offset += viewport().draw_string(offset, str_name_,
+      font_main, global_config().theme_text_size,
       premultiply(global_config().theme_text_color, opacity()));
 
   offset.x += global_config().theme_text_size * 1.f;
 
-  offset.y += viewport().draw_string(offset, str_path_, global_config().theme_text_size,
+  offset.y += viewport().draw_string(offset, str_path_,
+      font_main, global_config().theme_text_size,
       premultiply(global_config().theme_text_color, 0.75f * opacity())).y;
 
   offset.y += global_config().theme_text_size * 1.5f;

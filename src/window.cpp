@@ -1,8 +1,10 @@
 #include "phodispl/config.hpp"
 #include "phodispl/font-name.hpp"
+#include "phodispl/fonts.hpp"
 #include "phodispl/message-box.hpp"
 #include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
+#include "resources.hpp"
 
 #include <logcerr/log.hpp>
 
@@ -18,6 +20,15 @@ namespace {
       const win::vec2<float>& size
   ) {
     return pos.x < 112.f || pos.x > size.x - 122.f;
+  }
+
+
+
+  template<typename T>
+  void assert_eq(T l, T r, std::string_view msg) {
+    if (l != r) {
+      throw std::runtime_error{"assertion failed: " + std::string{msg}};
+    }
   }
 }
 
@@ -44,7 +55,9 @@ window::window(std::vector<std::filesystem::path> sl) :
 
   const auto& font_path = global_config().theme_font.path();
   logcerr::verbose("font file: {}", font_path.native());
-  font(font_path);
+  assert_eq(add_font(gl::glyphs{font_path}), font_main,  "font_main index mismatch");
+  assert_eq(add_font(gl::glyphs::from_static_memory(resources::icons_font_data())),
+      font_icons, "font_icons index mismatch");
 
   add_child(&image_display_, win::widget_constraint{
       .width  = win::dimension_fill_constraint{},

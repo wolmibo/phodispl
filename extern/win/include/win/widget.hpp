@@ -103,7 +103,8 @@ class widget {
     [[nodiscard]] mat4 trafo_mat_physical(vec2<float>, vec2<float>) const;
 
     //NOLINTNEXTLINE(*-use-nodiscard)
-    vec2<float> draw_string(vec2<float>, std::u32string_view, uint32_t, color) const;
+    vec2<float> draw_string(vec2<float>,
+        std::u32string_view, size_t, uint32_t, color) const;
 
     [[nodiscard]] const win::viewport& viewport() const;
 
