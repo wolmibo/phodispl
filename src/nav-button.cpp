@@ -20,8 +20,8 @@ nav_button::nav_button(bool left, std::move_only_function<void(void)> on_click) 
   quad_{gl::primitives::quad()},
 
   shader_{
-    resources::shader_nav_button_vs(),
-    resources::shader_nav_button_fs()
+    resources::shader_nav_button_vs_sv(),
+    resources::shader_nav_button_fs_sv()
   },
 
   shader_color_back_ {shader_.uniform("colorBack")},

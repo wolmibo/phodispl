@@ -17,7 +17,7 @@ namespace {
     std::string output = "  \"";
     size_t i = 0;
     while (input.peek() != -1) {
-      if (++i % 20 == 0) {
+      if (i++ % 20 == 0 && i > 1) {
         output += "\"\n  \"";
       }
       output += logcerr::format("\\x{:02x}", input.get());
@@ -30,18 +30,24 @@ namespace {
 
   std::string define_file(const std::filesystem::path& path, std::string_view id) {
     return logcerr::format("\n"
-      "namespace {{ constexpr std::string_view content_{}_ {{\n"
-      "{}\n"
+      "namespace {{ constexpr std::string_view content_{0}_ {{\n"
+      "{1}\n"
       "}};}}\n"
       "\n"
-      "std::string_view resources::{}() {{ return content_{}_; }}\n",
-      id, read_file(path), id, id);
+      "std::string_view resources::{0}_sv() {{ return content_{0}_; }}\n"
+      "std::span<const std::byte> resources::{0}_data() {{\n"
+      "  return std::as_bytes(std::span{{content_{0}_}});\n"
+      "}}\n",
+      id, read_file(path));
   }
 
 
 
   std::string declare_file(std::string_view id) {
-    return logcerr::format("[[nodiscard]] std::string_view {}();\n", id);
+    return logcerr::format(
+        "[[nodiscard]] std::string_view           {0}_sv();\n"
+        "[[nodiscard]] std::span<const std::byte> {0}_data();\n",
+    id);
   }
 }
 
@@ -85,6 +91,7 @@ int main(int argc, const char* argv[]) {
 
   header << "// This file is generated during build. DO NOT EDIT.\n";
   header << "#pragma once\n";
+  header << "#include <span>\n";
   header << "#include <string_view>\n";
   header << "namespace resources {\n";
 

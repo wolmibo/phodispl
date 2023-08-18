@@ -22,7 +22,7 @@ image_display::image_display() :
   ),
   quad_{gl::primitives::quad()},
 
-  shader_{resources::shader_crossfade_vs(), resources::shader_crossfade_fs()},
+  shader_{resources::shader_crossfade_vs_sv(), resources::shader_crossfade_fs_sv()},
   shader_factor_a_   {shader_.uniform("factorA")},
   shader_factor_b_   {shader_.uniform("factorB")},
   shader_transform_a_{shader_.uniform("transformA")},

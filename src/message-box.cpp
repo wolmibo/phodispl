@@ -17,8 +17,8 @@ message_box::message_box() :
   quad_{gl::primitives::quad()},
 
   shader_{
-    resources::shader_plane_object_vs(),
-    resources::shader_plane_solid_fs()
+    resources::shader_plane_object_vs_sv(),
+    resources::shader_plane_solid_fs_sv()
   },
 
   shader_trafo_{shader_.uniform("transform")},

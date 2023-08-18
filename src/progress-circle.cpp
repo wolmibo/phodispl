@@ -13,8 +13,8 @@ progress_circle::progress_circle() :
   quad_{gl::primitives::quad()},
 
   shader_{
-    resources::shader_progress_circle_vs(),
-    resources::shader_progress_circle_fs()
+    resources::shader_progress_circle_vs_sv(),
+    resources::shader_progress_circle_fs_sv()
   },
   shader_progress_        {shader_.uniform("value")},
   shader_alpha_           {shader_.uniform("alpha")},
