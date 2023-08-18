@@ -8,37 +8,43 @@
 
 
 namespace {
-  std::string read_file(const std::filesystem::path& path) {
+  std::pair<std::string, size_t> read_file(const std::filesystem::path& path) {
     std::ifstream input(path);
     if (!input) {
       throw std::runtime_error{"unable to open file " + path.string()};
     }
 
-    std::string output = "  \"";
+    std::string output = "  ";
     size_t i = 0;
     while (input.peek() != -1) {
       if (i++ % 20 == 0 && i > 1) {
-        output += "\"\n  \"";
+        output += "\n  ";
       }
-      output += logcerr::format("\\x{:02x}", input.get());
+      output += logcerr::format("0x{:02x},", input.get());
     }
-    output += "\"";
-    return output;
+    return {output, i};
   }
 
 
 
   std::string define_file(const std::filesystem::path& path, std::string_view id) {
+    auto [str, size] = read_file(path);
+
     return logcerr::format("\n"
-      "namespace {{ constexpr std::string_view content_{0}_ {{\n"
-      "{1}\n"
+      "namespace {{ constexpr std::array<unsigned char, {1}> content_{0}_ {{\n"
+      "{2}\n"
       "}};}}\n"
       "\n"
-      "std::string_view resources::{0}_sv() {{ return content_{0}_; }}\n"
+      "std::string_view resources::{0}_sv() {{\n"
+      "  return std::string_view{{\n"
+      "    reinterpret_cast<const char*>(content_{0}_.data()),\n"
+      "    content_{0}_.size()\n"
+      "  }};\n"
+      "}}\n"
       "std::span<const std::byte> resources::{0}_data() {{\n"
       "  return std::as_bytes(std::span{{content_{0}_}});\n"
       "}}\n",
-      id, read_file(path));
+      id, size, str);
   }
 
 
@@ -81,6 +87,7 @@ int main(int argc, const char* argv[]) {
   }
 
   source << "#include " << std::filesystem::path{args[1]}.filename() << "\n";
+  source << "#include <array>\n";
 
 
 
