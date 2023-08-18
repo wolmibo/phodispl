@@ -112,6 +112,12 @@ gl::glyphs::glyphs(std::span<const std::byte> data) :
 
 
 
+gl::glyphs gl::glyphs::from_static_memory(std::span<const std::byte> data) {
+  return glyphs{data};
+}
+
+
+
 
 
 const gl::glyph& gl::glyphs::get(char32_t code, uint32_t size) const {
