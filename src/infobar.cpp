@@ -205,6 +205,14 @@ void infobar::on_update() {
 
 
 
+void infobar::on_layout(win::vec2<std::optional<float>>& size) {
+  size.y = global_config().theme_text_size * 6.f;
+}
+
+
+
+
+
 namespace {
   [[nodiscard]] color premultiply(color c, float alpha) {
     return {c[0] * c[3] * alpha, c[1] * c[3] * alpha, c[2] * c[3] * alpha, c[3] * alpha};

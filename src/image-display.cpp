@@ -66,7 +66,7 @@ image_display::image_display() :
 
   add_child(&infobar_, win::widget_constraint{
       .width  = win::dimension_fill_constraint{},
-      .height = 128.f,
+      .height = win::dimension_compute_constraint{},
       .margin = win::margin_constraint{
         .start  = 0.f,
         .end    = 0.f,
