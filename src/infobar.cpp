@@ -2,6 +2,7 @@
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
 #include "phodispl/fonts.hpp"
+#include "phodispl/formatting.hpp"
 #include "phodispl/image.hpp"
 #include "resources.hpp"
 
@@ -138,7 +139,7 @@ void infobar::clear_frame() {
 
 
 void infobar::set_image(const image& img) {
-  invalidate(assign_diff(str_path_, img.path().parent_path().u32string()));
+  invalidate(assign_diff(str_path_, nice_path(img.path().parent_path()).u32string()));
   invalidate(assign_diff(str_name_, img.path().filename().u32string()));
 
   if (img.loading() || img.finished()) {
