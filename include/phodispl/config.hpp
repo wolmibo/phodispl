@@ -32,15 +32,13 @@ struct config {
 
 
     animation_curve           animation_view_next_curve{animation_curve::sinusoidal};
-    std::chrono::milliseconds animation_view_next_ms{0};
-
     animation_curve           animation_view_snap_curve{animation_curve::sinusoidal};
-    std::chrono::milliseconds animation_view_snap_ms{0};
-
     animation_curve           animation_ui_fade_curve{animation_curve::sinusoidal};
-    std::chrono::milliseconds animation_ui_fade_ms{250};
-
     animation_curve           animation_ui_highlight_curve{animation_curve::sinusoidal};
+
+    std::chrono::milliseconds animation_view_next_ms{0};
+    std::chrono::milliseconds animation_view_snap_ms{0};
+    std::chrono::milliseconds animation_ui_fade_ms{250};
     std::chrono::milliseconds animation_ui_highlight_ms{100};
 
 
@@ -68,9 +66,9 @@ struct config {
     listing_mode fl_empty_wd_dir          {listing_mode::supported};
 
     listing_mode fl_single_file           {listing_mode::always};
-    bool         fl_single_file_parent    {true};
     listing_mode fl_single_file_parent_dir{listing_mode::supported};
     bool         fl_single_file_demote    {true};
+    bool         fl_single_file_parent    {true};
 
     listing_mode fl_single_dir            {listing_mode::supported};
 
