@@ -206,7 +206,7 @@ void infobar::on_update() {
 
 
 void infobar::on_layout(win::vec2<std::optional<float>>& size) {
-  size.y = global_config().theme_text_size * 6.f;
+  size.y = global_config().theme_text_size * 3.5f;
 }
 
 
@@ -227,16 +227,16 @@ namespace {
       const win::viewport& viewport,
       float                alpha
   ) {
-    viewport.draw_string(position, key, font_main, global_config().theme_text_size,
+    viewport.draw_string(position, key, font_icons, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, 0.75 * alpha));
+
+    position += win::vec2<float>{global_config().theme_text_size * 1.2f, 0.f};
+
+    viewport.draw_string(position, value,
+        font_main, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, alpha));
 
-    auto pos = position + win::vec2<float>{global_config().theme_text_size * 6.f, 0.f};
-
-    position.y += viewport.draw_string(pos, value,
-        font_main, global_config().theme_text_size,
-        premultiply(global_config().theme_text_color, alpha)).y;
-
-    position.y += global_config().theme_text_size * 1.25f;
+    position += win::vec2<float>{global_config().theme_text_size * 6.f, 0.f};
   }
 }
 
@@ -257,28 +257,29 @@ void infobar::on_render() {
 
   quad_.draw();
 
-  auto start = logical_position() + static_cast<float>(global_config().theme_text_size)
+  auto line1 = logical_position() + static_cast<float>(global_config().theme_text_size)
                                       * win::vec2<float>{1.0f, 1.5f};
 
-  auto offset = start;
+  auto line2 = line1 + static_cast<float>(global_config().theme_text_size)
+                         * win::vec2<float>{0.f, 1.25f};
 
-  offset += viewport().draw_string(offset, str_name_,
-      font_main, global_config().theme_text_size,
-      premultiply(global_config().theme_text_color, opacity()));
+  auto diffx = std::max(
+    viewport().draw_string(line1, str_name_,
+        font_main, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, opacity())).x,
+    viewport().draw_string(line2, str_path_,
+        font_main, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, 0.75f * opacity())).x
+  ) + global_config().theme_text_size * 1.f;
 
-  offset.x += global_config().theme_text_size * 1.f;
-
-  offset.y += viewport().draw_string(offset, str_path_,
-      font_main, global_config().theme_text_size,
-      premultiply(global_config().theme_text_color, 0.75f * opacity())).y;
-
-  offset.y += global_config().theme_text_size * 1.5f;
-  offset.x = start.x;
-
+  line1.x += diffx;
+  line2.x += diffx;
 
   if (codec_) {
-    print(U"Format:",       ::stringify(*codec_), offset, viewport(), opacity());
-    print(U"Pixel Format:", str_format_,          offset, viewport(), opacity());
-    print(U"Size:",         str_size_,            offset, viewport(), opacity());
+    print(U"C", ::stringify(*codec_), line1, viewport(), opacity());
+    print(U"D", U"", line2, viewport(), opacity());
+    print(U"A", str_size_, line1, viewport(), opacity());
+    print(U"B", str_format_, line2, viewport(), opacity());
   }
+
 }
