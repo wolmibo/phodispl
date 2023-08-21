@@ -37,6 +37,7 @@ namespace {
       "\n"
       "std::string_view resources::{0}_sv() {{\n"
       "  return std::string_view{{\n"
+      "    //NOLINTNEXTLINE(*-reinterpret-cast)\n"
       "    reinterpret_cast<const char*>(content_{0}_.data()),\n"
       "    content_{0}_.size()\n"
       "  }};\n"
