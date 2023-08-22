@@ -56,6 +56,8 @@ void image::clear() {
   ptoken_ = {};
 
   image_ = {};
+
+  file_size_ = 0;
 }
 
 
@@ -97,6 +99,8 @@ void image::load() {
     std::vector<std::byte> buffer(pixglot::recommended_magic_size);
     std::ignore = reader.peek(buffer);
     codec_ = pixglot::determine_codec(buffer);
+
+    file_size_ = reader.size();
 
     loading_started_ = true;
 

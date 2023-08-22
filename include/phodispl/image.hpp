@@ -81,6 +81,8 @@ class image :
       return codec_;
     }
 
+    [[nodiscard]] size_t file_size() const { return file_size_; }
+
 
 
 
@@ -103,6 +105,7 @@ class image :
 
     std::optional<pixglot::image>            image_;
     std::optional<pixglot::codec>            codec_;
+    size_t                                   file_size_{0};
 
 
 
