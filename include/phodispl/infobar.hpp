@@ -43,6 +43,7 @@ class infobar : public fade_widget {
     std::u32string                        str_format_;
     std::u32string                        str_size_;
     std::optional<pixglot::codec>         codec_;
+    std::u32string                        str_file_size_;
     std::u32string                        str_name_;
     std::u32string                        str_path_;
 

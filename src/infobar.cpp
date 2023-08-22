@@ -144,8 +144,10 @@ void infobar::set_image(const image& img) {
 
   if (img.loading() || img.finished()) {
     invalidate(assign_diff(codec_, img.codec()));
+    invalidate(assign_diff(str_file_size_, format_byte_size(img.file_size())));
   } else {
     invalidate(assign_diff(codec_, {}));
+    invalidate(assign_diff<std::u32string>(str_file_size_, U""));
   }
 }
 
@@ -154,6 +156,7 @@ void infobar::set_image(const image& img) {
 void infobar::clear_image() {
   invalidate(assign_diff<std::u32string>(str_path_, U""));
   invalidate(assign_diff<std::u32string>(str_name_, U""));
+  invalidate(assign_diff<std::u32string>(str_file_size_, U""));
   invalidate(assign_diff(codec_, {}));
 }
 
@@ -278,7 +281,7 @@ void infobar::on_render() {
 
   if (codec_) {
     print(U"C", ::stringify(*codec_), line1, viewport(), opacity());
-    print(U"D", U"", line2, viewport(), opacity());
+    print(U"D", str_file_size_, line2, viewport(), opacity());
     print(U"A", str_size_, line1, viewport(), opacity());
     print(U"B", str_format_, line2, viewport(), opacity());
   }

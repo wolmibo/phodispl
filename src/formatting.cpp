@@ -267,3 +267,84 @@ std::u32string shorten_path(
   return collapse_filename(segments.back().first, segments.back().second, ps_w, el_w,
       max_width, measure, segments.size() == 1);
 }
+
+
+
+
+
+namespace {
+  [[nodiscard]] char32_t format_regular_digit(size_t num) {
+    return '0' + (num % 10);
+  }
+
+  [[nodiscard]] char32_t format_super_digit(size_t num) {
+    static constexpr std::u32string_view sups{U"⁰¹²³⁴⁵⁶⁷⁸⁹"};
+    return sups[num % sups.size()];
+  }
+
+
+
+  template<typename Digit>
+  [[nodiscard]] std::u32string format_number(size_t size, size_t div, Digit&& digit) {
+    if (size == 0 && div == 1) {
+      return std::u32string{std::forward<Digit>(digit)(0)};
+    }
+
+    if (div == 0) {
+      return U"∞";
+    }
+
+    size /= div;
+
+    std::u32string output;
+
+    if (size == 0) {
+      output.push_back(std::forward<Digit>(digit)(0));
+
+    } else {
+      while (size > 0) {
+        output.push_back(std::forward<Digit>(digit)(size));
+        size /= 10;
+      }
+    }
+
+    std::ranges::reverse(output);
+
+    return output;
+  }
+}
+
+
+
+
+std::u32string format_byte_size(size_t size) {
+  if (size < 1024) {
+    auto num = format_number(size, 1, format_regular_digit);
+    num.push_back(' ');
+    num.push_back('B');
+    return num;
+  }
+
+  size_t index{0};
+  while (size >= 1024L * 1024) {
+    size /= 1024;
+    index++;
+  }
+
+  auto num = format_number(size, 1024, format_regular_digit);
+
+  static constexpr std::string_view prefix{"KMGTPEZYRQ"};
+
+  if (index < prefix.size()) {
+    num.push_back(' ');
+    num.push_back(prefix[index]);
+    num.push_back('i');
+  } else {
+    num.append(U"×2");
+    num += format_number((index + 1) * 10, 1, format_super_digit);
+    num.push_back(' ');
+  }
+
+  num.push_back('B');
+  return num;
+}

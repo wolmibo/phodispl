@@ -11,6 +11,12 @@
 
 
 
+[[nodiscard]] std::u32string format_byte_size(size_t);
+
+
+
+
+
 template<typename T>
 using measure_function = std::move_only_function<float(T)>;
 
