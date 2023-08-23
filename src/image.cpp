@@ -56,6 +56,7 @@ void image::clear() {
   ptoken_ = {};
 
   image_ = {};
+  codec_ = {};
 
   file_size_ = 0;
 }
