@@ -12,6 +12,7 @@
 
 
 [[nodiscard]] std::u32string format_byte_size(size_t);
+[[nodiscard]] std::u32string to_u32string(size_t);
 
 
 

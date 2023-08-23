@@ -340,6 +340,26 @@ namespace {
 
 
 
+
+std::u32string to_u32string(size_t number) {
+  if (number == 0) {
+    return U"0";
+  }
+
+  std::u32string output;
+  for (; number > 0; number /= 10) {
+    output.push_back(format_regular_digit(number));
+  }
+
+  std::ranges::reverse(output);
+
+  return output;
+}
+
+
+
+
+
 std::u32string format_byte_size(size_t size) {
   if (size < 1024) {
     auto num = format_number(size, 1, 0, format_regular_digit);
