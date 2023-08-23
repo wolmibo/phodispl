@@ -284,28 +284,51 @@ namespace {
 
 
 
-  template<typename Digit>
-  [[nodiscard]] std::u32string format_number(size_t size, size_t div, Digit&& digit) {
-    if (size == 0 && div == 1) {
-      return std::u32string{std::forward<Digit>(digit)(0)};
+  [[nodiscard]] constexpr size_t powi(size_t base, unsigned int exp) {
+    size_t output{1};
+
+    for (; exp != 0; base *= base, exp >>= 1) {
+      if ((exp & 0x1) != 0) {
+        output *= base;
+      }
     }
 
+    return output;
+  }
+
+
+
+  template<typename Digit>
+  [[nodiscard]] std::u32string format_number(
+      size_t       number,
+      size_t       div,
+      unsigned int precision,
+      Digit&&      format_digit
+  ) {
     if (div == 0) {
       return U"∞";
     }
 
-    size /= div;
+    number = (number * powi(10, precision) * 10L) / div;
 
     std::u32string output;
 
-    if (size == 0) {
-      output.push_back(std::forward<Digit>(digit)(0));
+    if ((number % 10) >= 5) {
+      number += 10;
+    }
+    number /= 10;
 
-    } else {
-      while (size > 0) {
-        output.push_back(std::forward<Digit>(digit)(size));
-        size /= 10;
+    while (number > 0 || output.size() <= precision) {
+      output.push_back(std::forward<Digit>(format_digit)(number));
+      number /= 10;
+
+      if (output.size() == precision) {
+        output.push_back('.');
       }
+    }
+
+    if (output.empty() || output.back() == '.') {
+      output.push_back(std::forward<Digit>(format_digit)(0));
     }
 
     std::ranges::reverse(output);
@@ -319,7 +342,7 @@ namespace {
 
 std::u32string format_byte_size(size_t size) {
   if (size < 1024) {
-    auto num = format_number(size, 1, format_regular_digit);
+    auto num = format_number(size, 1, 0, format_regular_digit);
     num.push_back(' ');
     num.push_back('B');
     return num;
@@ -331,7 +354,12 @@ std::u32string format_byte_size(size_t size) {
     index++;
   }
 
-  auto num = format_number(size, 1024, format_regular_digit);
+  unsigned int precision{3};
+  for (auto shifted = size; shifted >= 10 * 1024L && precision > 0; shifted /= 10) {
+    precision--;
+  }
+
+  auto num = format_number(size, 1024, precision, format_regular_digit);
 
   static constexpr std::string_view prefix{"KMGTPEZYRQ"};
 
@@ -341,7 +369,7 @@ std::u32string format_byte_size(size_t size) {
     num.push_back('i');
   } else {
     num.append(U"×2");
-    num += format_number((index + 1) * 10, 1, format_super_digit);
+    num += format_number((index + 1) * 10, 1, 0, format_super_digit);
     num.push_back(' ');
   }
 
