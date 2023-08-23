@@ -6,8 +6,6 @@
 #include "phodispl/image.hpp"
 #include "resources.hpp"
 
-#include <codecvt>
-#include <locale>
 #include <string>
 #include <string_view>
 
@@ -34,8 +32,12 @@ namespace {
 
 
   [[nodiscard]] std::u32string convert_string(std::string_view str) {
-    return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}
-              .from_bytes(str.begin(), str.end());
+    std::u32string output;
+
+    output.resize(str.size());
+    std::ranges::copy(str, output.begin());
+
+    return output;
   }
 
 
