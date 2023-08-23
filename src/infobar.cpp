@@ -77,7 +77,7 @@ namespace {
     output += ::stringify(fsi.color_model());
 
     if (fsi.color_model() == pixglot::color_model::yuv) {
-      output += convert_string(std::to_string(std::to_underlying(fsi.subsampling())));
+      output += to_u32string(std::to_underlying(fsi.subsampling()));
     }
 
     if (fsi.has_alpha()) {
@@ -113,8 +113,7 @@ namespace {
 
 
   [[nodiscard]] std::u32string format_size(size_t width, size_t height) {
-    return convert_string(std::to_string(width)) + U'×'
-      + convert_string(std::to_string(height));
+    return to_u32string(width) + U'×' + to_u32string(height);
   }
 }
 
