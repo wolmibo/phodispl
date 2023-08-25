@@ -146,9 +146,11 @@ void infobar::set_image(const image& img) {
   if (img.loading() || img.finished()) {
     invalidate(assign_diff(codec_, img.codec()));
     invalidate(assign_diff(str_file_size_, format_byte_size(img.file_size())));
+    invalidate(assign_diff(str_warning_count_, to_u32string(img.warnings().size())));
   } else {
     invalidate(assign_diff(codec_, {}));
     invalidate(assign_diff<std::u32string>(str_file_size_, U""));
+    invalidate(assign_diff<std::u32string>(str_warning_count_, U""));
   }
 }
 
@@ -158,6 +160,7 @@ void infobar::clear_image() {
   invalidate(assign_diff<std::u32string>(str_path_, U""));
   invalidate(assign_diff<std::u32string>(str_name_, U""));
   invalidate(assign_diff<std::u32string>(str_file_size_, U""));
+  invalidate(assign_diff<std::u32string>(str_warning_count_, U""));
   invalidate(assign_diff(codec_, {}));
 }
 
@@ -279,6 +282,27 @@ void infobar::on_render() {
 
   line1.x += diffx;
   line2.x += diffx;
+
+  if (str_warning_count_ != U"0") {
+    auto shift = viewport().draw_string(line1, U"0",
+        font_icons, global_config().theme_text_size,
+        premultiply(global_config().theme_text_color, 0.75 * opacity()));
+
+    auto shiftx = shift.x;
+
+    if (str_warning_count_ != U"1") {
+      shift += line1 + win::vec2<float>{0.f, global_config().theme_text_size * -0.33f};
+
+      shiftx += viewport().draw_string(shift, str_warning_count_,
+          font_main, global_config().theme_text_size * 0.66,
+          premultiply(global_config().theme_text_color, opacity())).x;
+    }
+
+    shiftx += global_config().theme_text_size;
+
+    line1.x += shiftx;
+    line2.x += shiftx;
+  }
 
   if (codec_) {
     print(U"C", ::stringify(*codec_), line1, viewport(), opacity());
