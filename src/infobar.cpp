@@ -235,6 +235,10 @@ namespace {
       const win::viewport& viewport,
       float                alpha
   ) {
+    if (value.empty()) {
+      return;
+    }
+
     viewport.draw_string(position, key, font_icons, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, 0.75 * alpha));
 
