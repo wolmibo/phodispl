@@ -246,3 +246,15 @@ void image::toggle_animation() {
     frame_sequence_.pause();
   }
 }
+
+
+
+
+
+std::span<const std::string> image::warnings() const {
+  if (image_) {
+    return image_->warnings();
+  }
+
+  return {};
+}

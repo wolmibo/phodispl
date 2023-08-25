@@ -73,6 +73,8 @@ class image :
 
 
 
+    [[nodiscard]] std::span<const std::string> warnings() const;
+
     [[nodiscard]] const pixglot::metadata& metadata() const {
       return image_.value().metadata();
     }
