@@ -125,7 +125,7 @@ void image_display::exposure_multiply(float diff) {
 
 
 
-void image_display::scale_filter_toggle() {
+void image_display::toggle_scale_filter() {
   if (scale_filter_ == scale_filter::linear) {
     scale_filter_ = scale_filter::nearest;
   } else {

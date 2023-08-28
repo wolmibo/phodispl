@@ -36,7 +36,7 @@ class image_display : public win::widget {
     void exposure(float);
     void exposure_multiply(float);
 
-    void scale_filter_toggle();
+    void toggle_scale_filter();
 
     void scale(scale_mode);
     void scale_multiply_at(float, win::vec2<float>);

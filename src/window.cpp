@@ -335,7 +335,7 @@ void window::on_key_press(win::key keycode) {
 
     case win::key_from_char('t'):
     case win::key_from_char('T'):
-      image_display_.scale_filter_toggle();
+      image_display_.toggle_scale_filter();
       break;
 
     case win::key_from_char('i'):
