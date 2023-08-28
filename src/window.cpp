@@ -338,6 +338,11 @@ void window::on_key_press(win::key keycode) {
       image_display_.scale_filter_toggle();
       break;
 
+    case win::key_from_char('i'):
+    case win::key_from_char('I'):
+      image_display_.toggle_infobar();
+      break;
+
     default:
       break;
   }

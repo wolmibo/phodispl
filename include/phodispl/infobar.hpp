@@ -29,6 +29,8 @@ class infobar : public fade_widget {
     void clear_frame();
     void clear_image();
 
+    void show();
+
 
 
   private:

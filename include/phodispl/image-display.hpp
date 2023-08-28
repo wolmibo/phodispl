@@ -43,6 +43,8 @@ class image_display : public win::widget {
 
     void translate(win::vec2<float>);
 
+    void toggle_infobar();
+
 
 
   private:

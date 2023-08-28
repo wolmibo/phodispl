@@ -503,3 +503,15 @@ void image_display::set_error(
 
   message_box_.show();
 }
+
+
+
+
+
+void image_display::toggle_infobar() {
+  if (infobar_.visible()) {
+    infobar_.hide();
+  } else {
+    infobar_.show();
+  }
+}
