@@ -198,6 +198,14 @@ void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
 
 
 
+void infobar::on_pointer_move(win::vec2<float> /*pos*/) {
+  show();
+
+  mouse_inside_ = true;
+}
+
+
+
 void infobar::on_pointer_leave() {
   mouse_inside_ = false;
   mouse_leave_ = std::chrono::steady_clock::now();
