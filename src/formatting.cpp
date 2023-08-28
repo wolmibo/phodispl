@@ -374,7 +374,7 @@ std::u32string format_byte_size(size_t size) {
     index++;
   }
 
-  unsigned int precision{3};
+  unsigned int precision{2};
   for (auto shifted = size; shifted >= 10 * 1024L && precision > 0; shifted /= 10) {
     precision--;
   }
