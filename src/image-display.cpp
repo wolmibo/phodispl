@@ -509,9 +509,9 @@ void image_display::set_error(
 
 
 void image_display::toggle_infobar() {
-  if (infobar_.visible()) {
-    infobar_.hide();
+  if (infobar_.locked()) {
+    infobar_.unlock();
   } else {
-    infobar_.show();
+    infobar_.lock();
   }
 }

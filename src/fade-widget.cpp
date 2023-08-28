@@ -18,6 +18,8 @@ fade_widget::fade_widget() :
 
 
 void fade_widget::show() {
+  wants_hide_ = false;
+
   if (visible_ && !might_hide_) {
     return;
   }
@@ -33,6 +35,11 @@ void fade_widget::show() {
 
 
 void fade_widget::hide() {
+  if (locked_) {
+    wants_hide_ = true;
+    return;
+  }
+
   if (!visible_ || might_hide_) {
     return;
   }
@@ -56,5 +63,25 @@ void fade_widget::update() {
 
   if (opacity_.changed()) {
     invalidate();
+  }
+}
+
+
+
+
+
+void fade_widget::lock() {
+  locked_ = true;
+
+  show();
+}
+
+
+
+void fade_widget::unlock() {
+  locked_ = false;
+
+  if (wants_hide_) {
+    hide();
   }
 }
