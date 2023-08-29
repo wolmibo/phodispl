@@ -48,7 +48,7 @@ class infobar : public fade_widget {
     std::u32string                        str_file_size_;
     std::u32string                        str_name_;
     std::u32string                        str_path_;
-    std::u32string                        str_warning_count_;
+    std::u32string                        str_warning_count_{U"0"};
 
     void on_render() override;
     void on_update() override;
