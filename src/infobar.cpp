@@ -247,8 +247,15 @@ void infobar::recalculate_strings() {
     return;
   }
 
-  invalidate(assign_diff(str_name_, image_path_.filename().u32string()));
-  invalidate(assign_diff(str_path_, nice_path(image_path_.parent_path()).u32string()));
+  float w = global_config().theme_text_size * 20.f;
+
+  auto measure = [&](auto text) {
+    return viewport().measure_string(text, font_main, global_config().theme_text_size).x;
+  };
+
+  invalidate(assign_diff(str_name_, shorten_path(image_path_.filename(), w, measure)));
+  invalidate(assign_diff(str_path_,
+        shorten_path(nice_path(image_path_.parent_path()), w, measure)));
 }
 
 
