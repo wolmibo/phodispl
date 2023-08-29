@@ -279,6 +279,8 @@ void infobar::on_render() {
     return;
   }
 
+  float ts = global_config().theme_text_size;
+
   shader_.use();
   glUniform4f(shader_color_, 0.f, 0.f, 0.f, 0.7f * opacity());
 
@@ -287,40 +289,33 @@ void infobar::on_render() {
 
   quad_.draw();
 
-  auto line1 = logical_position() + static_cast<float>(global_config().theme_text_size)
-                                      * win::vec2<float>{1.0f, 1.5f};
-
-  auto line2 = line1 + static_cast<float>(global_config().theme_text_size)
-                         * win::vec2<float>{0.f, 1.25f};
+  auto line1 = logical_position() + ts * win::vec2<float>{1.0f, 1.5f};
+  auto line2 = line1              + ts * win::vec2<float>{0.f, 1.25f};
 
   auto diffx = std::max(
-    viewport().draw_string(line1, str_name_,
-        font_main, global_config().theme_text_size,
+    viewport().draw_string(line1, str_name_, font_main, ts,
         premultiply(global_config().theme_text_color, opacity())).x,
-    viewport().draw_string(line2, str_path_,
-        font_main, global_config().theme_text_size,
+    viewport().draw_string(line2, str_path_, font_main, ts,
         premultiply(global_config().theme_text_color, 0.75f * opacity())).x
-  ) + global_config().theme_text_size * 1.f;
+  ) + ts;
 
   line1.x += diffx;
   line2.x += diffx;
 
   if (str_warning_count_ != U"0") {
-    auto shift = viewport().draw_string(line1, U"0",
-        font_icons, global_config().theme_text_size,
+    auto shift = viewport().draw_string(line1, U"0", font_icons, ts,
         premultiply(global_config().theme_text_color, 0.75 * opacity()));
 
     auto shiftx = shift.x;
 
     if (str_warning_count_ != U"1") {
-      shift += line1 + win::vec2<float>{0.f, global_config().theme_text_size * -0.33f};
+      shift += line1 + ts * win::vec2<float>{0.f, -0.33f};
 
-      shiftx += viewport().draw_string(shift, str_warning_count_,
-          font_main, global_config().theme_text_size * 0.66,
+      shiftx += viewport().draw_string(shift, str_warning_count_, font_main, ts * 0.66,
           premultiply(global_config().theme_text_color, opacity())).x;
     }
 
-    shiftx += global_config().theme_text_size;
+    shiftx += ts;
 
     line1.x += shiftx;
     line2.x += shiftx;
@@ -333,4 +328,12 @@ void infobar::on_render() {
     print(U"B", str_format_, line2, viewport(), opacity());
   }
 
+
+
+  if (locked()) {
+    viewport().draw_string(logical_position() +
+        win::vec2<float>{logical_size().x - ts * 2.0f, ts * 1.5f},
+        U"a", font_icons, ts,
+        premultiply(global_config().theme_text_color, 0.75f * opacity()));
+  }
 }

@@ -74,6 +74,8 @@ void fade_widget::lock() {
   locked_ = true;
 
   show();
+
+  invalidate();
 }
 
 
@@ -84,4 +86,6 @@ void fade_widget::unlock() {
   if (wants_hide_) {
     hide();
   }
+
+  invalidate();
 }
