@@ -150,7 +150,7 @@ void infobar::set_image(const image& img) {
   } else {
     invalidate(assign_diff(codec_, {}));
     invalidate(assign_diff<std::u32string>(str_file_size_, U""));
-    invalidate(assign_diff<std::u32string>(str_warning_count_, U""));
+    invalidate(assign_diff<std::u32string>(str_warning_count_, U"0"));
   }
 }
 
@@ -160,7 +160,7 @@ void infobar::clear_image() {
   invalidate(assign_diff<std::u32string>(str_path_, U""));
   invalidate(assign_diff<std::u32string>(str_name_, U""));
   invalidate(assign_diff<std::u32string>(str_file_size_, U""));
-  invalidate(assign_diff<std::u32string>(str_warning_count_, U""));
+  invalidate(assign_diff<std::u32string>(str_warning_count_, U"0"));
   invalidate(assign_diff(codec_, {}));
 }
 
@@ -183,6 +183,10 @@ infobar::infobar() :
 
 
 void infobar::show() {
+  if (str_name_.empty()) {
+    return;
+  }
+
   mouse_leave_ = std::chrono::steady_clock::now();
 
   fade_widget::show();
@@ -271,7 +275,7 @@ namespace {
 
 
 void infobar::on_render() {
-  if (!visible()) {
+  if (!visible() || str_name_.empty()) {
     return;
   }
 
