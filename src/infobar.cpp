@@ -140,8 +140,9 @@ void infobar::clear_frame() {
 
 
 void infobar::set_image(const image& img) {
-  invalidate(assign_diff(str_path_, nice_path(img.path().parent_path()).u32string()));
-  invalidate(assign_diff(str_name_, img.path().filename().u32string()));
+  invalidate(assign_diff(image_path_, img.path()));
+  str_path_.clear();
+  str_name_.clear();
 
   if (img.loading() || img.finished()) {
     invalidate(assign_diff(codec_, img.codec()));
@@ -157,8 +158,10 @@ void infobar::set_image(const image& img) {
 
 
 void infobar::clear_image() {
-  invalidate(assign_diff<std::u32string>(str_path_, U""));
-  invalidate(assign_diff<std::u32string>(str_name_, U""));
+  invalidate(assign_diff<std::filesystem::path>(image_path_, ""));
+  str_path_.clear();
+  str_name_.clear();
+
   invalidate(assign_diff<std::u32string>(str_file_size_, U""));
   invalidate(assign_diff<std::u32string>(str_warning_count_, U"0"));
   invalidate(assign_diff(codec_, {}));
@@ -183,7 +186,7 @@ infobar::infobar() :
 
 
 void infobar::show() {
-  if (str_name_.empty()) {
+  if (image_path_.empty()) {
     return;
   }
 
@@ -239,6 +242,19 @@ void infobar::on_layout(win::vec2<std::optional<float>>& size) {
 
 
 
+void infobar::recalculate_strings() {
+  if (image_path_.empty() || (!str_name_.empty() && !str_path_.empty())) {
+    return;
+  }
+
+  invalidate(assign_diff(str_name_, image_path_.filename().u32string()));
+  invalidate(assign_diff(str_path_, nice_path(image_path_.parent_path()).u32string()));
+}
+
+
+
+
+
 namespace {
   [[nodiscard]] color premultiply(color c, float alpha) {
     return {c[0] * c[3] * alpha, c[1] * c[3] * alpha, c[2] * c[3] * alpha, c[3] * alpha};
@@ -275,9 +291,11 @@ namespace {
 
 
 void infobar::on_render() {
-  if (!visible() || str_name_.empty()) {
+  if (!visible() || image_path_.empty()) {
     return;
   }
+
+  recalculate_strings();
 
   float ts = global_config().theme_text_size;
 

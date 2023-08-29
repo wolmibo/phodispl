@@ -42,6 +42,8 @@ class infobar : public fade_widget {
     std::chrono::steady_clock::time_point mouse_leave_;
     bool                                  mouse_inside_{false};
 
+    std::filesystem::path                 image_path_;
+
     std::u32string                        str_format_;
     std::u32string                        str_size_;
     std::optional<pixglot::codec>         codec_;
@@ -58,6 +60,8 @@ class infobar : public fade_widget {
     void on_pointer_enter(win::vec2<float> /*pos*/) override;
     void on_pointer_move (win::vec2<float> /*pos*/) override;
     void on_pointer_leave()                         override;
+
+    void recalculate_strings();
 };
 
 #endif // PHODISPL_INFOBAR_HPP_INCLUDED
