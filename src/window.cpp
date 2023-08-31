@@ -91,6 +91,8 @@ window::window(std::vector<std::filesystem::path> sl) :
         .bottom = 24.f,
       }
   });
+
+  application::window().min_size({144, 144});
 }
 
 
