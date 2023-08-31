@@ -289,3 +289,11 @@ void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
 
   glfw->parent()->pointer_move(make_vec2<float>(x, y));
 }
+
+
+
+
+
+void win::window_glfw::min_size(vec2<uint32_t> size) {
+  glfwSetWindowSizeLimits(window_, size.x, size.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+}

@@ -327,3 +327,11 @@ void win::window_wayland::preferred_scale(
   self->scale_ = s;
   self->update_viewport();
 }
+
+
+
+
+
+void win::window_wayland::min_size(vec2<uint32_t> size) {
+  xdg_toplevel_set_min_size(toplevel_.get(), size.x, size.y);
+}

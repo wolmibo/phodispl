@@ -53,6 +53,10 @@ class window_glfw : public window_native {
 
 
 
+    void min_size(vec2<uint32_t> /*size*/) override;
+
+
+
     static void framebuffer_size_cb(GLFWwindow*, int, int);
 
     static void char_cb            (GLFWwindow*, unsigned int);

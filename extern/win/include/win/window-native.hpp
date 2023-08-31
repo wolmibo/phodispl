@@ -64,6 +64,8 @@ class window_native {
 
     void rescale(vec2<uint32_t>, float);
 
+    virtual void min_size(vec2<uint32_t> /*size*/) {}
+
 
 
     [[nodiscard]] virtual context share_context() const { return {}; };

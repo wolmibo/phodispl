@@ -60,6 +60,10 @@ class window_wayland : public window_native {
 
 
 
+    void min_size(vec2<uint32_t> /*size*/) override;
+
+
+
     static void xdg_surface_configure(void*, xdg_surface*, uint32_t);
 
     static constexpr xdg_surface_listener xdg_surface_listener_ {
