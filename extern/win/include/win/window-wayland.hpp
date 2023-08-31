@@ -24,8 +24,8 @@ class window_wayland : public window_native {
 
   private:
     bool                                should_close_{false};
-    vec2<uint32_t>                      size_{100, 100};
-    float                               scale_{1.f};
+    vec2<uint32_t>                      size_        {1024, 576};
+    float                               scale_       {1.f};
 
     global_wayland                      wayland_;
 
