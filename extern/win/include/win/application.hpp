@@ -31,16 +31,8 @@ class application : public window_listener, public viewport {
 
     [[nodiscard]] win::backend backend() const { return native_->backend(); }
 
+    void run() { native_->run();   }
 
-
-    void run()   { native_->run();   }
-    void close() { native_->close(); }
-
-    void title(const std::string& title) { native_->title(title); }
-
-    [[nodiscard]] context share_context() const { return native_->share_context(); }
-
-    [[nodiscard]] bool mod_active(modifier mod) const { return native_->mod_active(mod); }
 
 
     [[nodiscard]] const window_native& window() const { return *native_; }

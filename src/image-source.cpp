@@ -47,7 +47,7 @@ image_source::image_source(
   },
 
   worker_thread_{
-    [this, context = app.share_context()](const std::stop_token& stoken) {
+    [this, context = app.window().share_context()](const std::stop_token& stoken) {
       logcerr::thread_name("load");
       context.bind();
       logcerr::debug("entering load loop");
@@ -56,7 +56,7 @@ image_source::image_source(
     }
   },
 
-  filesystem_context_{app.share_context()},
+  filesystem_context_{app.window().share_context()},
   main_thread_id_    {std::this_thread::get_id()}
 {
   std::unique_lock lock{cache_mutex_};

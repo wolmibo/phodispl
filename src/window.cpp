@@ -184,7 +184,7 @@ void window::update_title() {
 
   if (new_title != old_title) {
     old_title = new_title;
-    title(new_title);
+    application::window().title(new_title);
   }
 }
 
@@ -250,7 +250,7 @@ void window::on_key_press(win::key keycode) {
     case win::key_from_char('q'):
     case win::key_from_char('Q'):
     case win::key::escape:
-      close();
+      application::window().close();
       break;
 
     case win::key::home: scale = -1; break;
@@ -303,7 +303,7 @@ void window::on_key_press(win::key keycode) {
     case win::key::f5:
     case win::key_from_char('r'):
     case win::key_from_char('R'):
-      if (mod_active(win::modifier::control)) {
+      if (application::window().mod_active(win::modifier::control)) {
         image_source_.reload_file_list();
       } else {
         image_source_.reload_current();
@@ -356,14 +356,14 @@ void window::input_mode_apply_scale(int scale) {
   if (scale > 0) {
     switch (input_mode_) {
       case input_mode::exposure_control:
-        if (mod_active(win::modifier::control)) {
+        if (application::window().mod_active(win::modifier::control)) {
           image_display_.exposure(std::pow(0.5f, scale));
         } else {
           image_display_.exposure(std::pow(2.f, scale));
         }
         break;
       case input_mode::standard:
-        if (mod_active(win::modifier::control)) {
+        if (application::window().mod_active(win::modifier::control)) {
           image_display_.scale(static_cast<float>(scale) / win::widget::scale());
         } else {
           image_display_.scale(1.f / static_cast<float>(scale) / win::widget::scale());
