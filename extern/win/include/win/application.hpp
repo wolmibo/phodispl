@@ -43,6 +43,8 @@ class application : public window_listener, public viewport {
     [[nodiscard]] bool mod_active(modifier mod) const { return native_->mod_active(mod); }
 
 
+    [[nodiscard]] const window_native& window() const { return *native_; }
+    [[nodiscard]]       window_native& window()       { return *native_; }
 
 
 
