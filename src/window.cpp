@@ -71,8 +71,8 @@ window::window(std::vector<std::filesystem::path> sl) :
   });
 
   add_child(&nav_left_, win::widget_constraint{
-      .width  = 64.f,
-      .height = 64.f,
+      .width  = win::dimension_compute_constraint{},
+      .height = win::dimension_compute_constraint{},
       .margin = win::margin_constraint{
         .start  = 24.f,
         .end    = {},
@@ -82,8 +82,8 @@ window::window(std::vector<std::filesystem::path> sl) :
   });
 
   add_child(&nav_right_, win::widget_constraint{
-      .width  = 64.f,
-      .height = 64.f,
+      .width  = win::dimension_compute_constraint{},
+      .height = win::dimension_compute_constraint{},
       .margin = win::margin_constraint{
         .start  = {},
         .end    = 24.f,

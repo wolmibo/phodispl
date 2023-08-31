@@ -44,6 +44,7 @@ class nav_button : public fade_widget {
 
     void on_render() override;
     void on_update() override;
+    void on_layout(win::vec2<std::optional<float>>& /*size*/) override;
 
     [[nodiscard]] bool stencil(win::vec2<float> /*pos*/) const override;
 

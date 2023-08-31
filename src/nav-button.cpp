@@ -164,3 +164,15 @@ bool nav_button::stencil(win::vec2<float> pos) const {
 
   return diff.x * diff.x + diff.y * diff.y <= 1.f;
 }
+
+
+
+
+
+void nav_button::on_layout(win::vec2<std::optional<float>>& size) {
+  auto ls = viewport().logical_size();
+
+  float s = std::clamp(std::min(ls.x - 6.f * 24.f, ls.y - 3.f * 24.f), 24.f, 64.f);
+
+  size = {s, s};
+}
