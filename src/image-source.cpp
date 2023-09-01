@@ -75,7 +75,8 @@ image_source::image_source(
 image_source::~image_source() {
   worker_thread_.request_stop();
 
-  { std::lock_guard lock{scheduled_images_lock_};
+  {
+    std::lock_guard lock{scheduled_images_lock_};
     if (loading_image_) {
       (*loading_image_)->abort_loading();
     }
@@ -200,7 +201,8 @@ void image_source::work_loop(const std::stop_token& stoken) {
 
           bool requires_recache{false};
 
-          { std::lock_guard lock{scheduled_images_lock_};
+          {
+            std::lock_guard lock{scheduled_images_lock_};
             loading_image_.reset();
             requires_recache = std::exchange(aborted_loading_, false);
 
@@ -237,7 +239,8 @@ void image_source::work_loop(const std::stop_token& stoken) {
 
 
 void image_source::next_image() {
-  { std::lock_guard<std::mutex> lock{cache_mutex_};
+  {
+    std::lock_guard<std::mutex> lock{cache_mutex_};
 
     if (cache_.size() <= 1) {
       return;
@@ -254,7 +257,8 @@ void image_source::next_image() {
 
 
 void image_source::previous_image() {
-  { std::lock_guard<std::mutex> lock{cache_mutex_};
+  {
+    std::lock_guard<std::mutex> lock{cache_mutex_};
 
     if (cache_.size() <= 1) {
       return;
