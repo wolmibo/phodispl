@@ -32,7 +32,7 @@ win::window_glfw::window_glfw(const std::string& app_id) {
   glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_DECORATED,               GLFW_TRUE);
 
-  window_ = glfwCreateWindow(1024, 576, app_id.c_str(), nullptr, nullptr);
+  window_ = glfwCreateWindow(size_.x, size_.y, app_id.c_str(), nullptr, nullptr);
   if (window_ == nullptr) {
     throw std::runtime_error{"unable to create glfw window"};
   }
@@ -41,7 +41,8 @@ win::window_glfw::window_glfw(const std::string& app_id) {
 
 
 
-  glfwSetFramebufferSizeCallback(window_, &window_glfw::framebuffer_size_cb);
+  glfwSetFramebufferSizeCallback   (window_, &window_glfw::framebuffer_size_cb);
+  glfwSetWindowContentScaleCallback(window_, &window_glfw::content_scale_cb);
 
   glfwSetKeyCallback (window_, &window_glfw::key_cb);
   glfwSetCharCallback(window_, &window_glfw::char_cb);
@@ -88,7 +89,14 @@ void win::window_glfw::run() {
   int width {0};
   int height{0};
   glfwGetFramebufferSize(window_, &width, &height);
-  rescale(make_vec2<uint32_t>(width, height), 1.f);
+  size_ = make_vec2<uint32_t>(width, height);
+
+  float xscale{1.f};
+  float yscale{1.f};
+  glfwGetWindowContentScale(window_, &xscale, &yscale);
+  scale_ = std::max(xscale, yscale);
+
+  rescale(size_, scale_);
 
   while (glfwWindowShouldClose(window_) == GLFW_FALSE) {
     if (update()) {
@@ -122,10 +130,25 @@ bool win::window_glfw::mod_active(modifier mod) const {
 
 
 void win::window_glfw::framebuffer_size_cb(GLFWwindow* win, int width, int height) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(win));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(win));
 
-  glfw->rescale(make_vec2<uint32_t>(width, height), 1.f);
+  self->size_ = make_vec2<uint32_t>(width, height);
+
+  self->rescale(self->size_, self->scale_);
 }
+
+
+
+
+
+void win::window_glfw::content_scale_cb(GLFWwindow* win, float xscale, float yscale) {
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(win));
+
+  self->scale_ = std::max(xscale, yscale);
+
+  self->rescale(self->size_, self->scale_);
+}
+
 
 
 

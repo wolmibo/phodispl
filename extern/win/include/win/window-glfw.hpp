@@ -37,6 +37,9 @@ class window_glfw : public window_native {
     int                      last_key_  {0};
     chaos_map<int, uint32_t> key_map_;
 
+    vec2<uint32_t>           size_ {1024, 576};
+    float                    scale_{1.f};
+
 
 
     [[nodiscard]] win::backend backend() const override { return win::backend::glfw; }
@@ -58,6 +61,7 @@ class window_glfw : public window_native {
 
 
     static void framebuffer_size_cb(GLFWwindow*, int, int);
+    static void content_scale_cb   (GLFWwindow*, float, float);
 
     static void char_cb            (GLFWwindow*, unsigned int);
     static void key_cb             (GLFWwindow*, int, int, int, int);
