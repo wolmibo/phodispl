@@ -423,7 +423,7 @@ void window::on_pointer_move(win::vec2<float> pos) {
 
 
 
-  if (!dragging_ && activation_area(pos, logical_size())) {
+  if (!dragging_ && activation_area(pos, logical_size()) && image_source_) {
     nav_left_.show();
     nav_right_.show();
   }
