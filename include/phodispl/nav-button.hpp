@@ -34,6 +34,7 @@ class nav_button : public fade_widget {
     GLint                                 shader_trafo_;
     GLint                                 shader_scale_x_;
     GLint                                 shader_scale_r_;
+    GLint                                 shader_aa_size_;
 
     std::chrono::steady_clock::time_point last_movement_;
     animation<float>                      highlight_;

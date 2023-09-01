@@ -29,6 +29,7 @@ nav_button::nav_button(bool left, std::move_only_function<void(void)> on_click) 
   shader_trafo_      {shader_.uniform("transform")},
   shader_scale_x_    {shader_.uniform("scaleX")},
   shader_scale_r_    {shader_.uniform("scaleR")},
+  shader_aa_size_    {shader_.uniform("aaSize")},
 
   highlight_(
       0.f,
@@ -103,6 +104,8 @@ void nav_button::on_render() {
 
   glUniform1f(shader_scale_x_, left_ ? -1.f : 1.f);
   glUniform1f(shader_scale_r_, inv_scale(*highlight_));
+
+  glUniform1f(shader_aa_size_, 64.f / logical_size().x);
 
   win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
   quad_.draw();
