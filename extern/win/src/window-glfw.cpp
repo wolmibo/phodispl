@@ -205,22 +205,22 @@ void win::window_glfw::key_cb(
     int         action,
     int         /*mods*/
 ) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
   auto prop_key = convert_key_code(key);
 
-  glfw->last_key_ = key;
+  self->last_key_ = key;
   if (action == GLFW_PRESS) {
     if (prop_key) {
-      glfw->parent()->on_key_press(*prop_key);
+      self->parent()->on_key_press(*prop_key);
     } else {
-      glfw->last_key_ = key;
+      self->last_key_ = key;
     }
   } else if (action == GLFW_RELEASE) {
     if (prop_key) {
-      glfw->parent()->on_key_release(*prop_key);
-    } else if (auto ix = glfw->key_map_.find_index(key)) {
-      glfw->parent()->on_key_release(static_cast<win::key>(glfw->key_map_.value(*ix)));
+      self->parent()->on_key_release(*prop_key);
+    } else if (auto ix = self->key_map_.find_index(key)) {
+      self->parent()->on_key_release(static_cast<win::key>(self->key_map_.value(*ix)));
     }
   }
 }
@@ -228,16 +228,16 @@ void win::window_glfw::key_cb(
 
 
 void win::window_glfw::char_cb(GLFWwindow* window, unsigned int character) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
-  if (glfw->last_key_ != 0) {
-    if (!glfw->key_map_.find_index(glfw->last_key_)) {
-      glfw->key_map_.emplace(glfw->last_key_, character);
+  if (self->last_key_ != 0) {
+    if (!self->key_map_.find_index(self->last_key_)) {
+      self->key_map_.emplace(self->last_key_, character);
     }
-    glfw->parent()->on_key_press(static_cast<win::key>(character));
+    self->parent()->on_key_press(static_cast<win::key>(character));
   }
 
-  glfw->last_key_ = 0;
+  self->last_key_ = 0;
 }
 
 
@@ -265,52 +265,52 @@ void win::window_glfw::mouse_btn_cb(
     int         action,
     int         /*mods*/
 ) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
   double x{0.};
   double y{0.};
   glfwGetCursorPos(window, &x, &y);
 
   if (action == GLFW_PRESS) {
-    glfw->parent()->pointer_press(make_vec2<float>(x, y), convert_button(button));
+    self->parent()->pointer_press(make_vec2<float>(x, y), convert_button(button));
   } else {
-    glfw->parent()->pointer_release(make_vec2<float>(x, y), convert_button(button));
+    self->parent()->pointer_release(make_vec2<float>(x, y), convert_button(button));
   }
 }
 
 
 
 void win::window_glfw::mouse_enter_cb(GLFWwindow* window, int enter) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
   if (enter != 0) {
     double x{0.};
     double y{0.};
     glfwGetCursorPos(window, &x, &y);
-    glfw->parent()->pointer_move(make_vec2<float>(x, y));
+    self->parent()->pointer_move(make_vec2<float>(x, y));
   } else {
-    glfw->parent()->pointer_leave();
+    self->parent()->pointer_leave();
   }
 }
 
 
 
 void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
   double x{0.};
   double y{0.};
   glfwGetCursorPos(window, &x, &y);
 
-  glfw->parent()->scroll(make_vec2<float>(x, y), make_vec2<float>(dx * -15.f, dy * 15.f));
+  self->parent()->scroll(make_vec2<float>(x, y), make_vec2<float>(dx * -15.f, dy * 15.f));
 }
 
 
 
 void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
-  auto* glfw = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
+  auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
-  glfw->parent()->pointer_move(make_vec2<float>(x, y));
+  self->parent()->pointer_move(make_vec2<float>(x, y));
 }
 
 
