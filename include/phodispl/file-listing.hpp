@@ -8,9 +8,7 @@
 #include "phodispl/fs-watcher.hpp"
 
 #include <filesystem>
-#include <functional>
 #include <optional>
-#include <span>
 
 
 

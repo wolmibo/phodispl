@@ -1,13 +1,11 @@
 #ifndef PHODISPL_IMAGE_SOURCE_HPP_INCLUDED
 #define PHODISPL_IMAGE_SOURCE_HPP_INCLUDED
 
-#include "phodispl/damageable.hpp"
 #include "phodispl/file-listing.hpp"
 #include "phodispl/image-cache.hpp"
 #include "phodispl/image.hpp"
 
 #include <condition_variable>
-#include <deque>
 #include <filesystem>
 #include <thread>
 #include <utility>

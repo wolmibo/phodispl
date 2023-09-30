@@ -1,4 +1,3 @@
-#include "phodispl/config.hpp"
 #include "phodispl/file-listing.hpp"
 #include "phodispl/image-source.hpp"
 

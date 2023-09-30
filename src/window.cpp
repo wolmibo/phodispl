@@ -1,8 +1,6 @@
 #include "phodispl/config.hpp"
 #include "phodispl/font-name.hpp"
 #include "phodispl/fonts.hpp"
-#include "phodispl/message-box.hpp"
-#include "phodispl/progress-circle.hpp"
 #include "phodispl/window.hpp"
 #include "resources.hpp"
 

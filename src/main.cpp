@@ -3,12 +3,8 @@
 
 #include "build-config.h"
 
-#include <bits/getopt_core.h>
-#include <csignal>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>

@@ -2,9 +2,7 @@
 #include "win/modifier.hpp"
 #include "win/widget.hpp"
 #include "win/window-listener.hpp"
-#include "win/window-wayland.hpp"
 
-#include <functional>
 #include <utility>
 
 #include <logcerr/log.hpp>

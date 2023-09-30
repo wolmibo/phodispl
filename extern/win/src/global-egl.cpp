@@ -2,6 +2,7 @@
 #include "win/global-egl.hpp"
 
 #include <array>
+#include <stdexcept>
 
 
 

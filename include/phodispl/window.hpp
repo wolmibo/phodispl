@@ -1,7 +1,6 @@
 #ifndef PHODISPL_WINDOW_HPP_INCLUDED
 #define PHODISPL_WINDOW_HPP_INCLUDED
 
-#include "phodispl/animation.hpp"
 #include "phodispl/continuous-scale.hpp"
 #include "phodispl/image-display.hpp"
 #include "phodispl/image-source.hpp"
@@ -9,8 +8,6 @@
 
 #include <chrono>
 #include <filesystem>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include <win/application.hpp>

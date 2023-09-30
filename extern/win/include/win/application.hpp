@@ -1,12 +1,10 @@
 #ifndef WIN_APPLICATION_HPP_INCLUDED
 #define WIN_APPLICATION_HPP_INCLUDED
 
-#include "win/types.hpp"
 #include "win/viewport.hpp"
 #include "win/window-listener.hpp"
 #include "win/window-native.hpp"
 
-#include <chrono>
 #include <memory>
 
 

@@ -4,7 +4,6 @@
 #include "resources.hpp"
 
 #include <chrono>
-#include <string_view>
 
 #include <gl/primitives.hpp>
 

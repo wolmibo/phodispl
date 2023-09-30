@@ -1,7 +1,6 @@
 #ifndef WIN_WINDOW_LISTENER_HPP_INCLUDED
 #define WIN_WINDOW_LISTENER_HPP_INCLUDED
 
-#include "win/mouse-button.hpp"
 #include "win/key.hpp"
 #include "win/vec2.hpp"
 

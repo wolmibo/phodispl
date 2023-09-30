@@ -1,7 +1,7 @@
 #ifndef WIN_CONTEXT_WAYLAND_HPP_INCLUDED
 #define WIN_CONTEXT_WAYLAND_HPP_INCLUDED
 
-#include "win/context.hpp"
+#include "win/context-native.hpp"
 
 #include <wayland-client.h>
 #include <wayland-egl.h>

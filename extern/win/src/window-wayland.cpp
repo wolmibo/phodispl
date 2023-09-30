@@ -3,7 +3,6 @@
 #include "win/application.hpp"
 #include "win/context.hpp"
 #include "win/global-wayland.hpp"
-#include "win/window-listener.hpp"
 #include "win/window-wayland.hpp"
 
 #include <logcerr/log.hpp>
