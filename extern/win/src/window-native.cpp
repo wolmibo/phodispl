@@ -79,8 +79,12 @@ std::unique_ptr<win::window_native> win::window_native::create(
     const std::string& app_id
 ) {
   switch (back) {
+#ifdef WIN_WITH_BACKEND_GLFW
     case backend::glfw:    return std::make_unique<window_glfw>   (app_id);
+#endif
+#ifdef WIN_WITH_BACKEND_WAYLAND
     case backend::wayland: return std::make_unique<window_wayland>(app_id);
+#endif
     case backend::none:    return std::make_unique<window_native> ();
 
     default:
