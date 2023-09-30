@@ -17,9 +17,9 @@ namespace {
 
 
 
-  void ft_assert(FT_Error e, std::string&& message) {
+  void ft_assert(FT_Error e, std::string message) {
     if (e != FT_Err_Ok) {
-      throw std::runtime_error{message + ":\n" + format_error(e)};
+      throw std::runtime_error{std::move(message) + ":\n" + format_error(e)};
     }
   }
 
