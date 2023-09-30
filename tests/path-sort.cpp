@@ -26,7 +26,7 @@ void assert(
     std::source_location location = std::source_location::current()
 ) {
   if (!expression) {
-    std::cout << "assertion failed: " << location.line() << std::endl;
+    std::cout << "assertion failed: " << location.line() << '\n' << std::flush;
     exit(1);
   }
 }
@@ -48,8 +48,9 @@ void test(
       std::cout << "mode: " << stringify(mode) << '\n';
       std::cout << "sorted:\n";
       std::ranges::for_each(input,   [](auto&& c) { std::cout << c << '\n'; });
-      std::cout << "expected sorting:" << std::endl;
+      std::cout << "expected sorting:" << '\n';
       std::ranges::for_each(correct, [](auto&& c) { std::cout << c << '\n'; });
+      std::cout << std::flush;
       exit(1);
     }
   }

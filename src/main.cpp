@@ -39,8 +39,7 @@ namespace {
       "   directory and phodispl lets you navigate through all the images in this\n"
       "   directory.\n"
       " ... multiple files to show the first image and to only let you navigate\n"
-      "   through the selected images.\n"
-    << std::endl;
+      "   through the selected images.\n\n";
   }
 
 
@@ -72,7 +71,7 @@ namespace {
       width += fmt.size();
       not_first = true;
     }
-    std::cout << std::endl;
+    std::cout << '\n';
   }
 
 
@@ -102,8 +101,7 @@ namespace {
       "TryExec=" << path.string() << "\n"
       "Keywords=Picture;Slideshow;Graphics;\n"
       "Categories=Viewer;2DGraphics;RasterGraphics;\n"
-      "MimeType=" << list_formats()
-      << std::endl;
+      "MimeType=" << list_formats() << '\n';
   }
 
 
