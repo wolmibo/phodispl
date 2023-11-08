@@ -8,6 +8,7 @@
 #include <iconfigp/color.hpp>
 #include <iconfigp/exception.hpp>
 #include <iconfigp/find-config.hpp>
+#include <iconfigp/format.hpp>
 #include <iconfigp/parser.hpp>
 #include <iconfigp/path.hpp>
 #include <iconfigp/section.hpp>
@@ -69,62 +70,31 @@ void load_config(const std::optional<std::filesystem::path>& path, bool strict) 
 
 
 
+ICONFIGP_DEFINE_ENUM_LUT(animation_curve,
+    "linear",        linear,
+    "sinusoidal",    sinusoidal,
+    "immediate",     immediate)
 
+ICONFIGP_DEFINE_ENUM_LUT(scale_filter,
+    "linear",        linear,
+    "nearest",       nearest)
 
-template<> struct iconfigp::case_insensitive_parse_lut<animation_curve> {
-  static constexpr std::string_view name {"animation-curve"};
-  static constexpr std::array<std::pair<std::string_view, animation_curve>, 3>
-  lut {
-    std::make_pair("linear",     animation_curve::linear),
-    std::make_pair("sinusoidal", animation_curve::sinusoidal),
-    std::make_pair("immediate",  animation_curve::immediate)
-  };
-};
+ICONFIGP_DEFINE_ENUM_LUT(listing_mode,
+    "always",        always,
+    "exists",        exists,
+    "supported",     supported)
 
-
-
-template<> struct iconfigp::case_insensitive_parse_lut<scale_filter> {
-  static constexpr std::string_view name {"scale-filter"};
-  static constexpr std::array<std::pair<std::string_view, scale_filter>, 2> lut {
-    std::make_pair("linear",  scale_filter::linear),
-    std::make_pair("nearest", scale_filter::nearest),
-  };
-};
+ICONFIGP_DEFINE_ENUM_LUT(path_compare_method,
+    "lexicographic", lexicographic,
+    "semantic",      semantic)
 
 
 
-template<> struct iconfigp::case_insensitive_parse_lut<listing_mode> {
-  static constexpr std::string_view name {"listing-mode"};
-  static constexpr std::array<std::pair<std::string_view, listing_mode>, 3> lut {
-    std::make_pair("always",    listing_mode::always),
-    std::make_pair("exists",    listing_mode::exists),
-    std::make_pair("supported", listing_mode::supported),
-  };
-};
+ICONFIGP_DEFINE_VALUE_PARSER(font_name,
+    "(<font name> | <path to font file>)",
+    [](std::string_view input) { return font_name{std::string{input}}; })
 
 
-
-template<> struct iconfigp::case_insensitive_parse_lut<path_compare_method> {
-  static constexpr std::string_view name {"path-compare-method"};
-  static constexpr std::array<std::pair<std::string_view, path_compare_method>, 2> lut {
-    std::make_pair("lexicographic", path_compare_method::lexicographic),
-    std::make_pair("semantic",      path_compare_method::semantic),
-  };
-};
-
-
-
-template<> struct iconfigp::value_parser<font_name> {
-  static constexpr std::string_view name{"font name"};
-
-  static std::string_view format() {
-    return "(<font name> | <path to font file>)";
-  }
-
-  static std::optional<font_name> parse(std::string_view str) {
-    return font_name{std::string{str}};
-  }
-};
 
 
 
@@ -240,7 +210,7 @@ config::config(std::string_view content, bool strict) {
 
 
     if (auto message =
-        iconfigp::generate_unused_message(root, content, logcerr::is_colored())) {
+        iconfigp::format_unused_message(root, content, logcerr::is_colored())) {
       logcerr::warn("config file contains unused keys");
       logcerr::print_raw_sync(std::cerr, *message);
       if (strict) {
