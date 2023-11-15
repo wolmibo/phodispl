@@ -33,6 +33,7 @@ pixglot_dep = dependency(
   default_options: [
     'default_library=static',
     'install_as_subproject=false',
+    'cpu_conversions=false',
     'tests=false'
   ],
   version: '>=0.1.2'
