@@ -1,11 +1,20 @@
 #include "win/window-native.hpp"
 
 #include "win/application.hpp"
-#include "win/window-glfw.hpp"
 #include "win/window-listener.hpp"
-#include "win/window-wayland.hpp"
 
 #include "win-config.h"
+
+#ifdef WIN_WITH_BACKEND_GLFW
+#include "win/window-glfw.hpp"
+#endif
+#ifdef WIN_WITH_BACKEND_WAYLAND
+#include "win/window-wayland.hpp"
+#endif
+
+#if !defined(WIN_WITH_BACKEND_WAYLAND) && !defined(WIN_WITH_BACKEND_GLFW)
+#warning "No window backend enabled"
+#endif
 
 #include <gl/base.hpp>
 
@@ -77,8 +86,8 @@ win::backend win::select_backend() {
 
 
 std::unique_ptr<win::window_native> win::window_native::create(
-    win::backend       back,
-    const std::string& app_id
+                     win::backend       back,
+    [[maybe_unused]] const std::string& app_id
 ) {
   switch (back) {
 #ifdef WIN_WITH_BACKEND_GLFW

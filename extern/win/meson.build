@@ -25,9 +25,6 @@ wlscanner = dependency('wayland-scanner',
   version:  '>=1.21.0'
 )
 
-scanner = find_program(wlscanner.get_variable('wayland_scanner'),
-                           required: get_option('wayland-native'))
-
 wlprotocols = dependency('wayland-protocols',
   required: get_option('wayland-native'),
   version:  '>=1.31'
@@ -40,7 +37,7 @@ wl_deps = [
   dependency('xkbcommon',      required: get_option('wayland-native'), version: '>=1.4.1')
 ]
 
-wlavailable = wlscanner.found() and scanner.found() and wlprotocols.found()
+wlavailable = wlscanner.found() and wlprotocols.found()
 foreach dep: wl_deps
   wlavailable = wlavailable and dep.found()
 endforeach
@@ -48,6 +45,8 @@ endforeach
 backends = []
 
 if wlavailable
+  scanner = find_program(wlscanner.get_variable('wayland_scanner'), required: true)
+
   scanner_src = generator(
     scanner,
     output: '@BASENAME@-protocol.c',
