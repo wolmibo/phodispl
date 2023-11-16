@@ -1,7 +1,9 @@
+#include "phodispl/message-box.hpp"
+
 #include "phodispl/config.hpp"
 #include "phodispl/fonts.hpp"
 #include "phodispl/formatting.hpp"
-#include "phodispl/message-box.hpp"
+
 #include "resources.hpp"
 
 #include <codecvt>

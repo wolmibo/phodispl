@@ -1,4 +1,5 @@
 #include "phodispl/continuous-scale.hpp"
+
 #include "phodispl/config.hpp"
 
 using namespace std::chrono;

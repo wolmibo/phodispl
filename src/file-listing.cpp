@@ -1,11 +1,13 @@
-#include "logcerr/log.hpp"
-#include "phodispl/config-types.hpp"
-#include "phodispl/config.hpp"
 #include "phodispl/file-listing.hpp"
+
+#include "phodispl/config.hpp"
+#include "phodispl/config-types.hpp"
 #include "phodispl/fs-watcher.hpp"
 
 #include <algorithm>
 #include <filesystem>
+
+#include <logcerr/log.hpp>
 
 #include <pixglot/codecs.hpp>
 

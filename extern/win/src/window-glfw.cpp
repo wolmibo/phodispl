@@ -1,6 +1,7 @@
+#include "win/window-glfw.hpp"
+
 #include "win/application.hpp"
 #include "win/context-glfw.hpp"
-#include "win/window-glfw.hpp"
 
 #include <stdexcept>
 #include <thread>

@@ -1,7 +1,9 @@
+#include "phodispl/window.hpp"
+
 #include "phodispl/config.hpp"
 #include "phodispl/font-name.hpp"
 #include "phodispl/fonts.hpp"
-#include "phodispl/window.hpp"
+
 #include "resources.hpp"
 
 #include <logcerr/log.hpp>

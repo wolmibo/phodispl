@@ -1,6 +1,8 @@
 #include "phodispl/nav-button.hpp"
+
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
+
 #include "resources.hpp"
 
 #include <chrono>

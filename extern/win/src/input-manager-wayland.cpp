@@ -1,4 +1,5 @@
 #include "win/input-manager-wayland.hpp"
+
 #include "win/modifier.hpp"
 #include "win/widget.hpp"
 #include "win/window-listener.hpp"

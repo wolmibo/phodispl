@@ -1,7 +1,8 @@
+#include "win/widget.hpp"
+
 #include "win/mouse-button.hpp"
 #include "win/viewport.hpp"
 #include "win/widget-constraint.hpp"
-#include "win/widget.hpp"
 
 #include <algorithm>
 

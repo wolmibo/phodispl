@@ -1,4 +1,5 @@
 #include "phodispl/config.hpp"
+
 #include "phodispl/path-compare.hpp"
 
 #include <fstream>

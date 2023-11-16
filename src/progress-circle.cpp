@@ -1,4 +1,5 @@
 #include "phodispl/progress-circle.hpp"
+
 #include "resources.hpp"
 
 #include <chrono>

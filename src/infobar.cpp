@@ -1,9 +1,11 @@
 #include "phodispl/infobar.hpp"
+
 #include "phodispl/config.hpp"
 #include "phodispl/fade-widget.hpp"
 #include "phodispl/fonts.hpp"
 #include "phodispl/formatting.hpp"
 #include "phodispl/image.hpp"
+
 #include "resources.hpp"
 
 #include <string>

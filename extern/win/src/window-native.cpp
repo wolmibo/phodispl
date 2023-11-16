@@ -1,11 +1,13 @@
-#include <gl/base.hpp>
+#include "win/window-native.hpp"
 
 #include "win/application.hpp"
 #include "win/window-glfw.hpp"
 #include "win/window-listener.hpp"
-#include "win/window-native.hpp"
 #include "win/window-wayland.hpp"
+
 #include "win-config.h"
+
+#include <gl/base.hpp>
 
 #include <logcerr/log.hpp>
 

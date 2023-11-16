@@ -1,5 +1,6 @@
-#include "win/context-wayland.hpp"
 #include "win/global-egl.hpp"
+
+#include "win/context-wayland.hpp"
 
 #include <array>
 #include <stdexcept>

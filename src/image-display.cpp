@@ -1,7 +1,9 @@
-#include "phodispl/config-types.hpp"
-#include "phodispl/config.hpp"
-#include "phodispl/formatting.hpp"
 #include "phodispl/image-display.hpp"
+
+#include "phodispl/config.hpp"
+#include "phodispl/config-types.hpp"
+#include "phodispl/formatting.hpp"
+
 #include "resources.hpp"
 
 #include <gl/primitives.hpp>

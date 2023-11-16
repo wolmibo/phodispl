@@ -1,6 +1,8 @@
 #include "gl/glyphs.hpp"
-#include "freetype/freetype.h"
+
 #include "gl/texture.hpp"
+
+#include <freetype/freetype.h>
 
 #include <logcerr/log.hpp>
 

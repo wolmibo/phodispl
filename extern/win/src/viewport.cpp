@@ -1,10 +1,11 @@
-#include <gl/base.hpp>
-#include <gl/primitives.hpp>
-
-#include "win/types.hpp"
 #include "win/viewport.hpp"
 
+#include "win/types.hpp"
+
 #include <cmath>
+
+#include <gl/base.hpp>
+#include <gl/primitives.hpp>
 
 
 

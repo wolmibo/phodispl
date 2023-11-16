@@ -1,5 +1,6 @@
-#include "phodispl/config.hpp"
 #include "phodispl/image-cache.hpp"
+
+#include "phodispl/config.hpp"
 #include "phodispl/image.hpp"
 
 #include <algorithm>
