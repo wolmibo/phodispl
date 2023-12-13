@@ -2,9 +2,11 @@
 #define WIN_WINDOW_LISTENER_HPP_INCLUDED
 
 #include "win/key.hpp"
-#include "win/vec2.hpp"
 
 #include <cstdint>
+
+#include <vec2.hpp>
+
 
 
 

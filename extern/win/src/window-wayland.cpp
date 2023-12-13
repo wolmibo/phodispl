@@ -105,7 +105,7 @@ win::window_wayland::window_wayland(const std::string& app_id) :
   decoration_ {create_decoration(wayland_.decoration_manager(), toplevel_.get())},
   viewport_   {create_viewport(wayland_.viewporter(), surface_.get())},
   wp_scale_   {create_wp_scale(wayland_.scale_manager(), surface_.get())},
-  egl_window_ {create_assert(wl_egl_window_create(surface_.get(), size_.x, size_.y),
+  egl_window_ {create_assert(wl_egl_window_create(surface_.get(), size_.x(), size_.y()),
                 "unable to create egl window")},
   context_    {wayland_.egl().create_context(egl_window_.get())},
 
@@ -237,7 +237,7 @@ void win::window_wayland::toplevel_configure(
 
   auto* self = static_cast<window_wayland*>(data);
 
-  auto new_size = make_vec2<uint32_t>(width, height);
+  auto new_size = vec2<uint32_t>(width, height);
   if (new_size == self->size_) {
     return;
   }
@@ -285,18 +285,20 @@ void win::window_wayland::decoration_configure(
 
 
 void win::window_wayland::update_viewport() {
-  wl_egl_window_resize(egl_window_.get(), size_.x * scale_, size_.y * scale_, 0, 0);
+  auto scaled = size_ * scale_;
+
+  wl_egl_window_resize(egl_window_.get(), scaled.x(), scaled.y(), 0, 0);
   rescale(size_, scale_);
 
 
   if (viewport_) {
-    wp_viewport_set_destination(viewport_.get(), size_.x, size_.y);
+    wp_viewport_set_destination(viewport_.get(), size_.x(), size_.y());
 
     wp_viewport_set_source(viewport_.get(),
         wl_fixed_from_int(0),
         wl_fixed_from_int(0),
-        wl_fixed_from_int(size_.x * scale_),
-        wl_fixed_from_int(size_.y * scale_));
+        wl_fixed_from_int(scaled.x()),
+        wl_fixed_from_int(scaled.y()));
   }
 }
 
@@ -332,5 +334,5 @@ void win::window_wayland::preferred_scale(
 
 
 void win::window_wayland::min_size(vec2<uint32_t> size) {
-  xdg_toplevel_set_min_size(toplevel_.get(), size.x, size.y);
+  xdg_toplevel_set_min_size(toplevel_.get(), size.x(), size.y());
 }

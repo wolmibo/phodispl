@@ -111,7 +111,7 @@ std::unique_ptr<win::window_native> win::window_native::create(
 
 void win::window_native::rescale(vec2<uint32_t> size, float scale) {
   static_cast<window_listener*>(parent())
-    ->on_resize_private(make_vec2<float>(size.x, size.y), scale);
+    ->on_resize_private(vec_cast<float>(size), scale);
   parent()->on_rescale(size, scale);
 }
 

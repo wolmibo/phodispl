@@ -3,11 +3,12 @@
 
 #include "win/context.hpp"
 #include "win/modifier.hpp"
-#include "win/vec2.hpp"
 
 #include <cstdint>
 #include <memory>
 #include <string>
+
+#include <vec2.hpp>
 
 
 

@@ -15,20 +15,19 @@ win::mat4 win::widget::trafo_mat_logical(vec2<float> position, vec2<float> size)
 
   auto vpsize = root_ptr_->logical_size();
 
-  vec2<float> s = vec2_div(size, vpsize);
+  vec2<float> s = div(size, vpsize);
 
   auto pos = position + logical_position();
 
-  pos.x =  pos.x - 0.5f * (vpsize.x - size.x);
-  pos.y = -pos.y + 0.5f * (vpsize.y - size.y);
+  pos = mul(vec2{1.f, -1.f}, pos) + mul(vec2{-0.5f, 0.5f}, vpsize - size);
 
-  vec2<float> p = 2.f * vec2_div(pos, vpsize);
+  vec2<float> p = 2.f * div(pos, vpsize);
 
   return {
-    s.x, 0.f, 0.f, p.x,
-    0.f, s.y, 0.f, p.y,
-    0.f, 0.f, 1.f, 0.f,
-    0.f, 0.f, 0.f, 1.f
+    s.x(), 0.f,   0.f, p.x(),
+    0.f,   s.y(), 0.f, p.y(),
+    0.f,   0.f,   1.f, 0.f,
+    0.f,   0.f,   0.f, 1.f
   };
 }
 
@@ -42,7 +41,7 @@ win::mat4 win::widget::trafo_mat_physical(vec2<float> position, vec2<float> size
 
 
 
-win::vec2<float> win::widget::draw_string(
+vec2<float> win::widget::draw_string(
     vec2<float>         position,
     std::u32string_view string,
     size_t              font_index,
@@ -125,10 +124,10 @@ void win::widget::compute_child_layout(widget* child, widget_constraint constrai
   child->on_layout(size_request);
 
   if (std::holds_alternative<dimension_compute_constraint>(constraint.width)) {
-    constraint.width = size_request.x.value_or(0.f);
+    constraint.width = size_request.x().value_or(0.f);
   }
   if (std::holds_alternative<dimension_compute_constraint>(constraint.height)) {
-    constraint.height = size_request.y.value_or(0.f);
+    constraint.height = size_request.y().value_or(0.f);
   }
 
   auto [x, y, w, h] = constraint.realize(realized_size_);
@@ -192,12 +191,12 @@ void win::widget::viewport(const win::viewport& vp) {
 
 
 namespace {
-  [[nodiscard]] bool affects(win::vec2<float> pos, const win::widget& widget) {
+  [[nodiscard]] bool affects(vec2<float> pos, const win::widget& widget) {
     auto lpos  = widget.logical_position();
     auto lsize = widget.logical_size();
 
-    return lpos.x <= pos.x && pos.x <= lpos.x + lsize.x &&
-      lpos.y <= pos.y && pos.y <= lpos.y + lsize.y && widget.stencil(pos);
+    return lpos.x() <= pos.x() && pos.x() <= lpos.x() + lsize.x() &&
+      lpos.y() <= pos.y() && pos.y() <= lpos.y() + lsize.y() && widget.stencil(pos);
   }
 }
 

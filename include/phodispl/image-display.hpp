@@ -39,9 +39,9 @@ class image_display : public win::widget {
     void toggle_scale_filter();
 
     void scale(scale_mode);
-    void scale_multiply_at(float, win::vec2<float>);
+    void scale_multiply_at(float, vec2<float>);
 
-    void translate(win::vec2<float>);
+    void translate(vec2<float>);
 
     void toggle_infobar();
 
@@ -68,7 +68,7 @@ class image_display : public win::widget {
 
     scale_mode                  scale_mode_       {dynamic_scale::fit};
     scale_mode                  scale_mode_target_{dynamic_scale::fit};
-    animation<win::vec2<float>> position_;
+    animation<vec2<float>>      position_;
 
     message_box                 message_box_;
     progress_circle             progress_circle_;

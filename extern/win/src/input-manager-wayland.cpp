@@ -90,7 +90,7 @@ namespace win {
 
     void clear() {
       moved    = false;
-      delta    = win::vec2<float>{0.f, 0.f};
+      delta    = {0.f, 0.f};
       enter    = 0;
       pressed.clear();
     }
@@ -122,8 +122,8 @@ win::input_manager_wayland::input_manager_wayland() :
 
 
 namespace {
-  [[nodiscard]] win::vec2<float> make_vec2(wl_fixed_t x, wl_fixed_t y) {
-    return win::make_vec2<float>(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  [[nodiscard]] vec2<float> make_vec2(wl_fixed_t x, wl_fixed_t y) {
+    return vec_cast<float>(vec2{wl_fixed_to_double(x), wl_fixed_to_double(y)});
   }
 }
 
@@ -204,9 +204,9 @@ namespace {
     auto* state = static_cast<win::input_manager_wayland*>(data)->pointer_state();
 
     if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
-      state->delta.y -= wl_fixed_to_double(value);
+      state->delta.y() -= wl_fixed_to_double(value);
     } else {
-      state->delta.x += wl_fixed_to_double(value);
+      state->delta.x() += wl_fixed_to_double(value);
     }
   }
 
@@ -241,7 +241,7 @@ namespace {
       self->widget_event(&win::widget::pointer_move, state->position);
     }
 
-    if (state->delta != win::vec2<float>{0.f, 0.f}) {
+    if (state->delta != vec2{0.f, 0.f}) {
       self->widget_event(&win::widget::scroll, state->position, state->delta);
     }
 

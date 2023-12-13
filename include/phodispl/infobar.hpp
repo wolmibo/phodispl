@@ -55,11 +55,11 @@ class infobar : public fade_widget {
     void on_render() override;
     void on_update() override;
 
-    void on_layout(win::vec2<std::optional<float>>& /*size*/) override;
+    void on_layout(vec2<std::optional<float>>& /*size*/) override;
 
-    void on_pointer_enter(win::vec2<float> /*pos*/) override;
-    void on_pointer_move (win::vec2<float> /*pos*/) override;
-    void on_pointer_leave()                         override;
+    void on_pointer_enter(vec2<float> /*pos*/) override;
+    void on_pointer_move (vec2<float> /*pos*/) override;
+    void on_pointer_leave()                    override;
 
     void recalculate_strings();
 };

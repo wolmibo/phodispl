@@ -41,7 +41,7 @@ class message_box : public fade_widget {
 
 
     void on_render() override;
-    void on_layout(win::vec2<std::optional<float>>& /*size*/) override;
+    void on_layout(vec2<std::optional<float>>& /*size*/) override;
 
     void recalculate_string(float);
 };

@@ -6,12 +6,13 @@
 
 #include "win/mouse-button.hpp"
 #include "win/types.hpp"
-#include "win/vec2.hpp"
 #include "win/widget-constraint.hpp"
 
 #include <functional>
 #include <string_view>
 #include <vector>
+
+#include <vec2.hpp>
 
 
 

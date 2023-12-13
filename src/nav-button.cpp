@@ -106,7 +106,7 @@ void nav_button::on_render() {
   glUniform1f(shader_scale_x_, left_ ? -1.f : 1.f);
   glUniform1f(shader_scale_r_, inv_scale(*highlight_));
 
-  glUniform1f(shader_aa_size_, 64.f / logical_size().x);
+  glUniform1f(shader_aa_size_, 64.f / logical_size().x());
 
   win::set_uniform_mat4(shader_trafo_, trafo_mat_logical({0.f, 0.f}, logical_size()));
   quad_.draw();
@@ -116,7 +116,7 @@ void nav_button::on_render() {
 
 
 
-void nav_button::on_pointer_enter(win::vec2<float> /*pos*/) {
+void nav_button::on_pointer_enter(vec2<float> /*pos*/) {
   last_movement_ = std::chrono::steady_clock::now();
   highlight_.animate_to(1.f);
 
@@ -134,7 +134,7 @@ void nav_button::on_pointer_leave() {
 
 
 
-void nav_button::on_pointer_press(win::vec2<float> /*pos*/, win::mouse_button btn) {
+void nav_button::on_pointer_press(vec2<float> /*pos*/, win::mouse_button btn) {
   if (btn == win::mouse_button::left) {
     last_movement_ = std::chrono::steady_clock::now();
     mouse_down_ = true;
@@ -145,7 +145,7 @@ void nav_button::on_pointer_press(win::vec2<float> /*pos*/, win::mouse_button bt
 
 
 
-void nav_button::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button btn) {
+void nav_button::on_pointer_release(vec2<float> /*pos*/, win::mouse_button btn) {
   if (btn == win::mouse_button::left && mouse_down_) {
     last_movement_ = std::chrono::steady_clock::now();
     mouse_down_ = false;
@@ -161,22 +161,22 @@ void nav_button::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button 
 
 
 
-bool nav_button::stencil(win::vec2<float> pos) const {
+bool nav_button::stencil(vec2<float> pos) const {
   auto center = logical_position() + 0.5f * logical_size();
-  auto diff   = win::vec2_div((pos - center) * inv_scale(*highlight_),
+  auto diff   = div((pos - center) * inv_scale(*highlight_),
                               0.5f * logical_size());
 
-  return diff.x * diff.x + diff.y * diff.y <= 1.f;
+  return diff.x() * diff.x() + diff.y() * diff.y() <= 1.f;
 }
 
 
 
 
 
-void nav_button::on_layout(win::vec2<std::optional<float>>& size) {
+void nav_button::on_layout(vec2<std::optional<float>>& size) {
   auto ls = viewport().logical_size();
 
-  float s = std::clamp(std::min(ls.x - 6.f * 24.f, ls.y - 3.f * 24.f), 24.f, 64.f);
+  float s = std::clamp(std::min(ls.x() - 6.f * 24.f, ls.y() - 3.f * 24.f), 24.f, 64.f);
 
   size = {s, s};
 }

@@ -32,7 +32,7 @@ win::window_glfw::window_glfw(const std::string& app_id) {
   glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_DECORATED,               GLFW_TRUE);
 
-  window_ = glfwCreateWindow(size_.x, size_.y, app_id.c_str(), nullptr, nullptr);
+  window_ = glfwCreateWindow(size_.x(), size_.y(), app_id.c_str(), nullptr, nullptr);
   if (window_ == nullptr) {
     throw std::runtime_error{"unable to create glfw window"};
   }
@@ -89,7 +89,7 @@ void win::window_glfw::run() {
   int width {0};
   int height{0};
   glfwGetFramebufferSize(window_, &width, &height);
-  size_ = make_vec2<uint32_t>(width, height);
+  size_ = vec2<uint32_t>(width, height);
 
   float xscale{1.f};
   float yscale{1.f};
@@ -132,7 +132,7 @@ bool win::window_glfw::mod_active(modifier mod) const {
 void win::window_glfw::framebuffer_size_cb(GLFWwindow* win, int width, int height) {
   auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(win));
 
-  self->size_ = make_vec2<uint32_t>(width, height);
+  self->size_ = vec2<uint32_t>(width, height);
 
   self->rescale(self->size_, self->scale_);
 }
@@ -272,9 +272,9 @@ void win::window_glfw::mouse_btn_cb(
   glfwGetCursorPos(window, &x, &y);
 
   if (action == GLFW_PRESS) {
-    self->parent()->pointer_press(make_vec2<float>(x, y), convert_button(button));
+    self->parent()->pointer_press(vec2<float>(x, y), convert_button(button));
   } else {
-    self->parent()->pointer_release(make_vec2<float>(x, y), convert_button(button));
+    self->parent()->pointer_release(vec2<float>(x, y), convert_button(button));
   }
 }
 
@@ -287,7 +287,7 @@ void win::window_glfw::mouse_enter_cb(GLFWwindow* window, int enter) {
     double x{0.};
     double y{0.};
     glfwGetCursorPos(window, &x, &y);
-    self->parent()->pointer_move(make_vec2<float>(x, y));
+    self->parent()->pointer_move(vec2<float>(x, y));
   } else {
     self->parent()->pointer_leave();
   }
@@ -302,7 +302,7 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
   double y{0.};
   glfwGetCursorPos(window, &x, &y);
 
-  self->parent()->scroll(make_vec2<float>(x, y), make_vec2<float>(dx * -15.f, dy * 15.f));
+  self->parent()->scroll(vec2<float>(x, y), vec2<float>(dx * -15.f, dy * 15.f));
 }
 
 
@@ -310,7 +310,7 @@ void win::window_glfw::mouse_scroll_cb(GLFWwindow* window, double dx, double dy)
 void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
   auto* self = static_cast<window_glfw*>(glfwGetWindowUserPointer(window));
 
-  self->parent()->pointer_move(make_vec2<float>(x, y));
+  self->parent()->pointer_move(vec2<float>(x, y));
 }
 
 
@@ -318,5 +318,5 @@ void win::window_glfw::mouse_pos_cb(GLFWwindow* window, double x, double y) {
 
 
 void win::window_glfw::min_size(vec2<uint32_t> size) {
-  glfwSetWindowSizeLimits(window_, size.x, size.y, GLFW_DONT_CARE, GLFW_DONT_CARE);
+  glfwSetWindowSizeLimits(window_, size.x(), size.y(), GLFW_DONT_CARE, GLFW_DONT_CARE);
 }

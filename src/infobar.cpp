@@ -199,7 +199,7 @@ void infobar::show() {
 
 
 
-void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
+void infobar::on_pointer_enter(vec2<float> /*pos*/) {
   show();
 
   mouse_inside_ = true;
@@ -207,7 +207,7 @@ void infobar::on_pointer_enter(win::vec2<float> /*pos*/) {
 
 
 
-void infobar::on_pointer_move(win::vec2<float> /*pos*/) {
+void infobar::on_pointer_move(vec2<float> /*pos*/) {
   show();
 
   mouse_inside_ = true;
@@ -236,8 +236,8 @@ void infobar::on_update() {
 
 
 
-void infobar::on_layout(win::vec2<std::optional<float>>& size) {
-  size.y = global_config().theme_text_size * 3.5f;
+void infobar::on_layout(vec2<std::optional<float>>& size) {
+  size.y() = global_config().theme_text_size * 3.5f;
 }
 
 
@@ -252,7 +252,7 @@ void infobar::recalculate_strings() {
   float w = global_config().theme_text_size * 20.f;
 
   auto measure = [&](auto text) {
-    return viewport().measure_string(text, font_main, global_config().theme_text_size).x;
+    return viewport().measure_string(text, font_main, global_config().theme_text_size).x();
   };
 
   invalidate(assign_diff(str_name_, shorten_path(image_path_.filename(), w, measure)));
@@ -274,7 +274,7 @@ namespace {
   void print(
       std::u32string_view  key,
       std::u32string_view  value,
-      win::vec2<float>&    position,
+      vec2<float>&         position,
       const win::viewport& viewport,
       float                alpha
   ) {
@@ -285,13 +285,13 @@ namespace {
     viewport.draw_string(position, key, font_icons, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, 0.75 * alpha));
 
-    position += win::vec2<float>{global_config().theme_text_size * 1.2f, 0.f};
+    position += vec2<float>{global_config().theme_text_size * 1.2f, 0.f};
 
     viewport.draw_string(position, value,
         font_main, global_config().theme_text_size,
         premultiply(global_config().theme_text_color, alpha));
 
-    position += win::vec2<float>{global_config().theme_text_size * 6.f, 0.f};
+    position += vec2<float>{global_config().theme_text_size * 6.f, 0.f};
   }
 }
 
@@ -316,36 +316,36 @@ void infobar::on_render() {
 
   quad_.draw();
 
-  auto line1 = logical_position() + ts * win::vec2<float>{1.0f, 1.5f};
-  auto line2 = line1              + ts * win::vec2<float>{0.f, 1.25f};
+  auto line1 = logical_position() + ts * vec2{1.0f, 1.5f};
+  auto line2 = line1              + ts * vec2{0.f, 1.25f};
 
   auto diffx = std::max(
     viewport().draw_string(line1, str_name_, font_main, ts,
-        premultiply(global_config().theme_text_color, opacity())).x,
+        premultiply(global_config().theme_text_color, opacity())).x(),
     viewport().draw_string(line2, str_path_, font_main, ts,
-        premultiply(global_config().theme_text_color, 0.75f * opacity())).x
+        premultiply(global_config().theme_text_color, 0.75f * opacity())).x()
   ) + ts;
 
-  line1.x += diffx;
-  line2.x += diffx;
+  line1.x() += diffx;
+  line2.x() += diffx;
 
   if (str_warning_count_ != U"0") {
     auto shift = viewport().draw_string(line1, U"0", font_icons, ts,
         premultiply(global_config().theme_text_color, 0.75 * opacity()));
 
-    auto shiftx = shift.x;
+    auto shiftx = shift.x();
 
     if (str_warning_count_ != U"1") {
-      shift += line1 + ts * win::vec2<float>{0.f, -0.33f};
+      shift += line1 + ts * vec2{0.f, -0.33f};
 
       shiftx += viewport().draw_string(shift, str_warning_count_, font_main, ts * 0.66,
-          premultiply(global_config().theme_text_color, opacity())).x;
+          premultiply(global_config().theme_text_color, opacity())).x();
     }
 
     shiftx += ts;
 
-    line1.x += shiftx;
-    line2.x += shiftx;
+    line1.x() += shiftx;
+    line2.x() += shiftx;
   }
 
   if (codec_) {
@@ -359,7 +359,7 @@ void infobar::on_render() {
 
   if (locked()) {
     viewport().draw_string(logical_position() +
-        win::vec2<float>{logical_size().x - ts * 2.0f, ts * 1.5f},
+        vec2{logical_size().x() - ts * 2.0f, ts * 1.5f},
         U"a", font_icons, ts,
         premultiply(global_config().theme_text_color, 0.75f * opacity()));
   }

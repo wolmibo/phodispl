@@ -157,7 +157,7 @@ void image_display::scale(scale_mode mode) {
 
 
 
-void image_display::scale_multiply_at(float factor, win::vec2<float> position) {
+void image_display::scale_multiply_at(float factor, vec2<float> position) {
   if (auto* value = std::get_if<float>(&scale_mode_)) {
     scale_mode_ = *value * factor;
 
@@ -181,7 +181,7 @@ void image_display::scale_multiply_at(float factor, win::vec2<float> position) {
 
 
 
-void image_display::translate(win::vec2<float> delta) {
+void image_display::translate(vec2<float> delta) {
   position_.set_to(*position_ + delta);
   invalidate();
 }
@@ -361,11 +361,11 @@ float image_display::current_scale(scale_mode mode) const {
 
 
 namespace {
-  [[nodiscard]] win::vec2<float> real_size(const pixglot::frame_view& f) {
-    auto size = win::make_vec2<float>(f.width(), f.height());
+  [[nodiscard]] vec2<float> real_size(const pixglot::frame_view& f) {
+    vec2<float> size(f.width(), f.height());
 
     if (pixglot::flips_xy(f.orientation())) {
-      std::swap(size.x, size.y);
+      std::swap(size.x(), size.y());
     }
 
     return size;
@@ -380,12 +380,12 @@ float image_display::scale_dynamic(
     const pixglot::frame_view& f,
     dynamic_scale              scale_mode
 ) const {
-  auto scale = win::vec2_div(logical_size(), real_size(f));
+  auto scale = div(logical_size(), real_size(f));
 
   if (scale_mode == dynamic_scale::fit) {
-    return std::min(scale.x, scale.y);
+    return std::min(scale.x(), scale.y());
   }
-  return std::max(scale.x, scale.y);
+  return std::max(scale.x(), scale.y());
 }
 
 
@@ -438,11 +438,11 @@ win::mat4 image_display::matrix_for(const pixglot::frame_view& f) const {
 
   float s = (1.f - factor) * s_source + factor * s_target;
 
-  auto scale = s * win::vec2_div(real_size(f), size);
+  auto scale = s * div(real_size(f), size);
 
-  auto pos = win::vec2_mul(win::vec2_div(*position_, size), {2.f, -2.f});
+  auto pos = mul(div(*position_, size), {2.f, -2.f});
 
-  return matrix_from(scale.x, scale.y, pos.x, pos.y, f.orientation());
+  return matrix_from(scale.x(), scale.y(), pos.x(), pos.y(), f.orientation());
 }
 
 

@@ -46,7 +46,7 @@ void main() {
 
 
 
-win::vec2<float> win::viewport::draw_string(
+vec2<float> win::viewport::draw_string(
     vec2<float>         position,
     std::u32string_view string,
     size_t              font_index,
@@ -74,22 +74,20 @@ win::vec2<float> win::viewport::draw_string(
 
   for (char32_t c: string) {
     if (c == 10) {
-      offset.x = 0.f;
-      offset.y += 1.2 * size;
+      offset.x() = 0.f;
+      offset.y() += 1.2 * size;
     } else if (c == 32) {
-      offset.x += font_cache_[font_index].get(c, size).advance_x();
+      offset.x() += font_cache_[font_index].get(c, size).advance_x();
     } else {
       const auto& g = font_cache_[font_index].get(c, size);
 
-      auto pos = position + offset;
-      pos.x = std::floor(pos.x + g.left());
-      pos.y = std::floor(pos.y - g.top());
+      auto pos = floor(position + offset + vec2{g.left(), -g.top()});
 
       set_uniform_mat4(0, trafo_mat_physical(pos, {g.width(), g.height()}));
       g.tex().bind();
       font_plane_.draw();
 
-      offset.x += g.advance_x();
+      offset.x() += g.advance_x();
     }
   }
 
@@ -100,7 +98,7 @@ win::vec2<float> win::viewport::draw_string(
 
 
 
-win::vec2<float> win::viewport::measure_string(
+vec2<float> win::viewport::measure_string(
     std::u32string_view text,
     size_t              font_index,
     uint32_t            size
@@ -114,10 +112,10 @@ win::vec2<float> win::viewport::measure_string(
 
   for (char32_t c: text) {
     if (c == 10) {
-      offset.x = 0.f;
-      offset.y += 1.2 * size;
+      offset.x() = 0.f;
+      offset.y() += 1.2 * size;
     } else {
-      offset.x += font_cache_[font_index].get(c, size).advance_x();
+      offset.x() += font_cache_[font_index].get(c, size).advance_x();
     }
   }
 
@@ -146,9 +144,9 @@ size_t win::viewport::add_font(gl::glyphs glyphs) {
 
 
 void win::viewport::resize(vec2<float> size, float scale) {
-  glViewport(0, 0, size.x * scale, size.y * scale);
+  glViewport(0, 0, size.x() * scale, size.y() * scale);
 
-  auto size_request = make_vec2<std::optional<float>>(size.x, size.y);
+  auto size_request = vec_cast<std::optional<float>>(size);
   on_layout(size_request);
 
   compute_layout({0.f, 0.f}, size, scale);

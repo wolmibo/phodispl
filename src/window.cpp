@@ -15,11 +15,8 @@
 
 
 namespace {
-  [[nodiscard]] bool activation_area(
-      const win::vec2<float>& pos,
-      const win::vec2<float>& size
-  ) {
-    return pos.x < 112.f || pos.x > size.x - 122.f;
+  [[nodiscard]] bool activation_area(const vec2<float>& pos, const vec2<float>& size) {
+    return pos.x() < 112.f || pos.x() > size.x() - 122.f;
   }
 
 
@@ -390,7 +387,7 @@ void window::input_mode_apply_scale(int scale) {
 
 
 
-void window::on_pointer_press(win::vec2<float> pos, win::mouse_button button) {
+void window::on_pointer_press(vec2<float> pos, win::mouse_button button) {
   if (button == win::mouse_button::middle) {
     dragging_ = true;
     last_position_ = pos;
@@ -406,7 +403,7 @@ void window::on_pointer_press(win::vec2<float> pos, win::mouse_button button) {
 
 
 
-void window::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button button) {
+void window::on_pointer_release(vec2<float> /*pos*/, win::mouse_button button) {
   if (button == win::mouse_button::middle || button == win::mouse_button::left) {
     dragging_ = false;
   }
@@ -414,7 +411,7 @@ void window::on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button butt
 
 
 
-void window::on_pointer_move(win::vec2<float> pos) {
+void window::on_pointer_move(vec2<float> pos) {
   if (dragging_) {
     image_display_.translate(pos - last_position_);
 
@@ -433,17 +430,17 @@ void window::on_pointer_move(win::vec2<float> pos) {
 
 
 
-void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
-  if (abs(delta.y) < 1e-5) {
+void window::on_scroll(vec2<float> pos, vec2<float> delta) {
+  if (abs(delta.y()) < 1e-5) {
     return;
   }
 
   switch (input_mode_) {
     case input_mode::exposure_control:
-      image_display_.exposure_multiply(std::pow(1.01f, delta.y));
+      image_display_.exposure_multiply(std::pow(1.01f, delta.y()));
       break;
     case input_mode::standard:
-      image_display_.scale_multiply_at(std::pow(1.01f, delta.y), pos);
+      image_display_.scale_multiply_at(std::pow(1.01f, delta.y()), pos);
       break;
   }
 }
@@ -452,7 +449,7 @@ void window::on_scroll(win::vec2<float> pos, win::vec2<float> delta) {
 
 
 
-void window::on_pinch_begin(win::vec2<float> pos) {
+void window::on_pinch_begin(vec2<float> pos) {
   last_position_ = pos;
   last_scale_ = 1.f;
 }
@@ -461,7 +458,7 @@ void window::on_pinch_begin(win::vec2<float> pos) {
 
 
 
-void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*rot*/) {
+void window::on_pinch_update(vec2<float> /*delta*/, float scale, float /*rot*/) {
   float ds = scale / last_scale_;
   ds *= ds;
   image_display_.scale_multiply_at(ds, last_position_);
@@ -472,7 +469,7 @@ void window::on_pinch_update(win::vec2<float> /*delta*/, float scale, float /*ro
 
 
 
-void window::on_swipe_begin(win::vec2<float> /*pos*/, uint32_t fingers) {
+void window::on_swipe_begin(vec2<float> /*pos*/, uint32_t fingers) {
   if (fingers == 3) {
     dragging_ = true;
   }
@@ -480,7 +477,7 @@ void window::on_swipe_begin(win::vec2<float> /*pos*/, uint32_t fingers) {
 
 
 
-void window::on_swipe_update(win::vec2<float> delta) {
+void window::on_swipe_update(vec2<float> delta) {
   if (dragging_) {
     image_display_.translate(delta);
   }

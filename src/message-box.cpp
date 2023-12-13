@@ -70,7 +70,7 @@ void message_box::recalculate_string(float width) {
   } else {
     header_ = wrap_text(convert_string(header_base_), width, [&](auto text) {
         return viewport().measure_string(text,
-            font_main, global_config().theme_heading_size).x;
+            font_main, global_config().theme_heading_size).x();
     });
   }
 
@@ -79,7 +79,7 @@ void message_box::recalculate_string(float width) {
   } else {
     body_ = wrap_text(convert_string(message_base_), width, [&](auto text) {
         return viewport().measure_string(text,
-            font_main, global_config().theme_text_size).x;
+            font_main, global_config().theme_text_size).x();
     });
   }
 
@@ -90,7 +90,7 @@ void message_box::recalculate_string(float width) {
 
     body_ += shorten_path(path_base_, width, [&](auto text) {
         return viewport().measure_string(text,
-            font_main, global_config().theme_text_size).x;
+            font_main, global_config().theme_text_size).x();
     });
   }
 }
@@ -99,22 +99,22 @@ void message_box::recalculate_string(float width) {
 
 
 
-void message_box::on_layout(win::vec2<std::optional<float>>& size) {
-  if (auto width = size.x; width) {
+void message_box::on_layout(vec2<std::optional<float>>& size) {
+  if (auto width = size.x(); width) {
     recalculate_string(*width);
 
     float height{0.f};
 
     height += (std::ranges::count(header_, U'\n') + 1) * viewport().measure_string(U"\n",
-                  font_main, global_config().theme_heading_size).y;
+                  font_main, global_config().theme_heading_size).y();
 
     height += global_config().theme_heading_size * 0.4f;
 
     height += (std::ranges::count(body_, U'\n') + 1)
                  * viewport().measure_string(U"\n",
-                     font_main, global_config().theme_text_size).y;
+                     font_main, global_config().theme_text_size).y();
 
-    size.y = height;
+    size.y() = height;
   }
 }
 
@@ -137,26 +137,26 @@ void message_box::on_render() {
   }
 
   if (new_text_) {
-    recalculate_string(logical_size().x);
+    recalculate_string(logical_size().x());
   }
 
 
 
-  win::vec2<float> anchor(0.f, global_config().theme_heading_size);
+  vec2<float> anchor(0.f, global_config().theme_heading_size);
 
-  anchor.y += draw_string(anchor, header_, font_main, global_config().theme_heading_size,
-                set_alpha(global_config().theme_heading_color, opacity())).y
+  anchor.y() += draw_string(anchor, header_, font_main, global_config().theme_heading_size,
+                set_alpha(global_config().theme_heading_color, opacity())).y()
                 + global_config().theme_heading_size * 0.4f;
 
   shader_.use();
   win::set_uniform_mat4(shader_trafo_,
-      trafo_mat_logical(anchor, {logical_size().x, 2.f}));
+      trafo_mat_logical(anchor, {logical_size().x(), 2.f}));
 
   auto c = set_alpha(global_config().theme_heading_color, opacity() * 0.5f);
   glUniform4f(shader_color_, c[0] * c[3], c[1] * c[3], c[2] * c[3], c[3]);
   quad_.draw();
 
-  anchor.y += global_config().theme_heading_size * 0.8f;
+  anchor.y() += global_config().theme_heading_size * 0.8f;
 
   draw_string(anchor, body_, font_main, global_config().theme_text_size,
       set_alpha(global_config().theme_text_color, opacity()));

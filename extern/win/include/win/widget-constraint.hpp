@@ -4,11 +4,11 @@
 #ifndef WIN_WIDGET_CONSTRAINT_HPP_INCLUDED
 #define WIN_WIDGET_CONSTRAINT_HPP_INCLUDED
 
-#include "win/vec2.hpp"
-
 #include <array>
 #include <optional>
 #include <variant>
+
+#include <vec2.hpp>
 
 
 

@@ -40,7 +40,7 @@ class window : public win::application {
     bool                             dragging_      {false};
     bool                             pinching_      {false};
     float                            last_scale_    {1.f};
-    win::vec2<float>                 last_position_ {0.f, 0.f};
+    vec2<float>                      last_position_ {0.f, 0.f};
     continuous_scale                 zoom_scale_    {std::chrono::milliseconds{5}};
     continuous_scale                 move_x_scale_  {std::chrono::milliseconds{1}};
     continuous_scale                 move_y_scale_  {std::chrono::milliseconds{1}};
@@ -76,22 +76,22 @@ class window : public win::application {
     void on_key_leave() override;
     void on_key_enter() override {}
 
-    void on_scroll        (win::vec2<float> /*pos*/, win::vec2<float> /*dir*/) override;
+    void on_scroll        (vec2<float> /*pos*/, vec2<float> /*dir*/) override;
 
-    void on_pointer_press  (win::vec2<float> /*pos*/, win::mouse_button /*btn*/) override;
-    void on_pointer_release(win::vec2<float> /*pos*/, win::mouse_button /*btn*/) override;
+    void on_pointer_press  (vec2<float> /*pos*/, win::mouse_button /*btn*/) override;
+    void on_pointer_release(vec2<float> /*pos*/, win::mouse_button /*btn*/) override;
 
-    void on_pointer_enter (win::vec2<float> /*pos*/) override {}
-    void on_pointer_move  (win::vec2<float> /*pos*/) override;
-    void on_pointer_leave()                          override {}
+    void on_pointer_enter (vec2<float> /*pos*/) override {}
+    void on_pointer_move  (vec2<float> /*pos*/) override;
+    void on_pointer_leave()                     override {}
 
-    void on_swipe_begin (win::vec2<float> /*pos*/, uint32_t /*count*/) override;
-    void on_swipe_update(win::vec2<float> /*delta*/)                   override;
+    void on_swipe_begin (vec2<float> /*pos*/, uint32_t /*count*/) override;
+    void on_swipe_update(vec2<float> /*delta*/)                   override;
     void on_swipe_cancel() override {};
     void on_swipe_finish() override;
 
-    void on_pinch_begin(win::vec2<float> /*pos*/) override;
-    void on_pinch_update(win::vec2<float> /*delta*/,
+    void on_pinch_begin(vec2<float> /*pos*/) override;
+    void on_pinch_update(vec2<float> /*delta*/,
                                     float /*scale*/, float /*rotation*/) override;
     void on_pinch_cancel() override {};
     void on_pinch_finish() override {};
