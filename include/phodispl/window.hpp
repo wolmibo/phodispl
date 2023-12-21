@@ -38,7 +38,6 @@ class window : public win::application {
                                      last_left_click_{};
 
     bool                             dragging_      {false};
-    bool                             pinching_      {false};
     float                            last_scale_    {1.f};
     vec2<float>                      last_position_ {0.f, 0.f};
     continuous_scale                 zoom_scale_    {std::chrono::milliseconds{5}};
