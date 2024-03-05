@@ -285,7 +285,7 @@ void win::window_wayland::decoration_configure(
 
 
 void win::window_wayland::update_viewport() {
-  auto scaled = size_ * scale_;
+  auto scaled = vec_cast<float>(size_) * scale_;
 
   wl_egl_window_resize(egl_window_.get(), scaled.x(), scaled.y(), 0, 0);
   rescale(size_, scale_);
