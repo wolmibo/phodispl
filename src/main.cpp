@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
 
   try {
     if (check_default_config) {
-      load_config(*check_default_config, true);
+      load_config(check_default_config, true);
       global_config().assert_equal(config{});
       return 0;
     }
