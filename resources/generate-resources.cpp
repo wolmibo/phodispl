@@ -16,8 +16,8 @@ namespace {
 
     std::string output = "  ";
     size_t i = 0;
-    while (input.peek() != -1) {
-      if (i++ % 20 == 0 && i > 1) {
+    for (; input.peek() != -1; ++i) {
+      if (i % 20 == 0 && i > 0) {
         output += "\n  ";
       }
       output += logcerr::format("0x{:02x},", input.get());
