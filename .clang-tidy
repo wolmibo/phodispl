@@ -3,7 +3,6 @@ Checks: >
     -bugprone-easily-swappable-parameters,
     -bugprone-exception-escape,
     -bugprone-narrowing-conversions,
-    -bugprone-unchecked-optional-access,
   cppcoreguidelines-*,
     -cppcoreguidelines-avoid-magic-numbers,
     -cppcoreguidelines-avoid-non-const-global-variables,
@@ -19,8 +18,6 @@ Checks: >
   performance-*,
     -performance-enum-size,
   readability-*,
-    -readability-braces-around-statements,
     -readability-identifier-length,
     -readability-magic-numbers,
-    -readability-simplify-boolean-expr,
     -readability-uppercase-literal-suffix
