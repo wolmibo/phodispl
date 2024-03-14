@@ -109,7 +109,7 @@ class animation_time {
     float                                 duration_;
     animation_curve                       curve_;
 
-    std::chrono::steady_clock::time_point start_{};
+    std::chrono::steady_clock::time_point start_;
 };
 
 

@@ -35,7 +35,7 @@ class window : public win::application {
     nav_button                       nav_right_;
 
     std::chrono::steady_clock::time_point
-                                     last_left_click_{};
+                                     last_left_click_;
 
     bool                             dragging_      {false};
     float                            last_scale_    {1.f};
