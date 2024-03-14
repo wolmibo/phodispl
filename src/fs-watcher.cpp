@@ -227,7 +227,7 @@ void fs_watcher::watch_loop() {
 
 
 void fs_watcher::watch(std::span<const std::filesystem::path> list) {
-  if (fd_ < 0) return;
+  if (fd_ < 0) { return; }
 
   std::lock_guard lock{mutex_};
 
@@ -241,7 +241,7 @@ void fs_watcher::watch(std::span<const std::filesystem::path> list) {
 
 
 void fs_watcher::unwatch() {
-  if (fd_ < 0) return;
+  if (fd_ < 0) { return; }
 
   std::lock_guard lock{mutex_};
 
