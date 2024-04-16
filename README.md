@@ -55,7 +55,7 @@ if they are not available:
 * [iconfigp](https://github.com/wolmibo/iconfigp)
 * [pixglot](https://github.com/wolmibo/pixglot)
 
-To install all dependencies on Fedora 37 run:
+To install all dependencies on Fedora run:
 ```sh
 sudo dnf install gcc-c++ meson libepoxy-devel fmt-devel fontconfig-devel \
 wayland-devel wayland-protocols-devel freetype-devel libxkbcommon-devel glfw-devel \
