@@ -164,10 +164,8 @@ void win::window_wayland::run() {
   context_.swap_interval(0);
 
   while (!should_close_ && wayland_.dispatch() != -1) {
-    if (frame_requested_ && update()) {
-      frame_requested_ = false;
-      parent()->render();
-      context_.swap_buffers();
+    if (frame_requested_) {
+      render(false);
     }
   }
 }
@@ -285,11 +283,9 @@ void win::window_wayland::decoration_configure(
 
 
 void win::window_wayland::update_viewport() {
-  auto scaled = vec_cast<float>(size_) * scale_;
+  auto scaled = vec_cast<int>(vec_cast<float>(size_) * scale_);
 
   wl_egl_window_resize(egl_window_.get(), scaled.x(), scaled.y(), 0, 0);
-  rescale(size_, scale_);
-
 
   if (viewport_) {
     wp_viewport_set_destination(viewport_.get(), size_.x(), size_.y());
@@ -299,6 +295,23 @@ void win::window_wayland::update_viewport() {
         wl_fixed_from_int(0),
         wl_fixed_from_int(scaled.x()),
         wl_fixed_from_int(scaled.y()));
+  }
+
+  rescale(size_, scale_);
+
+  render(true);
+}
+
+
+
+
+
+void win::window_wayland::render(bool force) {
+  if (update() || force) {
+    parent()->render();
+    context_.swap_buffers();
+
+    frame_requested_ = false;
   }
 }
 

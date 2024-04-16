@@ -57,6 +57,7 @@ class window_wayland : public window_native {
     [[nodiscard]] context share_context()              const override;
 
     void update_viewport();
+    void render(bool);
 
 
 
