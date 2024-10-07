@@ -128,6 +128,7 @@ int main(int argc, char* argv[]) {
 
   std::vector<std::filesystem::path> filenames;
 
+  //NOLINTBEGIN(*-use-designated-initializers)
   static std::array<option, 7> long_options = {
     option{"help",                 no_argument,       nullptr, 'h'},
     option{"version",              no_argument,       nullptr, 'v'},
@@ -137,6 +138,7 @@ int main(int argc, char* argv[]) {
     option{"check-default-config", required_argument, nullptr, 1001},
     option{nullptr,                0,                 nullptr, 0},
   };
+  //NOLINTEND(*-use-designated-initializers)
 
   int c {-1};
   while ((c = getopt_long(args.size(), args.data(), "hvVc:",
