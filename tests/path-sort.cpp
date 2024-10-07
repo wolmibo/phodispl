@@ -11,47 +11,49 @@
 
 
 
-[[nodiscard]] std::string_view stringify(path_compare_method mode) {
-  switch (mode) {
-    case path_compare_method::semantic:      return "semantic";
-    case path_compare_method::lexicographic: return "lexicographic";
+namespace {
+  [[nodiscard]] std::string_view stringify(path_compare_method mode) {
+    switch (mode) {
+      case path_compare_method::semantic:      return "semantic";
+      case path_compare_method::lexicographic: return "lexicographic";
+    }
+    return "<unknown>";
   }
-  return "<unknown>";
-}
 
 
 
-void assert(
-    bool                 expression,
-    std::source_location location = std::source_location::current()
-) {
-  if (!expression) {
-    std::cout << "assertion failed: " << location.line() << '\n' << std::flush;
-    exit(1);
-  }
-}
-
-
-
-void test(
-    path_compare_method                    mode,
-    std::span<std::filesystem::path>       input,
-    std::span<const std::filesystem::path> correct
-) {
-  std::mt19937_64 rng{};
-
-  for (size_t i = 0; i < 1000; ++i) {
-    std::ranges::shuffle(input, rng);
-    std::ranges::sort(input, path_compare{mode});
-
-    if (!std::ranges::equal(input, correct)) {
-      std::cout << "mode: " << stringify(mode) << '\n';
-      std::cout << "sorted:\n";
-      std::ranges::for_each(input,   [](auto&& c) { std::cout << c << '\n'; });
-      std::cout << "expected sorting:" << '\n';
-      std::ranges::for_each(correct, [](auto&& c) { std::cout << c << '\n'; });
-      std::cout << std::flush;
+  void assert(
+      bool                 expression,
+      std::source_location location = std::source_location::current()
+  ) {
+    if (!expression) {
+      std::cout << "assertion failed: " << location.line() << '\n' << std::flush;
       exit(1);
+    }
+  }
+
+
+
+  void test(
+      path_compare_method                    mode,
+      std::span<std::filesystem::path>       input,
+      std::span<const std::filesystem::path> correct
+  ) {
+    std::mt19937_64 rng{};
+
+    for (size_t i = 0; i < 1000; ++i) {
+      std::ranges::shuffle(input, rng);
+      std::ranges::sort(input, path_compare{mode});
+
+      if (!std::ranges::equal(input, correct)) {
+        std::cout << "mode: " << stringify(mode) << '\n';
+        std::cout << "sorted:\n";
+        std::ranges::for_each(input,   [](auto&& c) { std::cout << c << '\n'; });
+        std::cout << "expected sorting:" << '\n';
+        std::ranges::for_each(correct, [](auto&& c) { std::cout << c << '\n'; });
+        std::cout << std::flush;
+        exit(1);
+      }
     }
   }
 }
