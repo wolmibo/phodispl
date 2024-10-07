@@ -303,7 +303,7 @@ namespace {
       size_t       number,
       size_t       div,
       unsigned int precision,
-      Digit&&      format_digit
+      Digit        format_digit
   ) {
     if (div == 0) {
       return U"∞";
@@ -319,7 +319,7 @@ namespace {
     number /= 10;
 
     while (number > 0 || output.size() <= precision) {
-      output.push_back(std::forward<Digit>(format_digit)(number));
+      output.push_back(std::invoke(format_digit, number));
       number /= 10;
 
       if (output.size() == precision) {
@@ -328,7 +328,7 @@ namespace {
     }
 
     if (output.empty() || output.back() == '.') {
-      output.push_back(std::forward<Digit>(format_digit)(0));
+      output.push_back(std::invoke(format_digit, 0));
     }
 
     std::ranges::reverse(output);
