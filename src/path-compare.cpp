@@ -114,7 +114,11 @@ namespace {
     size_t i{1};
     while (i < str.size() && determine_char_type(str[i]) == type) { ++i; }
 
-    word out{type, str.substr(0, i)};
+    word out{
+      .ctype = type,
+      .text  = str.substr(0, i)
+    };
+
     str.remove_prefix(i);
 
     return out;
