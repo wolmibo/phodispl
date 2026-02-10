@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <functional>
+#include <mutex>
 #include <span>
 #include <thread>
 #include <vector>
