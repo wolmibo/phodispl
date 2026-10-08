@@ -222,6 +222,8 @@ namespace {
       uint32_t /*axis*/, int32_t /*value120*/) {}
   [[maybe_unused]] void pointer_axis_relative_direction(void* /*data*/,
       wl_pointer* /*pointer*/, uint32_t /*axis*/, uint32_t /*direction*/) {}
+  [[maybe_unused]] void pointer_warp(void* /*data*/, wl_pointer* /*pointer*/,
+      wl_fixed_t /*surface_x*/, wl_fixed_t /*surface_y*/) {}
 
 
 
@@ -283,6 +285,9 @@ namespace {
     .axis_value120           = pointer_axis_value120,
 #ifdef WL_POINTER_AXIS_RELATIVE_DIRECTION_SINCE_VERSION
     .axis_relative_direction = pointer_axis_relative_direction,
+#endif
+#ifdef WL_POINTER_WARP_SINCE_VERSION
+    .warp                    = pointer_warp,
 #endif
   };
 }
