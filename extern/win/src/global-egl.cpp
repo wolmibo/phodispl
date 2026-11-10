@@ -2,6 +2,8 @@
 
 #include "win/context-wayland.hpp"
 
+#include <logcerr/log.hpp>
+
 #include <array>
 #include <stdexcept>
 
@@ -68,6 +70,14 @@ win::global_egl::global_egl(wl_display* native) :
   display_{create_display(native)},
   config_ {create_config(display_)}
 {}
+
+
+
+win::global_egl::~global_egl() {
+  if (eglTerminate(display_) == EGL_FALSE) {
+    logcerr::error("unable to terminate eglDisplay");
+  }
+}
 
 
 

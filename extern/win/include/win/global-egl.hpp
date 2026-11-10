@@ -16,6 +16,13 @@ class global_egl {
   public:
     global_egl(wl_display*);
 
+    global_egl(const global_egl&) = delete;
+    global_egl(global_egl&&)      = delete;
+    global_egl& operator=(const global_egl&) = delete;
+    global_egl& operator=(global_egl &&)     = delete;
+
+    ~global_egl();
+
     [[nodiscard]] context_wayland create_context(wl_egl_window*)         const;
     [[nodiscard]] context_wayland create_context(const context_wayland&) const;
 
